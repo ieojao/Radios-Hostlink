@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ config.nome_site }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='images/' + config.favicon) }}">
+    <style>
+        :root {
+            --cor-principal: {{ config.cor_principal }};
+            --cor-fundo: {{ config.cor_fundo }};
+            --cor-texto: {{ config.cor_texto }};
+            --cor-botoes: {{ config.cor_botoes }};
+            --cor-links: {{ config.cor_links }};
+            --fonte: {{ config.fonte }};
+        }
+        {{ config.css_custom | safe }}
+    </style>
+</head>
+<body>
+    <!-- Player superior -->
+    <div class="player-bar">
+        <div class="player-info">
+            <span class="icon-play">▶</span>
+            <div>
+                <span class="music-title">LOUVOR</span><br>
+                <span class="music-genre">GOSPEL</span>
+            </div>
+        </div>
+        <div class="player-controls">
+            <span class="icon-radio">📻</span>
+            <span class="timer" id="timer">00:00</span>
+        </div>
+    </div>
+
+    <!-- Menu principal -->
+    <header>
+        <img src="{{ url_for('static', filename='images/' + config.logo) }}" alt="{{ config.nome_site }}" class="logo">
+        <nav>
+            <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>HOME</a>
+            <a href="{{ url_for('a_radio') }}" {% if request.endpoint == 'a_radio' %}class="active"{% endif %}>A RÁDIO</a>
+            <a href="{{ url_for('programacao') }}" {% if request.endpoint == 'programacao' %}class="active"{% endif %}>PROGRAMAÇÃO</a>
+            <a href="{{ url_for('equipe') }}" {% if request.endpoint == 'equipe' %}class="active"{% endif %}>EQUIPE</a>
+            <a href="{{ url_for('contato') }}" {% if request.endpoint == 'contato' %}class="active"{% endif %}>CONTATO</a>
+        </nav>
+        <div class="header-buttons">
+            <button class="menu-btn">☰</button>
+            <button class="play-btn">▶ PLAY</button>
+            <button class="sound-btn">🔊</button>
+            <button class="popup-btn">🎵 POPUP</button>
+        </div>
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Botão WhatsApp -->
+    <a href="https://wa.me/{{ config.whatsapp }}" class="whatsapp-btn" target="_blank">💬</a>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html> 

@@ -1,6 +1,8 @@
 <?php
 // Página inicial do site público
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../app/Database.php';
+require_once __DIR__ . '/../app/Config.php';
 
 function getPDO() {
     $config = require __DIR__ . '/../config/config.php';
@@ -20,6 +22,7 @@ function getConfig($chave, $padrao = '') {
     $v = $stmt->fetchColumn();
     return $v !== false ? $v : $padrao;
 }
+
 $site_nome = getConfig('site_nome', 'Rádio Nova Atalaia');
 $site_logo = getConfig('site_logo', 'logo.png');
 $cor_principal = getConfig('cor_principal', '#005080');
@@ -39,96 +42,44 @@ $rede_instagram = getConfig('rede_instagram', '');
 $rede_youtube = getConfig('rede_youtube', '');
 $rede_twitter = getConfig('rede_twitter', '');
 $rede_whatsapp = getConfig('rede_whatsapp', '');
-$pdo = getPDO();
-$banners = $pdo->query('SELECT * FROM banners ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC);
-?><!DOCTYPE html>
+
+$db = Database::getInstance();
+$config = Config::getSiteConfig();
+
+// Buscar dados dinâmicos
+$banners = $db->fetchAll("SELECT * FROM banners WHERE ativo = 1 ORDER BY ordem");
+$programacao = $db->fetchAll("SELECT * FROM programacao WHERE dia_semana = ? ORDER BY hora_inicio", [date('N')]);
+$equipe = $db->fetchAll("SELECT * FROM equipe WHERE ativo = 1 ORDER BY nome");
+?>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title><?= htmlspecialchars($site_nome) ?></title>
-  <?php if ($site_favicon): ?>
-    <link rel="icon" href="<?= htmlspecialchars($site_favicon) ?>">
-  <?php endif; ?>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css?family=<?= urlencode($fonte_site) ?>:400,700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><?= htmlspecialchars($config['nome_site']) ?></title>
+  <link rel="icon" href="<?= htmlspecialchars($config['favicon']) ?>">
+  <link rel="stylesheet" href="../styles.css">
+  <link href="https://fonts.googleapis.com/css?family=<?= urlencode($config['fonte']) ?>:400,700&display=swap" rel="stylesheet">
   <style>
-    body { background: <?= htmlspecialchars($cor_fundo) ?>; color: <?= htmlspecialchars($cor_texto) ?>; font-family: '<?= htmlspecialchars($fonte_site) ?>', Arial, sans-serif; }
-    .banner, .header-buttons button, nav a.active { background: <?= htmlspecialchars($cor_principal) ?> !important; }
-    nav a.active, .header-buttons button, .banner h1 { color: #fff !important; }
-    .player-dinamico { display: flex; align-items: center; gap: 16px; background: #222; color: #fff; padding: 12px 24px; }
-    .player-dinamico button { background: <?= htmlspecialchars($cor_botao) ?>; color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer; }
-    .player-dinamico .titulo { font-weight: bold; margin-left: 12px; }
-    .player-dinamico audio { display: none; }
-    .banners-home { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; margin: 32px 0; }
-    .banner-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #0001; padding: 0; overflow: hidden; width: 340px; text-align: center; transition: box-shadow .2s; }
-    .banner-card:hover { box-shadow: 0 4px 16px #0002; }
-    .banner-card img { width: 100%; height: 180px; object-fit: cover; display: block; }
-    .banner-card .titulo { font-weight: bold; font-size: 18px; margin: 12px 0 8px 0; color: <?= htmlspecialchars($cor_principal) ?>; }
-    .banner-card .link { display: inline-block; margin-bottom: 12px; color: #fff; background: <?= htmlspecialchars($cor_principal) ?>; padding: 6px 18px; border-radius: 20px; text-decoration: none; font-size: 15px; }
-    a { color: <?= htmlspecialchars($cor_link) ?>; }
-    a:hover { color: <?= htmlspecialchars($cor_link_hover) ?>; }
-    .footer { background: <?= htmlspecialchars($cor_principal) ?>; color: #fff; text-align: center; padding: 24px 10px 10px 10px; margin-top: 40px; border-radius: 16px 16px 0 0; }
-    .footer .redes { margin: 12px 0; }
-    .footer .redes a { color: #fff; margin: 0 8px; font-size: 22px; text-decoration: none; transition: color .2s; }
-    .footer .redes a:hover { color: <?= htmlspecialchars($cor_link_hover) ?>; }
-    <?= $css_custom ?>
+    :root {
+      --cor-principal: <?= $config['cor_principal'] ?>;
+      --cor-fundo: <?= $config['cor_fundo'] ?>;
+      --cor-texto: <?= $config['cor_texto'] ?>;
+      --cor-botoes: <?= $config['cor_botoes'] ?>;
+      --cor-links: <?= $config['cor_links'] ?>;
+    }
+    body { font-family: '<?= $config['fonte'] ?>', sans-serif; }
+    <?= $config['css_custom'] ?>
   </style>
 </head>
 <body>
-  <!-- Player dinâmico -->
-  <?php if ($stream_url): ?>
-    <div class="player-dinamico" id="player-dinamico">
-      <button id="playpause">▶</button>
-      <span class="titulo">AO VIVO</span>
-      <audio id="audio-player" src="<?= htmlspecialchars($stream_url) ?>"></audio>
-    </div>
-    <script>
-      const audio = document.getElementById('audio-player');
-      const btn = document.getElementById('playpause');
-      let playing = false;
-      btn.onclick = function() {
-        if (playing) {
-          audio.pause();
-          btn.textContent = '▶';
-        } else {
-          audio.play();
-          btn.textContent = '⏸';
-        }
-        playing = !playing;
-      };
-      audio.onended = function() {
-        btn.textContent = '▶';
-        playing = false;
-      };
-    </script>
-  <?php else: ?>
-    <div class="player-dinamico" style="background:#e00;">Streaming não configurado</div>
-  <?php endif; ?>
-
-  <!-- Banners dinâmicos -->
-  <?php if ($banners && count($banners)): ?>
-    <div class="banners-home">
-      <?php foreach ($banners as $b): ?>
-        <div class="banner-card">
-          <?php if ($b['imagem']): ?>
-            <img src="<?= htmlspecialchars($b['imagem']) ?>" alt="<?= htmlspecialchars($b['titulo']) ?>">
-          <?php endif; ?>
-          <div class="titulo"><?= htmlspecialchars($b['titulo']) ?></div>
-          <?php if ($b['link']): ?>
-            <a href="<?= htmlspecialchars($b['link']) ?>" class="link" target="_blank">Saiba mais</a>
-          <?php endif; ?>
-        </div>
-      <?php endforeach; ?>
-    </div>
-  <?php endif; ?>
-
-  <!-- Player superior antigo -->
+  <!-- Player superior -->
   <div class="player-bar">
     <div class="player-info">
       <span class="icon-play">▶</span>
       <div>
-        <span class="music-title">LOUVOR</span><br>
-        <span class="music-genre">GOSPEL</span>
+        <span class="music-title">AO VIVO</span><br>
+        <span class="music-genre"><?= htmlspecialchars($config['nome_site']) ?></span>
       </div>
     </div>
     <div class="player-controls">
@@ -139,62 +90,143 @@ $banners = $pdo->query('SELECT * FROM banners ORDER BY id DESC')->fetchAll(PDO::
 
   <!-- Menu principal -->
   <header>
-    <?php if ($site_logo): ?>
-      <img src="<?= htmlspecialchars($site_logo) ?>" alt="<?= htmlspecialchars($site_nome) ?>" class="logo">
-    <?php endif; ?>
+    <img src="<?= htmlspecialchars($config['logo']) ?>" alt="<?= htmlspecialchars($config['nome_site']) ?>" class="logo">
     <nav>
       <a href="index.php" class="active">HOME</a>
-      <a href="a-radio.html">A RÁDIO</a>
-      <a href="programacao.html">PROGRAMAÇÃO</a>
-      <a href="equipe.html">EQUIPE</a>
-      <a href="contato.html">CONTATO</a>
+      <a href="a-radio.php">A RÁDIO</a>
+      <a href="programacao.php">PROGRAMAÇÃO</a>
+      <a href="equipe.php">EQUIPE</a>
+      <a href="contato.php">CONTATO</a>
     </nav>
     <div class="header-buttons">
       <button class="menu-btn">☰</button>
-      <button class="play-btn">▶ PLAY</button>
-      <button class="sound-btn">🔊</button>
-      <button class="popup-btn">🎵 POPUP</button>
+      <button class="play-btn" onclick="togglePlayer()">▶ PLAY</button>
+      <button class="sound-btn" onclick="toggleMute()">🔊</button>
+      <button class="popup-btn" onclick="openPlayer()">🎵 POPUP</button>
     </div>
   </header>
 
-  <!-- Banner de programação -->
+  <!-- Banner principal -->
+  <?php if (!empty($banners)): ?>
   <section class="banner">
-    <h1><?= htmlspecialchars($site_nome) ?></h1>
+    <div class="banner-slider">
+      <?php foreach ($banners as $banner): ?>
+      <div class="banner-item">
+        <img src="<?= htmlspecialchars($banner['imagem']) ?>" alt="<?= htmlspecialchars($banner['titulo']) ?>">
+        <div class="banner-content">
+          <h1><?= htmlspecialchars($banner['titulo']) ?></h1>
+          <p><?= htmlspecialchars($banner['descricao']) ?></p>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+  </section>
+  <?php endif; ?>
+
+  <!-- Programação atual -->
+  <section class="programacao-atual">
+    <div class="container">
+      <h2>PROGRAMAÇÃO ATUAL</h2>
+      <?php if (!empty($programacao)): ?>
+        <?php foreach ($programacao as $programa): ?>
+        <div class="programa-item">
+          <div class="programa-hora"><?= htmlspecialchars($programa['hora_inicio']) ?></div>
+          <div class="programa-info">
+            <h3><?= htmlspecialchars($programa['titulo']) ?></h3>
+            <p><?= htmlspecialchars($programa['descricao']) ?></p>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p>Nenhuma programação cadastrada para hoje.</p>
+      <?php endif; ?>
+    </div>
   </section>
 
-  <!-- Tabs de dias da semana -->
-  <section class="programacao">
-    <div class="tabs">
-      <button class="tab active">DOMINGO</button>
-      <button class="tab">SEGUNDA</button>
-      <button class="tab">TERÇA</button>
-      <button class="tab">QUARTA</button>
-      <button class="tab">QUINTA</button>
-      <button class="tab">SEXTA</button>
-      <button class="tab">SÁBADO</button>
-    </div>
-    <div class="programa-atual">
-      <img src="programa.jpg" alt="Programação musical">
-      <div>
-        <span class="rolando-agora">ROLANDO AGORA</span>
-        <h2>Programação musical</h2>
+  <!-- Equipe -->
+  <section class="equipe">
+    <div class="container">
+      <h2>NOSSA EQUIPE</h2>
+      <div class="equipe-grid">
+        <?php foreach ($equipe as $membro): ?>
+        <div class="membro">
+          <img src="<?= htmlspecialchars($membro['foto']) ?>" alt="<?= htmlspecialchars($membro['nome']) ?>">
+          <h3><?= htmlspecialchars($membro['nome']) ?></h3>
+          <p><?= htmlspecialchars($membro['cargo']) ?></p>
+        </div>
+        <?php endforeach; ?>
       </div>
     </div>
   </section>
 
-  <!-- Rodapé dinâmico -->
-  <footer class="footer">
-    <div class="redes">
-      <?php if ($rede_facebook): ?><a href="<?= htmlspecialchars($rede_facebook) ?>" target="_blank" title="Facebook">&#x1F426;</a><?php endif; ?>
-      <?php if ($rede_instagram): ?><a href="<?= htmlspecialchars($rede_instagram) ?>" target="_blank" title="Instagram">&#x1F33A;</a><?php endif; ?>
-      <?php if ($rede_youtube): ?><a href="<?= htmlspecialchars($rede_youtube) ?>" target="_blank" title="YouTube">&#x1F4FA;</a><?php endif; ?>
-      <?php if ($rede_twitter): ?><a href="<?= htmlspecialchars($rede_twitter) ?>" target="_blank" title="Twitter">&#x1F426;</a><?php endif; ?>
-      <?php if ($rede_whatsapp): ?><a href="<?= htmlspecialchars($rede_whatsapp) ?>" target="_blank" title="WhatsApp">&#x1F4AC;</a><?php endif; ?>
+  <!-- Rodapé -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-info">
+          <img src="<?= htmlspecialchars($config['logo']) ?>" alt="<?= htmlspecialchars($config['nome_site']) ?>" class="footer-logo">
+          <p><?= htmlspecialchars($config['texto_rodape']) ?></p>
+        </div>
+        <div class="footer-social">
+          <?php if ($config['facebook']): ?>
+          <a href="<?= htmlspecialchars($config['facebook']) ?>" target="_blank">📘 Facebook</a>
+          <?php endif; ?>
+          <?php if ($config['instagram']): ?>
+          <a href="<?= htmlspecialchars($config['instagram']) ?>" target="_blank">📷 Instagram</a>
+          <?php endif; ?>
+          <?php if ($config['youtube']): ?>
+          <a href="<?= htmlspecialchars($config['youtube']) ?>" target="_blank">📺 YouTube</a>
+          <?php endif; ?>
+        </div>
+      </div>
     </div>
-    <div><?= nl2br(htmlspecialchars($rodape_texto)) ?></div>
   </footer>
 
   <!-- Botão WhatsApp -->
-  <a href="https://wa.me/SEUNUMERO" class="whatsapp-btn">💬</a>
+  <?php if ($config['whatsapp']): ?>
+  <a href="https://wa.me/<?= htmlspecialchars($config['whatsapp']) ?>" class="whatsapp-btn" target="_blank">💬</a>
+  <?php endif; ?>
+
+  <!-- Player de áudio -->
+  <audio id="player" preload="none">
+    <source src="<?= htmlspecialchars($config['url_streaming']) ?>" type="audio/mpeg">
+  </audio>
+
+  <script>
+    let player = document.getElementById('player');
+    let isPlaying = false;
+
+    function togglePlayer() {
+      if (isPlaying) {
+        player.pause();
+        isPlaying = false;
+        document.querySelector('.play-btn').textContent = '▶ PLAY';
+      } else {
+        player.play();
+        isPlaying = true;
+        document.querySelector('.play-btn').textContent = '⏸ PAUSE';
+      }
+    }
+
+    function toggleMute() {
+      player.muted = !player.muted;
+      document.querySelector('.sound-btn').textContent = player.muted ? '🔇' : '🔊';
+    }
+
+    function openPlayer() {
+      window.open('player.php', 'player', 'width=400,height=300');
+    }
+
+    // Atualizar timer
+    setInterval(() => {
+      if (isPlaying) {
+        let time = Math.floor(player.currentTime);
+        let minutes = Math.floor(time / 60);
+        let seconds = time % 60;
+        document.querySelector('.timer').textContent = 
+          `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      }
+    }, 1000);
+  </script>
 </body>
 </html> 

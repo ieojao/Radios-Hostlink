@@ -1,100 +1,230 @@
-# Rádio Web - Template Dinâmico
+# 📻 Sistema de Rádio Web - Nova Atalaia
 
-Este projeto é um template de site para rádios online, totalmente dinâmico, personalizável e pronto para ser utilizado em diferentes emissoras. Inclui painel administrativo protegido, banners dinâmicos, programação, equipe, contato, player de áudio e personalização visual completa.
+Um sistema completo e moderno para rádios web, com painel administrativo, player de áudio, programação dinâmica, equipe, formulário de contato e personalização visual completa.
 
-## Funcionalidades
+## ✨ Funcionalidades
 
-- **Site público dinâmico**: páginas de Home, Programação, Equipe, Contato e Sobre a Rádio, todas com banners, rodapé, cores, fontes e redes sociais configuráveis.
-- **Player de áudio**: integração com streaming ao vivo.
-- **Painel administrativo protegido**: login, gerenciamento de programação, locutores, banners e configurações visuais.
-- **Formulário de contato**: envio de mensagens para o e-mail configurado.
-- **Personalização visual**: cores, fontes, logo, favicon, CSS customizado e links de redes sociais.
-- **Banners dinâmicos**: exibidos em todas as páginas, gerenciados pelo admin.
-- **Equipe/Locutores**: cadastro e exibição dinâmica dos apresentadores.
-- **Grade de programação**: cadastro e exibição por dia da semana.
+### 🎵 Site Público
+- **Player de áudio integrado** com streaming ao vivo
+- **Páginas dinâmicas**: Home, Sobre a Rádio, Programação, Equipe e Contato
+- **Banners rotativos** gerenciados pelo admin
+- **Programação por dia da semana** com interface intuitiva
+- **Equipe/Locutores** com fotos e redes sociais
+- **Formulário de contato** funcional com envio de e-mail
+- **Design responsivo** para todos os dispositivos
+- **Personalização visual** completa (cores, fontes, logo, favicon)
 
-## Instalação
+### 🔧 Painel Administrativo
+- **Login seguro** com autenticação
+- **Dashboard** com estatísticas em tempo real
+- **Gerenciamento de banners** (adicionar, editar, excluir)
+- **Gerenciamento de equipe** (locutores e apresentadores)
+- **Gerenciamento de programação** por dia da semana
+- **Visualização de mensagens** de contato
+- **Configurações do site** (cores, fontes, redes sociais, streaming)
 
-1. **Clone o repositório e envie os arquivos para seu servidor.**
+### 🎨 Personalização
+- Cores principais, de fundo, texto, botões e links
+- Fontes do Google Fonts
+- Logo e favicon personalizados
+- CSS customizado
+- Links de redes sociais
+- URL do streaming
+- E-mail de contato
 
-2. **Crie o banco de dados MySQL** e importe o arquivo `database.sql` para criar as tabelas necessárias:
-   ```sql
-   mysql -u usuario -p banco < database.sql
-   ```
+## 🚀 Instalação Rápida
 
-3. **Configure a conexão com o banco de dados** em `config/config.php`:
-   ```php
-   return [
-       'db_host' => 'localhost',
-       'db_name' => 'radio',
-       'db_user' => 'root',
-       'db_pass' => '',
-   ];
-   ```
+### 1. Requisitos
+- PHP 7.4 ou superior
+- MySQL 5.7 ou superior
+- Servidor web (Apache/Nginx)
+- Extensões PHP: PDO, PDO_MySQL, mbstring
 
-4. **Acesse o painel administrativo** em `seusite.com/public/admin/login.php` e faça login.
-   - O usuário e senha iniciais devem ser inseridos diretamente na tabela `usuarios` do banco de dados (veja abaixo como criar um admin).
+### 2. Instalação Automática
+1. **Faça upload** dos arquivos para seu servidor
+2. **Acesse** `http://seudominio.com/install/install.php`
+3. **Preencha** as informações do banco de dados e usuário admin
+4. **Clique em "Instalar Sistema"**
+5. **Acesse** o painel admin em `http://seudominio.com/public/admin/login.php`
 
-## Criando o usuário admin
+### 3. Instalação Manual
+Se preferir instalar manualmente:
 
-Execute no MySQL (ajuste o hash da senha conforme necessário):
+```bash
+# 1. Criar banco de dados
+mysql -u root -p
+CREATE DATABASE radio_web CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-```sql
+# 2. Importar estrutura
+mysql -u root -p radio_web < database.sql
+
+# 3. Configurar conexão
+# Edite config/config.php com suas credenciais
+
+# 4. Criar usuário admin
+mysql -u root -p radio_web
 INSERT INTO usuarios (nome, email, senha, nivel) VALUES (
-  'Admin', 'admin@seudominio.com.br', 
-  '$2y$10$HASHGERADOPHP', -- gere o hash com password_hash('sua_senha', PASSWORD_DEFAULT)
+  'Admin', 'admin@seudominio.com', 
+  '$2y$10$HASHGERADOPHP', -- use password_hash('sua_senha', PASSWORD_DEFAULT)
   'admin'
 );
 ```
 
-## Estrutura de Pastas
+## 📁 Estrutura do Projeto
 
-- `public/` - arquivos públicos do site (index.php, páginas dinâmicas, admin)
-- `public/admin/` - painel administrativo (login, banners, locutores, programação, configurações)
-- `config/` - configuração do banco de dados
-- `app/` - autenticação e funções auxiliares
-- `styles.css` - estilos globais do site
-- `database.sql` - script para criar as tabelas
+```
+Radios-Hostlink/
+├── app/                    # Classes PHP
+│   ├── Database.php       # Conexão com banco
+│   └── Config.php         # Gerenciamento de configurações
+├── config/                # Configurações
+│   └── config.php         # Configuração do banco
+├── public/                # Arquivos públicos
+│   ├── index.php          # Página inicial
+│   ├── programacao.php    # Programação
+│   ├── equipe.php         # Equipe
+│   ├── contato.php        # Contato
+│   ├── a-radio.php        # Sobre a rádio
+│   └── admin/             # Painel administrativo
+│       ├── login.php      # Login
+│       ├── index.php      # Dashboard
+│       └── logout.php     # Logout
+├── install/               # Instalador
+│   └── install.php        # Script de instalação
+├── styles.css             # Estilos globais
+├── database.sql           # Estrutura do banco
+└── README.md              # Este arquivo
+```
 
-## Como funciona
+## 🗄️ Estrutura do Banco de Dados
 
-### Site público
+### Tabelas Principais
+- **usuarios**: Usuários do painel admin
+- **configuracoes**: Configurações do site
+- **banners**: Banners rotativos
+- **equipe**: Membros da equipe
+- **programacao**: Grade de programação
+- **contatos**: Mensagens de contato
+- **sobre_radio**: Informações sobre a rádio
 
-- **Home (`public/index.php`)**: exibe player, banners, programação, rodapé e redes sociais.
-- **Programação (`programacao.html`)**: grade dinâmica por dia da semana, editável pelo admin.
-- **Equipe (`equipe.html`)**: lista de locutores cadastrados.
-- **Contato (`contato.html`)**: formulário de contato dinâmico, envia para o e-mail configurado.
-- **Sobre a Rádio (`a-radio.html`)**: texto institucional, editável pelo admin.
+## 🎯 Como Usar
 
-### Painel Admin
+### 1. Primeiro Acesso
+1. Acesse o painel admin: `http://seudominio.com/public/admin/login.php`
+2. Faça login com as credenciais criadas na instalação
+3. Configure as informações básicas do site em "Configurações"
 
-Acesse `public/admin/login.php` para:
-- Gerenciar **banners** (adicionar, editar, excluir)
-- Gerenciar **locutores** (adicionar, editar, excluir)
-- Gerenciar **programação** (adicionar, editar, excluir)
-- Alterar **configurações visuais**: nome do site, logo, favicon, cores, fontes, texto do rodapé, CSS customizado, links de redes sociais, e-mail de contato e URL do streaming.
+### 2. Configurações Básicas
+No painel admin, configure:
+- **Nome do site** e logo
+- **Cores** e fontes
+- **URL do streaming** para o player
+- **Redes sociais** e WhatsApp
+- **E-mail** de contato
 
-### Personalização Visual
+### 3. Adicionar Conteúdo
+- **Banners**: Adicione imagens promocionais
+- **Equipe**: Cadastre locutores e apresentadores
+- **Programação**: Crie a grade de programação por dia
+- **Sobre a Rádio**: Adicione informações institucionais
 
-No painel admin, em "Configurações do Site", você pode:
-- Alterar cores principais, de fundo, texto, botões e links
-- Escolher a fonte (Google Fonts)
-- Definir logo e favicon
-- Inserir CSS customizado
-- Editar texto do rodapé
-- Adicionar links de redes sociais
+### 4. Personalização Visual
+- Altere cores no painel admin
+- Faça upload de logo e favicon
+- Adicione CSS customizado se necessário
+- Configure fontes do Google Fonts
 
-### Segurança
+## 🔒 Segurança
 
-- O painel admin é protegido por login e senha.
-- As senhas são armazenadas com hash seguro (password_hash).
+- **Senhas criptografadas** com `password_hash()`
+- **Sessões seguras** para autenticação
+- **Validação de dados** em formulários
+- **Proteção contra SQL injection** com prepared statements
+- **Sanitização de saída** com `htmlspecialchars()`
 
-## Observações
+## 🎨 Personalização Avançada
 
-- O template é neutro, pronto para ser usado em qualquer rádio. Basta preencher as informações no painel admin.
-- Os banners, locutores e programação são exibidos dinamicamente conforme cadastrados no painel.
-- O formulário de contato envia para o e-mail configurado nas configurações.
+### CSS Customizado
+No painel admin, você pode adicionar CSS personalizado:
 
-## Dúvidas
+```css
+/* Exemplo de personalização */
+.player-bar {
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+}
 
-Se precisar de ajuda para instalar, configurar ou personalizar, entre em contato com o desenvolvedor ou abra uma issue. 
+.banner {
+    background-image: url('sua-imagem.jpg');
+}
+```
+
+### Variáveis CSS
+O sistema usa variáveis CSS para facilitar a personalização:
+
+```css
+:root {
+    --cor-principal: #1e3a8a;
+    --cor-fundo: #ffffff;
+    --cor-texto: #333333;
+    --cor-botoes: #3b82f6;
+    --cor-links: #1e40af;
+}
+```
+
+## 📱 Responsividade
+
+O site é totalmente responsivo e funciona em:
+- 📱 Smartphones
+- 📱 Tablets
+- 💻 Desktops
+- 🖥️ Monitores grandes
+
+## 🔧 Manutenção
+
+### Backup
+Faça backup regular do banco de dados:
+```bash
+mysqldump -u usuario -p radio_web > backup_$(date +%Y%m%d).sql
+```
+
+### Atualizações
+- Mantenha o PHP atualizado
+- Monitore logs de erro
+- Faça backup antes de atualizações
+
+## 🆘 Suporte
+
+### Problemas Comuns
+
+1. **Erro de conexão com banco**
+   - Verifique as credenciais em `config/config.php`
+   - Confirme se o MySQL está rodando
+
+2. **Player não funciona**
+   - Verifique a URL do streaming nas configurações
+   - Teste a URL diretamente no navegador
+
+3. **E-mail não envia**
+   - Configure corretamente o servidor SMTP
+   - Verifique as configurações de e-mail do servidor
+
+### Logs
+Verifique os logs do PHP para erros:
+- Apache: `/var/log/apache2/error.log`
+- Nginx: `/var/log/nginx/error.log`
+
+## 📄 Licença
+
+Este projeto é de uso livre para rádios e emissoras.
+
+## 🤝 Contribuição
+
+Para contribuir com melhorias:
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Abra um Pull Request
+
+---
+
+**Desenvolvido com ❤️ para a comunidade radiofônica brasileira** 

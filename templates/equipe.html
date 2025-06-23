@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.nome_site }} - Equipe{% endblock %}
+
+{% block content %}
+<!-- Banner -->
+<section class="banner">
+    <h1>EQUIPE</h1>
+</section>
+
+<!-- Equipe -->
+<section class="equipe">
+    <div class="container">
+        <h2>Nossa Equipe</h2>
+        <p class="equipe-intro">Conheça os profissionais que fazem a {{ config.nome_site }} acontecer todos os dias.</p>
+        
+        {% if locutores %}
+        <div class="locutores-grid">
+            {% for locutor in locutores %}
+            <div class="locutor-card">
+                <div class="locutor-foto">
+                    {% if locutor.foto %}
+                    <img src="{{ url_for('static', filename='images/locutores/' + locutor.foto) }}" alt="{{ locutor.nome }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/locutor-padrao.jpg') }}" alt="{{ locutor.nome }}">
+                    {% endif %}
+                </div>
+                <div class="locutor-info">
+                    <h3>{{ locutor.nome }}</h3>
+                    {% if locutor.bio %}
+                    <p>{{ locutor.bio }}</p>
+                    {% endif %}
+                    {% if locutor.redes_sociais %}
+                    <div class="locutor-redes">
+                        <!-- Aqui você pode adicionar links para redes sociais -->
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="sem-equipe">
+            <p>Nossa equipe está sendo formada. Em breve você conhecerá todos os nossos locutores!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Seção de convite -->
+<section class="convite-equipe">
+    <div class="container">
+        <div class="convite-content">
+            <h2>Faça Parte da Nossa Equipe</h2>
+            <p>Você tem talento para locução, produção de áudio ou gerenciamento de mídia? Entre em contato conosco e faça parte da nossa equipe!</p>
+            
+            <div class="areas-atuacao">
+                <div class="area">
+                    <h3>🎤 Locução</h3>
+                    <p>Apresentação de programas e interação com ouvintes</p>
+                </div>
+                <div class="area">
+                    <h3>🎵 Produção Musical</h3>
+                    <p>Seleção e edição de músicas e vinhetas</p>
+                </div>
+                <div class="area">
+                    <h3>📻 Técnica</h3>
+                    <p>Operação de equipamentos e transmissão</p>
+                </div>
+                <div class="area">
+                    <h3>📱 Marketing Digital</h3>
+                    <p>Gestão de redes sociais e conteúdo online</p>
+                </div>
+            </div>
+            
+            <div class="convite-cta">
+                <a href="{{ url_for('contato') }}" class="btn-contato">Entre em Contato</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Estatísticas da equipe -->
+<section class="equipe-stats">
+    <div class="container">
+        <h2>Nossa Equipe em Números</h2>
+        <div class="stats-equipe">
+            <div class="stat-equipe">
+                <div class="stat-numero">{{ locutores|length if locutores else 0 }}</div>
+                <div class="stat-label">Locutores</div>
+            </div>
+            <div class="stat-equipe">
+                <div class="stat-numero">5+</div>
+                <div class="stat-label">Anos de Experiência Média</div>
+            </div>
+            <div class="stat-equipe">
+                <div class="stat-numero">24/7</div>
+                <div class="stat-label">Disponibilidade</div>
+            </div>
+            <div class="stat-equipe">
+                <div class="stat-numero">100%</div>
+                <div class="stat-label">Comprometimento</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

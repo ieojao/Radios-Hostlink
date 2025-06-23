@@ -1,0 +1,20 @@
+# Configurações do banco de dados
+DATABASE_URL=sqlite:///radio.db
+
+# Chave secreta para sessões (gere uma chave única)
+SECRET_KEY=sua-chave-secreta-aqui
+
+# Configurações do site
+SITE_NAME=Nova Atalaia
+SITE_EMAIL=contato@novaatalaia.com.br
+STREAMING_URL=https://streaming.example.com/live
+
+# Configurações de email (opcional)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=seu-email@gmail.com
+SMTP_PASS=sua-senha-de-app
+
+# Configurações de upload
+UPLOAD_FOLDER=static/uploads
+MAX_CONTENT_LENGTH=16777216 

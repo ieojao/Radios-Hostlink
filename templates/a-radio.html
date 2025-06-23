@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.nome_site }} - A Rádio{% endblock %}
+
+{% block content %}
+<!-- Banner -->
+<section class="banner">
+    <h1>A RÁDIO</h1>
+</section>
+
+<!-- Sobre a rádio -->
+<section class="sobre-radio">
+    <div class="container">
+        <div class="sobre-content">
+            <div class="sobre-texto">
+                <h2>Sobre a {{ config.nome_site }}</h2>
+                <p>A {{ config.nome_site }} é uma rádio gospel comprometida em levar a palavra de Deus e música de qualidade para todos os ouvintes. Nossa missão é evangelizar através da música e da pregação, proporcionando momentos de reflexão, adoração e edificação espiritual.</p>
+                
+                <p>Fundada com o propósito de ser uma voz cristã na comunidade, nossa rádio transmite programação 24 horas por dia, incluindo:</p>
+                
+                <ul>
+                    <li>Música gospel nacional e internacional</li>
+                    <li>Programas de pregação e estudo bíblico</li>
+                    <li>Notícias e informações da comunidade cristã</li>
+                    <li>Programas especiais para crianças e jovens</li>
+                    <li>Transmissão de cultos e eventos especiais</li>
+                </ul>
+                
+                <p>Nossa equipe é formada por locutores comprometidos com a palavra de Deus e apaixonados por música gospel. Cada programa é cuidadosamente preparado para abençoar e edificar nossos ouvintes.</p>
+            </div>
+            
+            <div class="sobre-imagem">
+                <img src="{{ url_for('static', filename='images/radio-estudio.jpg') }}" alt="Estúdio da Rádio">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Estatísticas -->
+<section class="estatisticas">
+    <div class="container">
+        <h2>Nossos Números</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-numero">24</div>
+                <div class="stat-label">Horas no Ar</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-numero">1000+</div>
+                <div class="stat-label">Ouvintes Diários</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-numero">50+</div>
+                <div class="stat-label">Programas Semanais</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-numero">10+</div>
+                <div class="stat-label">Anos de Experiência</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Missão, Visão e Valores -->
+<section class="mvv">
+    <div class="container">
+        <div class="mvv-grid">
+            <div class="mvv-item">
+                <h3>Missão</h3>
+                <p>Evangelizar através da música e da palavra de Deus, levando esperança e edificação espiritual para todos os ouvintes.</p>
+            </div>
+            <div class="mvv-item">
+                <h3>Visão</h3>
+                <p>Ser referência em rádio gospel, alcançando cada vez mais pessoas com a mensagem de amor e salvação de Cristo.</p>
+            </div>
+            <div class="mvv-item">
+                <h3>Valores</h3>
+                <ul>
+                    <li>Compromisso com a palavra de Deus</li>
+                    <li>Excelência na programação</li>
+                    <li>Transparência e ética</li>
+                    <li>Serviço à comunidade</li>
+                    <li>Inovação e qualidade técnica</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tecnologia -->
+<section class="tecnologia">
+    <div class="container">
+        <h2>Nossa Tecnologia</h2>
+        <div class="tech-content">
+            <div class="tech-info">
+                <h3>Transmissão Digital</h3>
+                <p>Utilizamos tecnologia de ponta para garantir uma transmissão de qualidade em todas as plataformas:</p>
+                <ul>
+                    <li>Streaming de alta qualidade</li>
+                    <li>Transmissão via internet</li>
+                    <li>Aplicativo móvel</li>
+                    <li>Integração com redes sociais</li>
+                    <li>Estúdio profissional</li>
+                </ul>
+            </div>
+            <div class="tech-imagem">
+                <img src="{{ url_for('static', filename='images/tecnologia.jpg') }}" alt="Tecnologia">
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

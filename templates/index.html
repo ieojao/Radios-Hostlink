@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.nome_site }} - Home{% endblock %}
+
+{% block content %}
+<!-- Banner de programação -->
+<section class="banner">
+    <h1>PROGRAMAÇÃO</h1>
+</section>
+
+<!-- Tabs de dias da semana -->
+<section class="programacao">
+    <div class="tabs">
+        <button class="tab active" data-dia="DOMINGO">DOMINGO</button>
+        <button class="tab" data-dia="SEGUNDA">SEGUNDA</button>
+        <button class="tab" data-dia="TERÇA">TERÇA</button>
+        <button class="tab" data-dia="QUARTA">QUARTA</button>
+        <button class="tab" data-dia="QUINTA">QUINTA</button>
+        <button class="tab" data-dia="SEXTA">SEXTA</button>
+        <button class="tab" data-dia="SÁBADO">SÁBADO</button>
+    </div>
+    
+    <div class="programa-atual">
+        {% if programacao_atual %}
+            <img src="{{ url_for('static', filename='images/' + programacao_atual.imagem) if programacao_atual.imagem else 'programa.jpg' }}" alt="{{ programacao_atual.titulo }}">
+            <div>
+                <span class="rolando-agora">ROLANDO AGORA</span>
+                <h2>{{ programacao_atual.titulo }}</h2>
+                <p>{{ programacao_atual.descricao }}</p>
+                <span class="horario">{{ programacao_atual.horario_inicio.strftime('%H:%M') }} - {{ programacao_atual.horario_fim.strftime('%H:%M') }}</span>
+            </div>
+        {% else %}
+            <img src="{{ url_for('static', filename='images/programa.jpg') }}" alt="Programação musical">
+            <div>
+                <span class="rolando-agora">ROLANDO AGORA</span>
+                <h2>Programação musical</h2>
+                <p>Música gospel 24 horas por dia</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Seção de destaques -->
+<section class="destaques">
+    <h2>DESTAQUES</h2>
+    <div class="cards">
+        <div class="card">
+            <img src="{{ url_for('static', filename='images/destaque1.jpg') }}" alt="Destaque 1">
+            <h3>Programa da Manhã</h3>
+            <p>Comece seu dia com louvor e adoração</p>
+        </div>
+        <div class="card">
+            <img src="{{ url_for('static', filename='images/destaque2.jpg') }}" alt="Destaque 2">
+            <h3>Show da Tarde</h3>
+            <p>Música gospel para animar sua tarde</p>
+        </div>
+        <div class="card">
+            <img src="{{ url_for('static', filename='images/destaque3.jpg') }}" alt="Destaque 3">
+            <h3>Louvor da Noite</h3>
+            <p>Encerre seu dia com gratidão</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Atualizar programação atual via API
+    function atualizarProgramacaoAtual() {
+        fetch('/api/programacao-atual')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.log('Nenhuma programação atual');
+                } else {
+                    // Atualizar informações da programação atual
+                    const programaAtual = document.querySelector('.programa-atual');
+                    if (programaAtual) {
+                        const titulo = programaAtual.querySelector('h2');
+                        const descricao = programaAtual.querySelector('p');
+                        const horario = programaAtual.querySelector('.horario');
+                        
+                        if (titulo) titulo.textContent = data.titulo;
+                        if (descricao) descricao.textContent = data.descricao;
+                        if (horario) horario.textContent = `${data.horario_inicio} - ${data.horario_fim}`;
+                    }
+                }
+            })
+            .catch(error => console.error('Erro ao buscar programação:', error));
+    }
+
+    // Atualizar a cada 5 minutos
+    setInterval(atualizarProgramacaoAtual, 300000);
+    
+    // Atualizar timer
+    function atualizarTimer() {
+        const timer = document.getElementById('timer');
+        if (timer) {
+            const agora = new Date();
+            const minutos = agora.getMinutes().toString().padStart(2, '0');
+            const segundos = agora.getSeconds().toString().padStart(2, '0');
+            timer.textContent = `${minutos}:${segundos}`;
+        }
+    }
+    
+    setInterval(atualizarTimer, 1000);
+});
+</script>
+{% endblock %} 
