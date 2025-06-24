@@ -89,7 +89,7 @@ def main():
     
     print(f"\n🚀 Iniciando servidor em http://{args.host}:{args.port}")
     print("📱 Painel admin: http://localhost:5000/admin")
-    print("👤 Login: admin@novaatalaia.com.br / admin123")
+    print("👤 Login: admin@hostlink.com / admin123")
     print("\nPressione Ctrl+C para parar")
     
     try:
