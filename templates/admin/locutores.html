@@ -1,0 +1,84 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gerenciar Locutores - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}Gerenciar Locutores{% endblock %}
+
+{% block content %}
+<div class="locutores-admin">
+    <div class="page-header">
+        <h1>Gerenciar Locutores</h1>
+        <a href="{{ url_for('admin_locutores_adicionar') }}" class="btn btn-primary">
+            <span>➕</span> Adicionar Locutor
+        </a>
+    </div>
+
+    {% if locutores %}
+    <div class="locutores-grid">
+        {% for locutor in locutores %}
+        <div class="locutor-card">
+            <div class="locutor-header">
+                {% if locutor.foto %}
+                <div class="locutor-foto">
+                    <img src="{{ locutor.foto }}" alt="{{ locutor.nome }}" onerror="this.style.display='none'">
+                </div>
+                {% else %}
+                <div class="locutor-foto-placeholder">
+                    <span>🎤</span>
+                </div>
+                {% endif %}
+                
+                <div class="locutor-info">
+                    <h3>{{ locutor.nome }}</h3>
+                    <p class="locutor-data">Cadastrado em: {{ locutor.criado_em.strftime('%d/%m/%Y') }}</p>
+                </div>
+            </div>
+            
+            {% if locutor.bio %}
+            <div class="locutor-bio">
+                <p>{{ locutor.bio[:150] }}{% if locutor.bio|length > 150 %}...{% endif %}</p>
+            </div>
+            {% endif %}
+            
+            {% if locutor.redes_sociais %}
+            <div class="locutor-redes">
+                <strong>Redes Sociais:</strong>
+                <p>{{ locutor.redes_sociais }}</p>
+            </div>
+            {% endif %}
+            
+            <div class="locutor-acoes">
+                <a href="{{ url_for('admin_locutores_editar', id=locutor.id) }}" class="btn btn-small btn-secondary">
+                    ✏️ Editar
+                </a>
+                <form method="POST" action="{{ url_for('admin_locutores_excluir', id=locutor.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este locutor?')">
+                    <button type="submit" class="btn btn-small btn-danger">
+                        🗑️ Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-locutores">
+        <div class="empty-state">
+            <div class="empty-icon">🎤</div>
+            <h2>Nenhum locutor cadastrado</h2>
+            <p>Comece adicionando o primeiro locutor da equipe.</p>
+            <a href="{{ url_for('admin_locutores_adicionar') }}" class="btn btn-primary">
+                Adicionar Primeiro Locutor
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Locutores admin loaded');
+});
+</script>
+{% endblock %} 

@@ -48,28 +48,28 @@
     <div class="quick-actions">
         <h2>Ações Rápidas</h2>
         <div class="actions-grid">
-            <a href="#" class="action-card">
+            <a href="{{ url_for('admin_programacao_adicionar') }}" class="action-card">
                 <div class="action-icon">➕</div>
                 <h3>Adicionar Programa</h3>
                 <p>Criar nova programação</p>
             </a>
             
-            <a href="#" class="action-card">
+            <a href="{{ url_for('admin_locutores_adicionar') }}" class="action-card">
                 <div class="action-icon">👤</div>
                 <h3>Gerenciar Locutores</h3>
                 <p>Adicionar ou editar locutores</p>
             </a>
             
-            <a href="#" class="action-card">
+            <a href="{{ url_for('admin_configuracoes') }}" class="action-card">
                 <div class="action-icon">⚙️</div>
                 <h3>Configurações</h3>
                 <p>Configurar site</p>
             </a>
             
-            <a href="#" class="action-card">
+            <a href="{{ url_for('admin_usuarios') }}" class="action-card">
                 <div class="action-icon">📊</div>
-                <h3>Relatórios</h3>
-                <p>Ver estatísticas</p>
+                <h3>Usuários</h3>
+                <p>Gerenciar usuários</p>
             </a>
         </div>
     </div>

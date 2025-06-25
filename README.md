@@ -103,8 +103,8 @@ DATABASE_URL=sqlite:///radio.db
 SECRET_KEY=sua-chave-secreta-aqui
 
 # Configurações do site
-SITE_NAME=Hostlink
-SITE_EMAIL=contato@hostlink.com.br
+SITE_NAME=Radios Hostlink
+SITE_EMAIL=contato@radioshostlink.com.br
 STREAMING_URL=https://streaming.example.com/live
 ```
 
@@ -128,7 +128,7 @@ DATABASE_URL=postgresql://usuario:senha@localhost/radio_web
 **URL**: `http://localhost:5000/admin`
 
 **Credenciais padrão**:
-- **Email**: admin@hostlink.com
+- **Email**: admin@radioshostlink.com.br
 - **Senha**: admin123
 
 ⚠️ **Importante**: Altere essas credenciais após o primeiro acesso!
@@ -248,7 +248,7 @@ python app.py --port 8080
 ## 📞 Suporte
 
 Para suporte técnico:
-- Email: contato@novaatalaia.com.br
+- Email: contato@radioshostlink.com.br
 - WhatsApp: (11) 99999-9999
 
 ## 📄 Licença
@@ -266,4 +266,4 @@ Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes
 
 ---
 
-**Desenvolvido com ❤️ para a Nova Atalaia** 
+**Desenvolvido com ❤️ para a Radios Hostlink** 

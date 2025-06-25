@@ -1,0 +1,77 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gerenciar Banners - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}Gerenciar Banners{% endblock %}
+
+{% block content %}
+<div class="banners-admin">
+    <div class="page-header">
+        <h1>Gerenciar Banners</h1>
+        <a href="{{ url_for('admin_banners_adicionar') }}" class="btn btn-primary">
+            <span>➕</span> Adicionar Banner
+        </a>
+    </div>
+
+    {% if banners %}
+    <div class="banners-grid">
+        {% for banner in banners %}
+        <div class="banner-card">
+            <div class="banner-header">
+                <h3>{{ banner.titulo }}</h3>
+                <p class="banner-data">Criado em: {{ banner.criado_em.strftime('%d/%m/%Y') }}</p>
+            </div>
+            
+            {% if banner.imagem %}
+            <div class="banner-imagem">
+                <img src="{{ banner.imagem }}" alt="{{ banner.titulo }}" onerror="this.style.display='none'">
+            </div>
+            {% else %}
+            <div class="banner-imagem-placeholder">
+                <span>🖼️</span>
+                <p>Sem imagem</p>
+            </div>
+            {% endif %}
+            
+            {% if banner.link %}
+            <div class="banner-link">
+                <strong>Link:</strong>
+                <a href="{{ banner.link }}" target="_blank">{{ banner.link[:50] }}{% if banner.link|length > 50 %}...{% endif %}</a>
+            </div>
+            {% endif %}
+            
+            <div class="banner-acoes">
+                <a href="{{ url_for('admin_banners_editar', id=banner.id) }}" class="btn btn-small btn-secondary">
+                    ✏️ Editar
+                </a>
+                <form method="POST" action="{{ url_for('admin_banners_excluir', id=banner.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este banner?')">
+                    <button type="submit" class="btn btn-small btn-danger">
+                        🗑️ Excluir
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-banners">
+        <div class="empty-state">
+            <div class="empty-icon">🖼️</div>
+            <h2>Nenhum banner cadastrado</h2>
+            <p>Adicione banners para exibir no site.</p>
+            <a href="{{ url_for('admin_banners_adicionar') }}" class="btn btn-primary">
+                Adicionar Primeiro Banner
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Banners admin loaded');
+});
+</script>
+{% endblock %} 

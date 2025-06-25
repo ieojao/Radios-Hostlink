@@ -1,0 +1,75 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if banner %}Editar Banner{% else %}Adicionar Banner{% endif %} - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}{% if banner %}Editar Banner{% else %}Adicionar Banner{% endif %}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>{% if banner %}Editar Banner{% else %}Adicionar Banner{% endif %}</h1>
+        <a href="{{ url_for('admin_banners') }}" class="btn btn-secondary">
+            ← Voltar
+        </a>
+    </div>
+
+    <form method="POST" class="admin-form">
+        <div class="form-group">
+            <label for="titulo">Título do Banner *</label>
+            <input type="text" id="titulo" name="titulo" value="{{ banner.titulo if banner else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="imagem">URL da Imagem</label>
+            <input type="url" id="imagem" name="imagem" value="{{ banner.imagem if banner else '' }}" 
+                   placeholder="https://exemplo.com/banner.jpg">
+            <small>URL da imagem do banner (opcional)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="link">Link de Destino</label>
+            <input type="url" id="link" name="link" value="{{ banner.link if banner else '' }}" 
+                   placeholder="https://exemplo.com">
+            <small>URL para onde o banner deve direcionar quando clicado (opcional)</small>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if banner %}Atualizar Banner{% else %}Adicionar Banner{% endif %}
+            </button>
+            <a href="{{ url_for('admin_banners') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview da imagem se URL for fornecida
+    const imagemInput = document.getElementById('imagem');
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'imagem-preview';
+    previewContainer.style.display = 'none';
+    imagemInput.parentNode.appendChild(previewContainer);
+    
+    function atualizarPreview() {
+        const url = imagemInput.value.trim();
+        if (url) {
+            previewContainer.innerHTML = `<img src="${url}" alt="Preview" onerror="this.style.display='none'">`;
+            previewContainer.style.display = 'block';
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    }
+    
+    imagemInput.addEventListener('input', atualizarPreview);
+    imagemInput.addEventListener('blur', atualizarPreview);
+    
+    // Atualizar preview se já há valor
+    if (imagemInput.value) {
+        atualizarPreview();
+    }
+});
+</script>
+{% endblock %} 

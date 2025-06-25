@@ -1,0 +1,196 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Configurações - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}Configurações do Site{% endblock %}
+
+{% block content %}
+<div class="configuracoes-admin">
+    <div class="page-header">
+        <h1>Configurações do Site</h1>
+        <p>Configure as informações básicas e aparência do site</p>
+    </div>
+
+    <form method="POST" class="admin-form configuracoes-form">
+        <div class="config-section">
+            <h2>Informações Básicas</h2>
+            
+            <div class="form-group">
+                <label for="nome_site">Nome do Site *</label>
+                <input type="text" id="nome_site" name="nome_site" value="{{ config.nome_site }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email_contato">Email de Contato</label>
+                <input type="email" id="email_contato" name="email_contato" value="{{ config.email_contato }}">
+            </div>
+
+            <div class="form-group">
+                <label for="texto_rodape">Texto do Rodapé</label>
+                <input type="text" id="texto_rodape" name="texto_rodape" value="{{ config.texto_rodape }}">
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Streaming e Contato</h2>
+            
+            <div class="form-group">
+                <label for="url_streaming">URL do Streaming</label>
+                <input type="url" id="url_streaming" name="url_streaming" value="{{ config.url_streaming }}" 
+                       placeholder="https://streaming.example.com/live">
+            </div>
+
+            <div class="form-group">
+                <label for="whatsapp">WhatsApp</label>
+                <input type="text" id="whatsapp" name="whatsapp" value="{{ config.whatsapp }}" 
+                       placeholder="5511999999999">
+                <small>Número do WhatsApp (apenas números)</small>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Redes Sociais</h2>
+            
+            <div class="form-group">
+                <label for="facebook">Facebook</label>
+                <input type="url" id="facebook" name="facebook" value="{{ config.facebook }}" 
+                       placeholder="https://facebook.com/radioshostlink">
+            </div>
+
+            <div class="form-group">
+                <label for="instagram">Instagram</label>
+                <input type="url" id="instagram" name="instagram" value="{{ config.instagram }}" 
+                       placeholder="https://instagram.com/radioshostlink">
+            </div>
+
+            <div class="form-group">
+                <label for="youtube">YouTube</label>
+                <input type="url" id="youtube" name="youtube" value="{{ config.youtube }}" 
+                       placeholder="https://youtube.com/radioshostlink">
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Aparência</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cor_principal">Cor Principal</label>
+                    <input type="color" id="cor_principal" name="cor_principal" value="{{ config.cor_principal }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="cor_fundo">Cor de Fundo</label>
+                    <input type="color" id="cor_fundo" name="cor_fundo" value="{{ config.cor_fundo }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="cor_texto">Cor do Texto</label>
+                    <input type="color" id="cor_texto" name="cor_texto" value="{{ config.cor_texto }}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="cor_botoes">Cor dos Botões</label>
+                    <input type="color" id="cor_botoes" name="cor_botoes" value="{{ config.cor_botoes }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="cor_links">Cor dos Links</label>
+                    <input type="color" id="cor_links" name="cor_links" value="{{ config.cor_links }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="fonte">Fonte</label>
+                    <select id="fonte" name="fonte">
+                        <option value="Roboto" {% if config.fonte == 'Roboto' %}selected{% endif %}>Roboto</option>
+                        <option value="Arial" {% if config.fonte == 'Arial' %}selected{% endif %}>Arial</option>
+                        <option value="Helvetica" {% if config.fonte == 'Helvetica' %}selected{% endif %}>Helvetica</option>
+                        <option value="Georgia" {% if config.fonte == 'Georgia' %}selected{% endif %}>Georgia</option>
+                        <option value="Times New Roman" {% if config.fonte == 'Times New Roman' %}selected{% endif %}>Times New Roman</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="css_custom">CSS Personalizado</label>
+                <textarea id="css_custom" name="css_custom" rows="6" placeholder="/* Adicione estilos CSS personalizados aqui */">{{ config.css_custom }}</textarea>
+                <small>Estilos CSS adicionais para personalizar ainda mais o site</small>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Arquivos</h2>
+            
+            <div class="form-group">
+                <label for="logo">URL do Logo</label>
+                <input type="url" id="logo" name="logo" value="{{ config.logo }}" 
+                       placeholder="https://exemplo.com/logo.png">
+            </div>
+
+            <div class="form-group">
+                <label for="favicon">URL do Favicon</label>
+                <input type="url" id="favicon" name="favicon" value="{{ config.favicon }}" 
+                       placeholder="https://exemplo.com/favicon.ico">
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Salvar Configurações</button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview das cores em tempo real
+    const colorInputs = document.querySelectorAll('input[type="color"]');
+    
+    colorInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Aqui você pode adicionar preview em tempo real se necessário
+            console.log(`${this.name}: ${this.value}`);
+        });
+    });
+    
+    // Preview do logo e favicon
+    const logoInput = document.getElementById('logo');
+    const faviconInput = document.getElementById('favicon');
+    
+    function criarPreview(input, tipo) {
+        const previewContainer = document.createElement('div');
+        previewContainer.className = `${tipo}-preview`;
+        previewContainer.style.display = 'none';
+        input.parentNode.appendChild(previewContainer);
+        
+        function atualizarPreview() {
+            const url = input.value.trim();
+            if (url) {
+                if (tipo === 'logo') {
+                    previewContainer.innerHTML = `<img src="${url}" alt="Logo Preview" style="max-width: 200px; max-height: 100px;" onerror="this.style.display='none'">`;
+                } else {
+                    previewContainer.innerHTML = `<img src="${url}" alt="Favicon Preview" style="width: 32px; height: 32px;" onerror="this.style.display='none'">`;
+                }
+                previewContainer.style.display = 'block';
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        }
+        
+        input.addEventListener('input', atualizarPreview);
+        input.addEventListener('blur', atualizarPreview);
+        
+        if (input.value) {
+            atualizarPreview();
+        }
+    }
+    
+    criarPreview(logoInput, 'logo');
+    criarPreview(faviconInput, 'favicon');
+});
+</script>
+{% endblock %} 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script de inicialização da aplicação Nova Atalaia
+Script de inicialização da aplicação Radios Hostlink
 """
 
 import os
@@ -43,7 +43,7 @@ def check_env_file():
     return True
 
 def main():
-    parser = argparse.ArgumentParser(description='Nova Atalaia - Rádio Web')
+    parser = argparse.ArgumentParser(description='Radios Hostlink - Rádio Web')
     parser.add_argument('--port', type=int, default=5000, help='Porta para executar (padrão: 5000)')
     parser.add_argument('--host', default='0.0.0.0', help='Host para executar (padrão: 0.0.0.0)')
     parser.add_argument('--debug', action='store_true', help='Executar em modo debug')
@@ -52,7 +52,7 @@ def main():
     
     args = parser.parse_args()
     
-    print("🎵 Nova Atalaia - Rádio Web")
+    print("🎵 Radios Hostlink - Rádio Web")
     print("=" * 40)
     
     # Verificar dependências
@@ -89,7 +89,7 @@ def main():
     
     print(f"\n🚀 Iniciando servidor em http://{args.host}:{args.port}")
     print("📱 Painel admin: http://localhost:5000/admin")
-    print("👤 Login: admin@hostlink.com / admin123")
+    print("👤 Login: admin@radioshostlink.com.br / admin123")
     print("\nPressione Ctrl+C para parar")
     
     try:

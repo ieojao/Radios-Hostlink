@@ -983,4 +983,692 @@ nav a.active {
         bottom: 20px;
         right: 20px;
     }
+}
+
+/* Estilos para a página "A Rádio" */
+.hero-section {
+    position: relative;
+    height: 80vh;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: -60px; /* Compensar o player bar */
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--cor-principal, #1e3a8a), var(--cor-botoes, #3b82f6));
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.8;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Seção de Estatísticas */
+.stats-section {
+    background: white;
+    padding: 80px 0;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    text-align: center;
+}
+
+.stat-item {
+    padding: 20px;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--cor-principal, #1e3a8a);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    color: var(--cor-texto, #333333);
+    font-weight: 500;
+}
+
+/* Seção de História */
+.history-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    color: var(--cor-principal, #1e3a8a);
+    margin-bottom: 20px;
+}
+
+.section-divider {
+    width: 80px;
+    height: 4px;
+    background: var(--cor-botoes, #3b82f6);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.history-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.history-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.history-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--cor-texto, #333333);
+}
+
+/* Seção MVV */
+.mvv-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.mvv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-top: 60px;
+}
+
+.mvv-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.mvv-card:hover {
+    transform: translateY(-10px);
+}
+
+.mvv-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.mvv-card h3 {
+    font-size: 1.5rem;
+    color: var(--cor-principal, #1e3a8a);
+    margin-bottom: 20px;
+}
+
+.mvv-card p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--cor-texto, #333333);
+}
+
+.valores-list {
+    list-style: none;
+    text-align: left;
+}
+
+.valores-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #e1e5e9;
+    position: relative;
+    padding-left: 30px;
+}
+
+.valores-list li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--cor-botoes, #3b82f6);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.valores-list li:last-child {
+    border-bottom: none;
+}
+
+/* Seção de Destaque */
+.highlight-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--cor-principal, #1e3a8a), var(--cor-botoes, #3b82f6));
+    color: white;
+}
+
+.highlight-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.highlight-text h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.highlight-text p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.highlight-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.feature-icon {
+    font-size: 1.5rem;
+}
+
+.highlight-image {
+    text-align: center;
+}
+
+.radio-studio {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.studio-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.radio-studio h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.radio-studio p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Seção CTA */
+.cta-section {
+    padding: 80px 0;
+    background: #f8fafc;
+    text-align: center;
+}
+
+.cta-content h2 {
+    font-size: 2.5rem;
+    color: var(--cor-principal, #1e3a8a);
+    margin-bottom: 20px;
+}
+
+.cta-content p {
+    font-size: 1.1rem;
+    color: var(--cor-texto, #333333);
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--cor-botoes, #3b82f6);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--cor-principal, #1e3a8a);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--cor-principal, #1e3a8a);
+    border: 2px solid var(--cor-principal, #1e3a8a);
+}
+
+.btn-secondary:hover {
+    background: var(--cor-principal, #1e3a8a);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Responsividade para a página "A Rádio" */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .hero-description {
+        font-size: 1rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .history-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .history-image img {
+        height: 250px;
+    }
+    
+    .mvv-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .highlight-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .highlight-text h2 {
+        font-size: 2rem;
+    }
+    
+    .highlight-features {
+        grid-template-columns: 1fr;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .cta-content h2 {
+        font-size: 2rem;
+    }
+}
+
+/* Estilos para a página "Equipe" */
+.team-message-section {
+    padding: 60px 0;
+    background: #f8fafc;
+}
+
+.team-message {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.message-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.team-message blockquote {
+    font-size: 1.3rem;
+    line-height: 1.6;
+    color: var(--cor-texto, #333333);
+    font-style: italic;
+    margin: 0;
+    position: relative;
+}
+
+.team-message blockquote::before {
+    content: '"';
+    font-size: 4rem;
+    color: var(--cor-botoes, #3b82f6);
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    opacity: 0.3;
+}
+
+/* Seção da Equipe */
+.team-section {
+    padding: 80px 0;
+    background: white;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    margin-top: 60px;
+}
+
+.team-member {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.team-member:hover {
+    transform: translateY(-10px);
+}
+
+.member-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 20px;
+    border: 4px solid var(--cor-botoes, #3b82f6);
+}
+
+.member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--cor-principal, #1e3a8a), var(--cor-botoes, #3b82f6));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: white;
+}
+
+.member-info h3 {
+    font-size: 1.5rem;
+    color: var(--cor-principal, #1e3a8a);
+    margin-bottom: 15px;
+}
+
+.member-bio {
+    color: var(--cor-texto, #333333);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.member-social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.social-item {
+    background: var(--cor-botoes, #3b82f6);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Seção de Áreas */
+.areas-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+.areas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+}
+
+.area-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.area-card:hover {
+    transform: translateY(-5px);
+}
+
+.area-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.area-card h3 {
+    font-size: 1.3rem;
+    color: var(--cor-principal, #1e3a8a);
+    margin-bottom: 15px;
+}
+
+.area-card p {
+    color: var(--cor-texto, #333333);
+    line-height: 1.6;
+}
+
+/* Seção de Destaque da Equipe */
+.team-highlight-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, var(--cor-principal, #1e3a8a), var(--cor-botoes, #3b82f6));
+    color: white;
+}
+
+.team-studio {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.studio-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.team-studio h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.team-studio p {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Responsividade para a página "Equipe" */
+@media (max-width: 768px) {
+    .team-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .areas-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .team-message {
+        padding: 30px 20px;
+    }
+    
+    .team-message blockquote {
+        font-size: 1.1rem;
+    }
+    
+    .member-photo {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .photo-placeholder {
+        font-size: 2.5rem;
+    }
+    
+    .highlight-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .highlight-text h2 {
+        font-size: 2rem;
+    }
+    
+    .highlight-features {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .team-member {
+        padding: 20px;
+    }
+    
+    .area-card {
+        padding: 20px;
+    }
+    
+    .team-message blockquote {
+        font-size: 1rem;
+    }
+    
+    .member-info h3 {
+        font-size: 1.3rem;
+    }
+    
+    .area-card h3 {
+        font-size: 1.2rem;
+    }
 } 

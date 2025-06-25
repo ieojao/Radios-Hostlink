@@ -1,0 +1,74 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gerenciar Programação - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}Gerenciar Programação{% endblock %}
+
+{% block content %}
+<div class="programacao-admin">
+    <div class="page-header">
+        <h1>Gerenciar Programação</h1>
+        <a href="{{ url_for('admin_programacao_adicionar') }}" class="btn btn-primary">
+            <span>➕</span> Adicionar Programa
+        </a>
+    </div>
+
+    {% for dia in dias_semana %}
+    <div class="dia-programacao">
+        <h2>{{ dia }}</h2>
+        
+        {% if programacao[dia] %}
+        <div class="programas-grid">
+            {% for programa in programacao[dia] %}
+            <div class="programa-card">
+                <div class="programa-header">
+                    <h3>{{ programa.titulo }}</h3>
+                    <div class="programa-horario">
+                        {{ programa.horario_inicio.strftime('%H:%M') }} - {{ programa.horario_fim.strftime('%H:%M') }}
+                    </div>
+                </div>
+                
+                {% if programa.descricao %}
+                <p class="programa-descricao">{{ programa.descricao[:100] }}{% if programa.descricao|length > 100 %}...{% endif %}</p>
+                {% endif %}
+                
+                {% if programa.imagem %}
+                <div class="programa-imagem">
+                    <img src="{{ programa.imagem }}" alt="{{ programa.titulo }}" onerror="this.style.display='none'">
+                </div>
+                {% endif %}
+                
+                <div class="programa-acoes">
+                    <a href="{{ url_for('admin_programacao_editar', id=programa.id) }}" class="btn btn-small btn-secondary">
+                        ✏️ Editar
+                    </a>
+                    <form method="POST" action="{{ url_for('admin_programacao_excluir', id=programa.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este programa?')">
+                        <button type="submit" class="btn btn-small btn-danger">
+                            🗑️ Excluir
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-programs">
+            <p>Nenhum programa cadastrado para este dia.</p>
+            <a href="{{ url_for('admin_programacao_adicionar') }}?dia={{ dia }}" class="btn btn-secondary">
+                Adicionar Programa
+            </a>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Adicionar funcionalidade de busca se necessário
+    console.log('Programação admin loaded');
+});
+</script>
+{% endblock %} 

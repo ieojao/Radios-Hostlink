@@ -1,0 +1,157 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gerenciar Página "Equipe" - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}Gerenciar Página "Equipe"{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>Gerenciar Página "Equipe"</h1>
+        <a href="{{ url_for('equipe') }}" target="_blank" class="btn btn-secondary">
+            👁️ Ver Página
+        </a>
+    </div>
+
+    <form method="POST" class="admin-form">
+        <div class="config-section">
+            <h2>Informações Principais</h2>
+            
+            <div class="form-group">
+                <label for="titulo">Título Principal *</label>
+                <input type="text" id="titulo" name="titulo" value="{{ pagina_equipe.titulo if pagina_equipe else '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="subtitulo">Subtítulo</label>
+                <input type="text" id="subtitulo" name="subtitulo" value="{{ pagina_equipe.subtitulo if pagina_equipe else '' }}" 
+                       placeholder="Uma breve descrição da equipe">
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição Geral</label>
+                <textarea id="descricao" name="descricao" rows="4" placeholder="Descreva a equipe de forma geral...">{{ pagina_equipe.descricao if pagina_equipe else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="mensagem_equipe">Mensagem da Equipe</label>
+                <textarea id="mensagem_equipe" name="mensagem_equipe" rows="4" placeholder="Uma mensagem especial da equipe...">{{ pagina_equipe.mensagem_equipe if pagina_equipe else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="imagem_principal">URL da Imagem Principal</label>
+                <input type="url" id="imagem_principal" name="imagem_principal" value="{{ pagina_equipe.imagem_principal if pagina_equipe else '' }}" 
+                       placeholder="https://exemplo.com/imagem-equipe.jpg">
+                <small>Imagem de destaque da página (recomendado: 1200x600px)</small>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Estatísticas da Equipe</h2>
+            <p>Adicione até 4 estatísticas sobre a equipe (ex: total de membros, anos de experiência, etc.)</p>
+            
+            {% set estatisticas_equipe = {} %}
+            {% if pagina_equipe and pagina_equipe.estatisticas_equipe %}
+                {% set estatisticas_equipe = pagina_equipe.estatisticas_equipe | from_json %}
+            {% endif %}
+            
+            {% for i in range(1, 5) %}
+            <div class="estatistica-item">
+                <h3>Estatística {{ i }}</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="estatistica_equipe_{{ i }}_titulo">Título</label>
+                        <input type="text" id="estatistica_equipe_{{ i }}_titulo" name="estatistica_equipe_{{ i }}_titulo" 
+                               value="{{ estatisticas_equipe.get('estatistica_equipe_' + i|string, {}).get('titulo', '') }}" 
+                               placeholder="Ex: Membros da Equipe">
+                    </div>
+                    <div class="form-group">
+                        <label for="estatistica_equipe_{{ i }}_valor">Valor</label>
+                        <input type="text" id="estatistica_equipe_{{ i }}_valor" name="estatistica_equipe_{{ i }}_valor" 
+                               value="{{ estatisticas_equipe.get('estatistica_equipe_' + i|string, {}).get('valor', '') }}" 
+                               placeholder="Ex: 15">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="config-section">
+            <h2>Áreas de Atuação</h2>
+            <p>Adicione até 6 áreas de atuação da equipe (ex: locução, produção, técnica, etc.)</p>
+            
+            {% set areas_atuacao = {} %}
+            {% if pagina_equipe and pagina_equipe.areas_atuacao %}
+                {% set areas_atuacao = pagina_equipe.areas_atuacao | from_json %}
+            {% endif %}
+            
+            {% for i in range(1, 7) %}
+            <div class="area-item">
+                <h3>Área {{ i }}</h3>
+                <div class="form-group">
+                    <label for="area_{{ i }}_titulo">Título da Área</label>
+                    <input type="text" id="area_{{ i }}_titulo" name="area_{{ i }}_titulo" 
+                           value="{{ areas_atuacao.get('area_' + i|string, {}).get('titulo', '') }}" 
+                           placeholder="Ex: Locução">
+                </div>
+                <div class="form-group">
+                    <label for="area_{{ i }}_descricao">Descrição da Área</label>
+                    <textarea id="area_{{ i }}_descricao" name="area_{{ i }}_descricao" rows="3" 
+                              placeholder="Descreva as responsabilidades desta área...">{{ areas_atuacao.get('area_' + i|string, {}).get('descricao', '') }}</textarea>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="config-section">
+            <h2>Convite para a Equipe</h2>
+            
+            <div class="form-group">
+                <label for="convite_equipe">Mensagem de Convite</label>
+                <textarea id="convite_equipe" name="convite_equipe" rows="4" placeholder="Mensagem convidando pessoas para fazer parte da equipe...">{{ pagina_equipe.convite_equipe if pagina_equipe else '' }}</textarea>
+                <small>Mensagem para incentivar pessoas a se juntarem à equipe</small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview da imagem principal
+    const imagemPrincipal = document.getElementById('imagem_principal');
+    
+    function criarPreview(input) {
+        const previewContainer = document.createElement('div');
+        previewContainer.className = 'imagem-principal-preview';
+        previewContainer.style.display = 'none';
+        input.parentNode.appendChild(previewContainer);
+        
+        function atualizarPreview() {
+            const url = input.value.trim();
+            if (url) {
+                previewContainer.innerHTML = `<img src="${url}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px;" onerror="this.style.display='none'">`;
+                previewContainer.style.display = 'block';
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        }
+        
+        input.addEventListener('input', atualizarPreview);
+        input.addEventListener('blur', atualizarPreview);
+        
+        if (input.value) {
+            atualizarPreview();
+        }
+    }
+    
+    criarPreview(imagemPrincipal);
+});
+</script>
+{% endblock %} 
