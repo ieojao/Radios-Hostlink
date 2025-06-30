@@ -2,10 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from datetime import datetime, time
 import os
 from dotenv import load_dotenv
 import json
+import uuid
 
 # Carregar variáveis de ambiente
 load_dotenv('config.env')
@@ -14,6 +16,54 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'sua-chave-secreta-aqui')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///radio.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Configurações para upload de arquivos
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'ico'}
+
+# Criar pasta de uploads se não existir
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+def allowed_file(filename):
+    """Verifica se a extensão do arquivo é permitida"""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_uploaded_file(file, folder=''):
+    """Salva um arquivo enviado e retorna o caminho"""
+    if file and allowed_file(file.filename):
+        # Gerar nome único para o arquivo
+        filename = secure_filename(file.filename)
+        unique_filename = f"{uuid.uuid4().hex}_{filename}"
+        
+        # Criar pasta se não existir
+        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], folder)
+        os.makedirs(upload_path, exist_ok=True)
+        
+        # Salvar arquivo
+        file_path = os.path.join(upload_path, unique_filename)
+        file.save(file_path)
+        
+        # Retornar caminho relativo para o banco de dados (com /static/ no início)
+        return f"/static/uploads/{folder}/{unique_filename}"
+    return None
+
+def delete_uploaded_file(file_path):
+    """Deleta um arquivo enviado"""
+    if file_path and not file_path.startswith('http'):
+        try:
+            # Remover /static/ do início se existir
+            if file_path.startswith('/static/'):
+                file_path = file_path[8:]  # Remove '/static/'
+            
+            full_path = os.path.join('static', file_path)
+            if os.path.exists(full_path):
+                os.remove(full_path)
+                return True
+        except Exception as e:
+            print(f"Erro ao deletar arquivo {file_path}: {e}")
+    return False
 
 # Filtro personalizado para JSON
 @app.template_filter('from_json')
@@ -71,6 +121,17 @@ class Banner(db.Model):
     link = db.Column(db.String(255))
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Destaque(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(100), nullable=False)
+    descricao = db.Column(db.Text)
+    imagem = db.Column(db.String(255))
+    link = db.Column(db.String(255))
+    ordem = db.Column(db.Integer, default=0)  # Para controlar a ordem de exibição
+    ativo = db.Column(db.Boolean, default=True)
+    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    atualizado_em = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 class Configuracao(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     chave = db.Column(db.String(100), nullable=False)
@@ -105,6 +166,31 @@ class PaginaEquipe(db.Model):
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
     atualizado_em = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class MensagemContato(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    telefone = db.Column(db.String(20))
+    assunto = db.Column(db.String(200))
+    mensagem = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), default='não_lida')  # não_lida, lida, respondida
+    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+
+class PaginaContato(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    titulo = db.Column(db.String(200), nullable=False)
+    subtitulo = db.Column(db.String(300))
+    descricao = db.Column(db.Text)
+    telefone_principal = db.Column(db.String(20))
+    telefone_secundario = db.Column(db.String(20))
+    email_contato = db.Column(db.String(100))
+    endereco = db.Column(db.Text)
+    horario_funcionamento = db.Column(db.Text)
+    redes_sociais = db.Column(db.Text)  # JSON com redes sociais
+    mapa_embed = db.Column(db.Text)  # Código embed do Google Maps
+    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    atualizado_em = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.get(int(user_id))
@@ -134,7 +220,11 @@ def get_site_config():
         'facebook': 'https://facebook.com/radioshostlink',
         'instagram': 'https://instagram.com/radioshostlink',
         'youtube': 'https://youtube.com/radioshostlink',
-        'css_custom': ''
+        'css_custom': '',
+        'programacao_padrao_titulo': 'Programação musical',
+        'programacao_padrao_descricao': 'Música gospel 24 horas por dia',
+        'programacao_padrao_horario': '24h - Ao vivo',
+        'programacao_rolando_agora': 'ROLANDO AGORA'
     }
     
     for key, value in defaults.items():
@@ -148,7 +238,8 @@ def get_site_config():
 def index():
     config = get_site_config()
     programacao_atual = get_programacao_atual()
-    return render_template('index.html', config=config, programacao_atual=programacao_atual)
+    destaques = Destaque.query.filter_by(ativo=True).order_by(Destaque.ordem).all()
+    return render_template('index.html', config=config, programacao_atual=programacao_atual, destaques=destaques)
 
 @app.route('/a-radio')
 def a_radio():
@@ -177,7 +268,25 @@ def equipe():
 @app.route('/contato')
 def contato():
     config = get_site_config()
-    return render_template('contato.html', config=config)
+    pagina_contato = PaginaContato.query.first()
+    return render_template('contato.html', config=config, pagina_contato=pagina_contato)
+
+@app.route('/contato/enviar', methods=['POST'])
+def enviar_mensagem():
+    try:
+        mensagem = MensagemContato(
+            nome=request.form['nome'],
+            email=request.form['email'],
+            telefone=request.form.get('telefone', ''),
+            assunto=request.form.get('assunto', ''),
+            mensagem=request.form['mensagem']
+        )
+        db.session.add(mensagem)
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': 'Mensagem enviada com sucesso!'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': 'Erro ao enviar mensagem. Tente novamente.'})
 
 def get_programacao_atual():
     """Retorna a programação atual baseada no dia e horário"""
@@ -220,6 +329,104 @@ def api_programacao_atual():
         })
     return jsonify({'error': 'Nenhuma programação encontrada'})
 
+@app.route('/api/programacao-dia/<dia>')
+def api_programacao_dia(dia):
+    """API para buscar programações de um dia específico"""
+    try:
+        # Validar dia da semana
+        dias_validos = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO']
+        if dia not in dias_validos:
+            return jsonify({'error': 'Dia da semana inválido'}), 400
+        
+        # Buscar programações do dia
+        programacoes = Programacao.query.filter_by(dia_semana=dia).order_by(Programacao.horario_inicio).all()
+        
+        # Verificar qual programa está ao vivo
+        agora = datetime.now()
+        hora_atual = agora.time()
+        
+        programacoes_json = []
+        for programa in programacoes:
+            is_atual = (programa.horario_inicio <= hora_atual and programa.horario_fim >= hora_atual)
+            
+            programacoes_json.append({
+                'id': programa.id,
+                'titulo': programa.titulo,
+                'descricao': programa.descricao,
+                'horario_inicio': programa.horario_inicio.strftime('%H:%M'),
+                'horario_fim': programa.horario_fim.strftime('%H:%M'),
+                'imagem': programa.imagem,
+                'is_atual': is_atual
+            })
+        
+        return jsonify({
+            'dia': dia,
+            'programacoes': programacoes_json
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'error': f'Erro ao buscar programações: {str(e)}'
+        }), 500
+
+@app.route('/api/streaming-url')
+def api_streaming_url():
+    """API para fornecer a URL de streaming do rádio"""
+    try:
+        # Buscar URL de streaming das configurações
+        streaming_config = Configuracao.query.filter_by(chave='streaming_url').first()
+        
+        if streaming_config and streaming_config.valor:
+            return jsonify({
+                'streaming_url': streaming_config.valor,
+                'status': 'success'
+            })
+        else:
+            # Fallback para variável de ambiente
+            streaming_url = os.getenv('STREAMING_URL')
+            if streaming_url:
+                return jsonify({
+                    'streaming_url': streaming_url,
+                    'status': 'success'
+                })
+            else:
+                return jsonify({
+                    'error': 'URL de streaming não configurada',
+                    'status': 'error'
+                }), 404
+    except Exception as e:
+        return jsonify({
+            'error': f'Erro ao buscar URL de streaming: {str(e)}',
+            'status': 'error'
+        }), 500
+
+@app.route('/api/player-stats')
+def api_player_stats():
+    """API para estatísticas do player (para futuras implementações)"""
+    try:
+        # Aqui você pode adicionar estatísticas como:
+        # - Número de ouvintes ativos
+        # - Música atual (se disponível via metadados)
+        # - Status do servidor de streaming
+        
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'listeners': 0,  # Placeholder
+                'current_track': {
+                    'title': 'Rádio Online',
+                    'artist': 'Ao Vivo',
+                    'duration': 0
+                },
+                'stream_status': 'online'
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            'error': f'Erro ao buscar estatísticas: {str(e)}',
+            'status': 'error'
+        }), 500
+
 # Rotas do admin
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -249,12 +456,16 @@ def admin_dashboard():
     total_programacao = Programacao.query.count()
     total_locutores = Locutor.query.count()
     total_banners = Banner.query.count()
+    total_mensagens = MensagemContato.query.count()
+    mensagens_nao_lidas = MensagemContato.query.filter_by(status='não_lida').count()
     
     return render_template('admin/dashboard.html', 
                          config=config,
                          total_programacao=total_programacao,
                          total_locutores=total_locutores,
-                         total_banners=total_banners)
+                         total_banners=total_banners,
+                         total_mensagens=total_mensagens,
+                         mensagens_nao_lidas=mensagens_nao_lidas)
 
 # Rotas para gerenciar programação
 @app.route('/admin/programacao')
@@ -276,13 +487,24 @@ def admin_programacao_adicionar():
     
     if request.method == 'POST':
         try:
+            # Processar upload de imagem
+            imagem_path = None
+            if 'imagem_arquivo' in request.files:
+                file = request.files['imagem_arquivo']
+                if file and file.filename:
+                    imagem_path = save_uploaded_file(file, 'programacao')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not imagem_path:
+                imagem_path = request.form.get('imagem_url', '')
+            
             programacao = Programacao(
                 dia_semana=request.form['dia_semana'],
                 horario_inicio=datetime.strptime(request.form['horario_inicio'], '%H:%M').time(),
                 horario_fim=datetime.strptime(request.form['horario_fim'], '%H:%M').time(),
                 titulo=request.form['titulo'],
-                descricao=request.form['descricao'],
-                imagem=request.form.get('imagem', '')
+                descricao=request.form.get('descricao', ''),
+                imagem=imagem_path
             )
             db.session.add(programacao)
             db.session.commit()
@@ -291,8 +513,7 @@ def admin_programacao_adicionar():
         except Exception as e:
             flash(f'Erro ao adicionar programa: {str(e)}', 'error')
     
-    dias_semana = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO']
-    return render_template('admin/programacao_form.html', config=config, dias_semana=dias_semana)
+    return render_template('admin/programacao_form.html', config=config)
 
 @app.route('/admin/programacao/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -302,12 +523,27 @@ def admin_programacao_editar(id):
     
     if request.method == 'POST':
         try:
+            # Processar upload de imagem
+            imagem_path = programacao.imagem  # Manter imagem atual por padrão
+            if 'imagem_arquivo' in request.files:
+                file = request.files['imagem_arquivo']
+                if file and file.filename:
+                    # Deletar imagem antiga se existir
+                    if programacao.imagem:
+                        delete_uploaded_file(programacao.imagem)
+                    # Salvar nova imagem
+                    imagem_path = save_uploaded_file(file, 'programacao')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not imagem_path or (imagem_path == programacao.imagem and request.form.get('imagem_url')):
+                imagem_path = request.form.get('imagem_url', '')
+            
             programacao.dia_semana = request.form['dia_semana']
             programacao.horario_inicio = datetime.strptime(request.form['horario_inicio'], '%H:%M').time()
             programacao.horario_fim = datetime.strptime(request.form['horario_fim'], '%H:%M').time()
             programacao.titulo = request.form['titulo']
-            programacao.descricao = request.form['descricao']
-            programacao.imagem = request.form.get('imagem', '')
+            programacao.descricao = request.form.get('descricao', '')
+            programacao.imagem = imagem_path
             
             db.session.commit()
             flash('Programa atualizado com sucesso!', 'success')
@@ -315,14 +551,17 @@ def admin_programacao_editar(id):
         except Exception as e:
             flash(f'Erro ao atualizar programa: {str(e)}', 'error')
     
-    dias_semana = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO']
-    return render_template('admin/programacao_form.html', config=config, programacao=programacao, dias_semana=dias_semana)
+    return render_template('admin/programacao_form.html', config=config, programacao=programacao)
 
 @app.route('/admin/programacao/excluir/<int:id>', methods=['POST'])
 @login_required
 def admin_programacao_excluir(id):
     programacao = Programacao.query.get_or_404(id)
     try:
+        # Deletar arquivo de imagem se existir
+        if programacao.imagem:
+            delete_uploaded_file(programacao.imagem)
+        
         db.session.delete(programacao)
         db.session.commit()
         flash('Programa excluído com sucesso!', 'success')
@@ -346,9 +585,20 @@ def admin_locutores_adicionar():
     
     if request.method == 'POST':
         try:
+            # Processar upload de foto
+            foto_path = None
+            if 'foto_arquivo' in request.files:
+                file = request.files['foto_arquivo']
+                if file and file.filename:
+                    foto_path = save_uploaded_file(file, 'locutores')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not foto_path:
+                foto_path = request.form.get('foto_url', '')
+            
             locutor = Locutor(
                 nome=request.form['nome'],
-                foto=request.form.get('foto', ''),
+                foto=foto_path,
                 bio=request.form.get('bio', ''),
                 redes_sociais=request.form.get('redes_sociais', '')
             )
@@ -369,8 +619,23 @@ def admin_locutores_editar(id):
     
     if request.method == 'POST':
         try:
+            # Processar upload de foto
+            foto_path = locutor.foto  # Manter foto atual por padrão
+            if 'foto_arquivo' in request.files:
+                file = request.files['foto_arquivo']
+                if file and file.filename:
+                    # Deletar foto antiga se existir
+                    if locutor.foto:
+                        delete_uploaded_file(locutor.foto)
+                    # Salvar nova foto
+                    foto_path = save_uploaded_file(file, 'locutores')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not foto_path or (foto_path == locutor.foto and request.form.get('foto_url')):
+                foto_path = request.form.get('foto_url', '')
+            
             locutor.nome = request.form['nome']
-            locutor.foto = request.form.get('foto', '')
+            locutor.foto = foto_path
             locutor.bio = request.form.get('bio', '')
             locutor.redes_sociais = request.form.get('redes_sociais', '')
             
@@ -387,6 +652,10 @@ def admin_locutores_editar(id):
 def admin_locutores_excluir(id):
     locutor = Locutor.query.get_or_404(id)
     try:
+        # Deletar arquivo de foto se existir
+        if locutor.foto:
+            delete_uploaded_file(locutor.foto)
+        
         db.session.delete(locutor)
         db.session.commit()
         flash('Locutor excluído com sucesso!', 'success')
@@ -410,9 +679,20 @@ def admin_banners_adicionar():
     
     if request.method == 'POST':
         try:
+            # Processar upload de imagem
+            imagem_path = None
+            if 'imagem_arquivo' in request.files:
+                file = request.files['imagem_arquivo']
+                if file and file.filename:
+                    imagem_path = save_uploaded_file(file, 'banners')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not imagem_path:
+                imagem_path = request.form.get('imagem_url', '')
+            
             banner = Banner(
                 titulo=request.form['titulo'],
-                imagem=request.form.get('imagem', ''),
+                imagem=imagem_path,
                 link=request.form.get('link', '')
             )
             db.session.add(banner)
@@ -432,8 +712,23 @@ def admin_banners_editar(id):
     
     if request.method == 'POST':
         try:
+            # Processar upload de imagem
+            imagem_path = banner.imagem  # Manter imagem atual por padrão
+            if 'imagem_arquivo' in request.files:
+                file = request.files['imagem_arquivo']
+                if file and file.filename:
+                    # Deletar imagem antiga se existir
+                    if banner.imagem:
+                        delete_uploaded_file(banner.imagem)
+                    # Salvar nova imagem
+                    imagem_path = save_uploaded_file(file, 'banners')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not imagem_path or (imagem_path == banner.imagem and request.form.get('imagem_url')):
+                imagem_path = request.form.get('imagem_url', '')
+            
             banner.titulo = request.form['titulo']
-            banner.imagem = request.form.get('imagem', '')
+            banner.imagem = imagem_path
             banner.link = request.form.get('link', '')
             
             db.session.commit()
@@ -449,6 +744,10 @@ def admin_banners_editar(id):
 def admin_banners_excluir(id):
     banner = Banner.query.get_or_404(id)
     try:
+        # Deletar arquivo de imagem se existir
+        if banner.imagem:
+            delete_uploaded_file(banner.imagem)
+        
         db.session.delete(banner)
         db.session.commit()
         flash('Banner excluído com sucesso!', 'success')
@@ -456,6 +755,123 @@ def admin_banners_excluir(id):
         flash(f'Erro ao excluir banner: {str(e)}', 'error')
     
     return redirect(url_for('admin_banners'))
+
+# Rotas para gerenciar destaques
+@app.route('/admin/destaques')
+@login_required
+def admin_destaques():
+    config = get_site_config()
+    destaques = Destaque.query.order_by(Destaque.ordem).all()
+    return render_template('admin/destaques.html', config=config, destaques=destaques)
+
+@app.route('/admin/destaques/adicionar', methods=['GET', 'POST'])
+@login_required
+def admin_destaques_adicionar():
+    config = get_site_config()
+    
+    if request.method == 'POST':
+        try:
+            # Processar upload de imagem
+            imagem_path = None
+            if 'imagem_arquivo' in request.files:
+                file = request.files['imagem_arquivo']
+                if file and file.filename:
+                    imagem_path = save_uploaded_file(file, 'destaques')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not imagem_path:
+                imagem_path = request.form.get('imagem_url', '')
+            
+            # Determinar ordem (última + 1)
+            ultima_ordem = db.session.query(db.func.max(Destaque.ordem)).scalar() or 0
+            
+            destaque = Destaque(
+                titulo=request.form['titulo'],
+                descricao=request.form.get('descricao', ''),
+                imagem=imagem_path,
+                link=request.form.get('link', ''),
+                ordem=ultima_ordem + 1,
+                ativo=request.form.get('ativo', False) == 'on'
+            )
+            db.session.add(destaque)
+            db.session.commit()
+            flash('Destaque adicionado com sucesso!', 'success')
+            return redirect(url_for('admin_destaques'))
+        except Exception as e:
+            flash(f'Erro ao adicionar destaque: {str(e)}', 'error')
+    
+    return render_template('admin/destaques_form.html', config=config)
+
+@app.route('/admin/destaques/editar/<int:id>', methods=['GET', 'POST'])
+@login_required
+def admin_destaques_editar(id):
+    config = get_site_config()
+    destaque = Destaque.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        try:
+            # Processar upload de imagem
+            imagem_path = destaque.imagem  # Manter imagem atual por padrão
+            if 'imagem_arquivo' in request.files:
+                file = request.files['imagem_arquivo']
+                if file and file.filename:
+                    # Deletar imagem antiga se existir
+                    if destaque.imagem:
+                        delete_uploaded_file(destaque.imagem)
+                    # Salvar nova imagem
+                    imagem_path = save_uploaded_file(file, 'destaques')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not imagem_path or (imagem_path == destaque.imagem and request.form.get('imagem_url')):
+                imagem_path = request.form.get('imagem_url', '')
+            
+            destaque.titulo = request.form['titulo']
+            destaque.descricao = request.form.get('descricao', '')
+            destaque.imagem = imagem_path
+            destaque.link = request.form.get('link', '')
+            destaque.ordem = int(request.form.get('ordem', 0))
+            destaque.ativo = request.form.get('ativo', False) == 'on'
+            
+            db.session.commit()
+            flash('Destaque atualizado com sucesso!', 'success')
+            return redirect(url_for('admin_destaques'))
+        except Exception as e:
+            flash(f'Erro ao atualizar destaque: {str(e)}', 'error')
+    
+    return render_template('admin/destaques_form.html', config=config, destaque=destaque)
+
+@app.route('/admin/destaques/excluir/<int:id>', methods=['POST'])
+@login_required
+def admin_destaques_excluir(id):
+    destaque = Destaque.query.get_or_404(id)
+    try:
+        # Deletar arquivo de imagem se existir
+        if destaque.imagem:
+            delete_uploaded_file(destaque.imagem)
+        
+        db.session.delete(destaque)
+        db.session.commit()
+        flash('Destaque excluído com sucesso!', 'success')
+    except Exception as e:
+        flash(f'Erro ao excluir destaque: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_destaques'))
+
+@app.route('/admin/destaques/ordem', methods=['POST'])
+@login_required
+def admin_destaques_ordem():
+    """Atualizar ordem dos destaques via AJAX"""
+    try:
+        dados = request.get_json()
+        for item in dados:
+            destaque = Destaque.query.get(item['id'])
+            if destaque:
+                destaque.ordem = item['ordem']
+        
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 # Rotas para gerenciar configurações
 @app.route('/admin/configuracoes', methods=['GET', 'POST'])
@@ -465,15 +881,68 @@ def admin_configuracoes():
     
     if request.method == 'POST':
         try:
+            # Processar upload de logo
+            logo_path = config.get('logo', '')
+            if 'logo_arquivo' in request.files:
+                file = request.files['logo_arquivo']
+                if file and file.filename:
+                    # Deletar logo antiga se existir
+                    if logo_path and logo_path.startswith('/static/uploads/'):
+                        delete_uploaded_file(logo_path)
+                    # Salvar nova logo
+                    logo_path = save_uploaded_file(file, 'config')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not logo_path or (logo_path == config.get('logo', '') and request.form.get('logo_url')):
+                logo_path = request.form.get('logo_url', '')
+            
+            # Processar upload de favicon
+            favicon_path = config.get('favicon', '')
+            if 'favicon_arquivo' in request.files:
+                file = request.files['favicon_arquivo']
+                if file and file.filename:
+                    # Deletar favicon antigo se existir
+                    if favicon_path and favicon_path.startswith('/static/uploads/'):
+                        delete_uploaded_file(favicon_path)
+                    # Salvar novo favicon
+                    favicon_path = save_uploaded_file(file, 'config')
+            
+            # Se não foi enviado arquivo, usar URL se fornecida
+            if not favicon_path or (favicon_path == config.get('favicon', '') and request.form.get('favicon_url')):
+                favicon_path = request.form.get('favicon_url', '')
+            
             # Atualizar configurações
-            for key, value in request.form.items():
-                if key != 'csrf_token':
-                    config_existente = Configuracao.query.filter_by(chave=key).first()
-                    if config_existente:
-                        config_existente.valor = value
-                    else:
-                        nova_config = Configuracao(chave=key, valor=value)
-                        db.session.add(nova_config)
+            configuracoes_para_atualizar = {
+                'nome_site': request.form.get('nome_site', ''),
+                'email_contato': request.form.get('email_contato', ''),
+                'texto_rodape': request.form.get('texto_rodape', ''),
+                'url_streaming': request.form.get('url_streaming', ''),
+                'whatsapp': request.form.get('whatsapp', ''),
+                'facebook': request.form.get('facebook', ''),
+                'instagram': request.form.get('instagram', ''),
+                'youtube': request.form.get('youtube', ''),
+                'cor_principal': request.form.get('cor_principal', '#007bff'),
+                'cor_fundo': request.form.get('cor_fundo', '#ffffff'),
+                'cor_texto': request.form.get('cor_texto', '#333333'),
+                'cor_botoes': request.form.get('cor_botoes', '#007bff'),
+                'cor_links': request.form.get('cor_links', '#007bff'),
+                'fonte': request.form.get('fonte', 'Roboto'),
+                'css_custom': request.form.get('css_custom', ''),
+                'programacao_rolando_agora': request.form.get('programacao_rolando_agora', 'ROLANDO AGORA'),
+                'programacao_padrao_titulo': request.form.get('programacao_padrao_titulo', 'Programação musical'),
+                'programacao_padrao_descricao': request.form.get('programacao_padrao_descricao', 'Música gospel 24 horas por dia'),
+                'programacao_padrao_horario': request.form.get('programacao_padrao_horario', '24h - Ao vivo'),
+                'logo': logo_path,
+                'favicon': favicon_path
+            }
+            
+            for key, value in configuracoes_para_atualizar.items():
+                config_existente = Configuracao.query.filter_by(chave=key).first()
+                if config_existente:
+                    config_existente.valor = value
+                else:
+                    nova_config = Configuracao(chave=key, valor=value)
+                    db.session.add(nova_config)
             
             db.session.commit()
             flash('Configurações atualizadas com sucesso!', 'success')
@@ -637,69 +1106,107 @@ def admin_equipe():
     
     if request.method == 'POST':
         try:
-            if pagina_equipe:
-                # Atualizar página existente
-                pagina_equipe.titulo = request.form['titulo']
-                pagina_equipe.subtitulo = request.form.get('subtitulo', '')
-                pagina_equipe.descricao = request.form.get('descricao', '')
-                pagina_equipe.mensagem_equipe = request.form.get('mensagem_equipe', '')
-                pagina_equipe.imagem_principal = request.form.get('imagem_principal', '')
-                pagina_equipe.convite_equipe = request.form.get('convite_equipe', '')
-                
-                # Processar estatísticas da equipe
-                estatisticas_equipe = {}
-                for i in range(1, 5):  # Máximo 4 estatísticas
-                    titulo = request.form.get(f'estatistica_equipe_{i}_titulo', '').strip()
-                    valor = request.form.get(f'estatistica_equipe_{i}_valor', '').strip()
-                    if titulo and valor:
-                        estatisticas_equipe[f'estatistica_equipe_{i}'] = {'titulo': titulo, 'valor': valor}
-                
-                pagina_equipe.estatisticas_equipe = json.dumps(estatisticas_equipe)
-                
-                # Processar áreas de atuação
-                areas_atuacao = {}
-                for i in range(1, 7):  # Máximo 6 áreas
-                    titulo = request.form.get(f'area_{i}_titulo', '').strip()
-                    descricao = request.form.get(f'area_{i}_descricao', '').strip()
-                    if titulo and descricao:
-                        areas_atuacao[f'area_{i}'] = {'titulo': titulo, 'descricao': descricao}
-                
-                pagina_equipe.areas_atuacao = json.dumps(areas_atuacao)
-            else:
-                # Criar nova página
-                estatisticas_equipe = {}
-                for i in range(1, 5):
-                    titulo = request.form.get(f'estatistica_equipe_{i}_titulo', '').strip()
-                    valor = request.form.get(f'estatistica_equipe_{i}_valor', '').strip()
-                    if titulo and valor:
-                        estatisticas_equipe[f'estatistica_equipe_{i}'] = {'titulo': titulo, 'valor': valor}
-                
-                areas_atuacao = {}
-                for i in range(1, 7):
-                    titulo = request.form.get(f'area_{i}_titulo', '').strip()
-                    descricao = request.form.get(f'area_{i}_descricao', '').strip()
-                    if titulo and descricao:
-                        areas_atuacao[f'area_{i}'] = {'titulo': titulo, 'descricao': descricao}
-                
-                pagina_equipe = PaginaEquipe(
-                    titulo=request.form['titulo'],
-                    subtitulo=request.form.get('subtitulo', ''),
-                    descricao=request.form.get('descricao', ''),
-                    mensagem_equipe=request.form.get('mensagem_equipe', ''),
-                    imagem_principal=request.form.get('imagem_principal', ''),
-                    estatisticas_equipe=json.dumps(estatisticas_equipe),
-                    areas_atuacao=json.dumps(areas_atuacao),
-                    convite_equipe=request.form.get('convite_equipe', '')
-                )
+            if not pagina_equipe:
+                pagina_equipe = PaginaEquipe()
                 db.session.add(pagina_equipe)
             
+            pagina_equipe.titulo = request.form['titulo']
+            pagina_equipe.subtitulo = request.form['subtitulo']
+            pagina_equipe.descricao = request.form['descricao']
+            pagina_equipe.mensagem_equipe = request.form['mensagem_equipe']
+            pagina_equipe.imagem_principal = request.form.get('imagem_principal', '')
+            pagina_equipe.estatisticas_equipe = request.form['estatisticas_equipe']
+            pagina_equipe.areas_atuacao = request.form['areas_atuacao']
+            pagina_equipe.convite_equipe = request.form['convite_equipe']
+            
             db.session.commit()
-            flash('Página "Equipe" atualizada com sucesso!', 'success')
+            flash('Página de equipe atualizada com sucesso!', 'success')
             return redirect(url_for('admin_equipe'))
         except Exception as e:
-            flash(f'Erro ao atualizar página: {str(e)}', 'error')
+            flash(f'Erro ao atualizar página de equipe: {str(e)}', 'error')
     
     return render_template('admin/equipe.html', config=config, pagina_equipe=pagina_equipe)
+
+# Rotas para gerenciar mensagens de contato
+@app.route('/admin/mensagens')
+@login_required
+def admin_mensagens():
+    config = get_site_config()
+    mensagens = MensagemContato.query.order_by(MensagemContato.criado_em.desc()).all()
+    return render_template('admin/mensagens.html', config=config, mensagens=mensagens)
+
+@app.route('/admin/mensagens/<int:id>')
+@login_required
+def admin_mensagem_detalhes(id):
+    config = get_site_config()
+    mensagem = MensagemContato.query.get_or_404(id)
+    
+    # Marcar como lida
+    if mensagem.status == 'não_lida':
+        mensagem.status = 'lida'
+        db.session.commit()
+    
+    return render_template('admin/mensagem_detalhes.html', config=config, mensagem=mensagem)
+
+@app.route('/admin/mensagens/status/<int:id>', methods=['POST'])
+@login_required
+def admin_mensagem_status(id):
+    mensagem = MensagemContato.query.get_or_404(id)
+    novo_status = request.form['status']
+    
+    if novo_status in ['não_lida', 'lida', 'respondida']:
+        mensagem.status = novo_status
+        db.session.commit()
+        flash('Status da mensagem atualizado com sucesso!', 'success')
+    else:
+        flash('Status inválido!', 'error')
+    
+    return redirect(url_for('admin_mensagem_detalhes', id=id))
+
+@app.route('/admin/mensagens/excluir/<int:id>', methods=['POST'])
+@login_required
+def admin_mensagem_excluir(id):
+    mensagem = MensagemContato.query.get_or_404(id)
+    try:
+        db.session.delete(mensagem)
+        db.session.commit()
+        flash('Mensagem excluída com sucesso!', 'success')
+    except Exception as e:
+        flash(f'Erro ao excluir mensagem: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_mensagens'))
+
+# Rota para gerenciar página de contato
+@app.route('/admin/contato', methods=['GET', 'POST'])
+@login_required
+def admin_contato():
+    config = get_site_config()
+    pagina_contato = PaginaContato.query.first()
+    
+    if request.method == 'POST':
+        try:
+            if not pagina_contato:
+                pagina_contato = PaginaContato()
+                db.session.add(pagina_contato)
+            
+            pagina_contato.titulo = request.form['titulo']
+            pagina_contato.subtitulo = request.form['subtitulo']
+            pagina_contato.descricao = request.form['descricao']
+            pagina_contato.telefone_principal = request.form['telefone_principal']
+            pagina_contato.telefone_secundario = request.form['telefone_secundario']
+            pagina_contato.email_contato = request.form['email_contato']
+            pagina_contato.endereco = request.form['endereco']
+            pagina_contato.horario_funcionamento = request.form['horario_funcionamento']
+            pagina_contato.redes_sociais = request.form['redes_sociais']
+            pagina_contato.mapa_embed = request.form['mapa_embed']
+            
+            db.session.commit()
+            flash('Página de contato atualizada com sucesso!', 'success')
+            return redirect(url_for('admin_contato'))
+        except Exception as e:
+            flash(f'Erro ao atualizar página de contato: {str(e)}', 'error')
+    
+    return render_template('admin/contato.html', config=config, pagina_contato=pagina_contato)
 
 if __name__ == '__main__':
     with app.app_context():
@@ -742,27 +1249,49 @@ if __name__ == '__main__':
         if not PaginaEquipe.query.first():
             pagina_equipe = PaginaEquipe(
                 titulo='Nossa Equipe',
-                subtitulo='Profissionais apaixonados por rádio e comunicação',
-                descricao='Nossa equipe é formada por profissionais dedicados e apaixonados por rádio. Cada membro contribui com sua expertise para criar uma programação de qualidade e manter a excelência em tudo que fazemos.',
-                mensagem_equipe='Somos uma equipe unida pela paixão pelo rádio e pelo compromisso com a qualidade. Cada dia é uma nova oportunidade de conectar com nossos ouvintes e fazer a diferença na comunidade através da comunicação.',
-                imagem_principal='',
+                subtitulo='Conheça os profissionais que fazem a diferença',
+                descricao='Nossa equipe é composta por profissionais apaixonados por rádio e comunicação, dedicados a trazer o melhor conteúdo para nossos ouvintes.',
+                mensagem_equipe='Trabalhamos juntos para criar uma experiência única e envolvente para nossa audiência.',
+                imagem_principal='https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800',
                 estatisticas_equipe=json.dumps({
-                    'estatistica_equipe_1': {'titulo': 'Membros da Equipe', 'valor': '12'},
-                    'estatistica_equipe_2': {'titulo': 'Anos de Experiência', 'valor': '150'},
-                    'estatistica_equipe_3': {'titulo': 'Especialidades', 'valor': '8'},
-                    'estatistica_equipe_4': {'titulo': 'Prêmios', 'valor': '5'}
+                    'estatistica_equipe_1': {'titulo': 'Anos de Experiência', 'valor': '15+'},
+                    'estatistica_equipe_2': {'titulo': 'Profissionais', 'valor': '25+'},
+                    'estatistica_equipe_3': {'titulo': 'Programas', 'valor': '50+'},
+                    'estatistica_equipe_4': {'titulo': 'Prêmios', 'valor': '10+'}
                 }),
                 areas_atuacao=json.dumps({
-                    'area_1': {'titulo': 'Locução', 'descricao': 'Profissionais responsáveis pela apresentação dos programas e interação com o público.'},
-                    'area_2': {'titulo': 'Produção', 'descricao': 'Equipe que cuida da produção de conteúdo, roteiros e coordenação dos programas.'},
-                    'area_3': {'titulo': 'Técnica', 'descricao': 'Especialistas em equipamentos, transmissão e qualidade de áudio.'},
-                    'area_4': {'titulo': 'Jornalismo', 'descricao': 'Repórteres e editores que garantem informações precisas e relevantes.'},
-                    'area_5': {'titulo': 'Marketing', 'descricao': 'Profissionais que cuidam da divulgação e relacionamento com parceiros.'},
-                    'area_6': {'titulo': 'Administrativo', 'descricao': 'Equipe que gerencia recursos e garante o funcionamento da rádio.'}
+                    'area_1': {'titulo': 'Jornalismo', 'descricao': 'Cobertura de notícias locais e nacionais'},
+                    'area_2': {'titulo': 'Entretenimento', 'descricao': 'Programas de música e entretenimento'},
+                    'area_3': {'titulo': 'Esportes', 'descricao': 'Cobertura esportiva completa'},
+                    'area_4': {'titulo': 'Tecnologia', 'descricao': 'Inovação e tendências tecnológicas'},
+                    'area_5': {'titulo': 'Cultura', 'descricao': 'Arte, literatura e eventos culturais'},
+                    'area_6': {'titulo': 'Comunidade', 'descricao': 'Projetos sociais e comunitários'}
                 }),
-                convite_equipe='Estamos sempre em busca de talentos apaixonados por rádio e comunicação. Se você tem interesse em fazer parte da nossa equipe, entre em contato conosco! Oferecemos oportunidades de crescimento e um ambiente colaborativo.'
+                convite_equipe='Quer fazer parte da nossa equipe? Entre em contato conosco! Oferecemos oportunidades de crescimento e um ambiente colaborativo.'
             )
             db.session.add(pagina_equipe)
-            db.session.commit()
+
+        # Criar dados padrão para página de contato
+        if not PaginaContato.query.first():
+            pagina_contato = PaginaContato(
+                titulo='Entre em Contato',
+                subtitulo='Estamos aqui para ajudar. Entre em contato conosco!',
+                descricao='Tem alguma dúvida, sugestão ou quer fazer parte da nossa equipe? Entre em contato conosco através do formulário abaixo ou pelos nossos canais de atendimento.',
+                telefone_principal='(11) 99999-9999',
+                telefone_secundario='(11) 88888-8888',
+                email_contato='contato@radioshostlink.com.br',
+                endereco='Rua das Rádios, 123\nBairro Central\nSão Paulo - SP, 01234-567',
+                horario_funcionamento='Segunda a Sexta: 8h às 18h\nSábado: 9h às 14h\nDomingo: Fechado',
+                redes_sociais=json.dumps({
+                    'facebook': 'https://facebook.com/radioshostlink',
+                    'instagram': 'https://instagram.com/radioshostlink',
+                    'twitter': 'https://twitter.com/radioshostlink',
+                    'youtube': 'https://youtube.com/radioshostlink'
+                }),
+                mapa_embed='<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.1234567890123!2d-46.6388!3d-23.5505!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDMzJzAxLjgiUyA0NsKwMzgnMTkuNyJX!5e0!3m2!1spt-BR!2sbr!4v1234567890123" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>'
+            )
+            db.session.add(pagina_contato)
+
+        db.session.commit()
     
     app.run(debug=True, host='0.0.0.0', port=5000) 

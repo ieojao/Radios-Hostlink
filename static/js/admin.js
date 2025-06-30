@@ -438,4 +438,53 @@ adminStyle.textContent = `
         opacity: 1;
     }
 `;
-document.head.appendChild(adminStyle); 
+document.head.appendChild(adminStyle);
+
+// Função para validar URL de imagem
+function validarImagem(url) {
+    return new Promise((resolve) => {
+        if (!url) {
+            resolve(false);
+            return;
+        }
+        
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+    });
+}
+
+// Função para testar URL de imagem e mostrar feedback
+async function testarImagem(input) {
+    const url = input.value.trim();
+    const feedback = input.parentNode.querySelector('.imagem-feedback');
+    
+    if (!url) {
+        if (feedback) feedback.remove();
+        return;
+    }
+    
+    // Criar ou atualizar feedback
+    let feedbackElement = feedback;
+    if (!feedbackElement) {
+        feedbackElement = document.createElement('div');
+        feedbackElement.className = 'imagem-feedback';
+        feedbackElement.style.marginTop = '5px';
+        feedbackElement.style.fontSize = '0.9rem';
+        input.parentNode.appendChild(feedbackElement);
+    }
+    
+    feedbackElement.innerHTML = '🔄 Testando imagem...';
+    feedbackElement.style.color = '#666';
+    
+    const isValid = await validarImagem(url);
+    
+    if (isValid) {
+        feedbackElement.innerHTML = '✅ Imagem válida';
+        feedbackElement.style.color = '#10b981';
+    } else {
+        feedbackElement.innerHTML = '❌ Imagem não encontrada ou inválida';
+        feedbackElement.style.color = '#ef4444';
+    }
+} 

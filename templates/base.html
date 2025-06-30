@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ config.nome_site }}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/player.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
-    <link rel="icon" href="{{ url_for('static', filename='images/' + config.favicon) }}">
+    <link rel="icon" href="{{ config.favicon }}" onerror="this.href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📻</text></svg>'">
     <style>
         :root {
             --cor-principal: {{ config.cor_principal }};
@@ -20,24 +21,10 @@
     </style>
 </head>
 <body>
-    <!-- Player superior -->
-    <div class="player-bar">
-        <div class="player-info">
-            <span class="icon-play">▶</span>
-            <div>
-                <span class="music-title">LOUVOR</span><br>
-                <span class="music-genre">GOSPEL</span>
-            </div>
-        </div>
-        <div class="player-controls">
-            <span class="icon-radio">📻</span>
-            <span class="timer" id="timer">00:00</span>
-        </div>
-    </div>
-
     <!-- Menu principal -->
     <header>
-        <img src="{{ url_for('static', filename='images/' + config.logo) }}" alt="{{ config.nome_site }}" class="logo">
+        <img src="{{ config.logo }}" alt="{{ config.nome_site }}" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <span class="logo-text" style="display: none; font-size: 24px; font-weight: bold; color: var(--cor-principal);">{{ config.nome_site }}</span>
         <nav>
             <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>HOME</a>
             <a href="{{ url_for('a_radio') }}" {% if request.endpoint == 'a_radio' %}class="active"{% endif %}>A RÁDIO</a>
@@ -46,10 +33,7 @@
             <a href="{{ url_for('contato') }}" {% if request.endpoint == 'contato' %}class="active"{% endif %}>CONTATO</a>
         </nav>
         <div class="header-buttons">
-            <button class="menu-btn">☰</button>
-            <button class="play-btn">▶ PLAY</button>
-            <button class="sound-btn">🔊</button>
-            <button class="popup-btn">🎵 POPUP</button>
+            <button class="play-now-btn" onclick="window.radioPlayer && window.radioPlayer.togglePlay()">▶ OUVIR AGORA</button>
         </div>
     </header>
 
@@ -59,10 +43,15 @@
     </main>
 
     <!-- Botão WhatsApp -->
-    <a href="https://wa.me/{{ config.whatsapp }}" class="whatsapp-btn" target="_blank">💬</a>
+    <a href="https://wa.me/{{ config.whatsapp }}" class="whatsapp-btn" target="_blank">
+        <img src="{{ url_for('static', filename='images/social/whatsapp.svg') }}" alt="WhatsApp">
+    </a>
 
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/player-config.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/player.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/social-icons.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html> 

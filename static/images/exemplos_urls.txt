@@ -1,0 +1,30 @@
+EXEMPLOS DE URLs DE IMAGENS PARA TESTE:
+
+1. Imagens do Unsplash (gratuitas e confiáveis):
+   - https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=400&fit=crop
+   - https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=400&fit=crop
+   - https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=400&fit=crop
+
+2. Imagens do Picsum (placeholders):
+   - https://picsum.photos/800/400
+   - https://picsum.photos/800/400?random=1
+   - https://picsum.photos/800/400?random=2
+
+3. Imagens do Lorem Picsum:
+   - https://loremflickr.com/800/400/music
+   - https://loremflickr.com/800/400/radio
+   - https://loremflickr.com/800/400/gospel
+
+DICAS IMPORTANTES:
+- Sempre use URLs completas que começam com http:// ou https://
+- Teste a URL no navegador antes de usar
+- Imagens muito grandes podem demorar para carregar
+- Alguns sites bloqueiam hotlinking (uso direto da URL)
+- Para melhor performance, use imagens otimizadas (formato WebP ou JPEG comprimido)
+
+PROBLEMAS COMUNS:
+1. URL inválida ou quebrada
+2. Site bloqueia hotlinking
+3. Imagem muito pesada
+4. Formato não suportado pelo navegador
+5. Problemas de CORS (Cross-Origin Resource Sharing) 

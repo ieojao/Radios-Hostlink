@@ -36,6 +36,17 @@
         </div>
         
         <div class="stat-card">
+            <div class="stat-icon">💬</div>
+            <div class="stat-content">
+                <h3>{{ total_mensagens }}</h3>
+                <p>Mensagens</p>
+                {% if mensagens_nao_lidas > 0 %}
+                    <small class="unread-badge">{{ mensagens_nao_lidas }} não lidas</small>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="stat-card">
             <div class="stat-icon">👥</div>
             <div class="stat-content">
                 <h3>1</h3>
@@ -58,6 +69,12 @@
                 <div class="action-icon">👤</div>
                 <h3>Gerenciar Locutores</h3>
                 <p>Adicionar ou editar locutores</p>
+            </a>
+            
+            <a href="{{ url_for('admin_destaques') }}" class="action-card">
+                <div class="action-icon">⭐</div>
+                <h3>Gerenciar Destaques</h3>
+                <p>Editar destaques da página inicial</p>
             </a>
             
             <a href="{{ url_for('admin_configuracoes') }}" class="action-card">

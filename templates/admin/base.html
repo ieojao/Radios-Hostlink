@@ -6,6 +6,7 @@
     <title>{% block title %}Admin - {{ config.nome_site }}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ config.favicon }}">
 </head>
 <body class="admin">
     <!-- Sidebar -->
@@ -36,6 +37,11 @@
                 <span class="nav-text">Banners</span>
             </a>
             
+            <a href="{{ url_for('admin_destaques') }}" class="nav-item">
+                <span class="nav-icon">⭐</span>
+                <span class="nav-text">Destaques</span>
+            </a>
+            
             <a href="{{ url_for('admin_a_radio') }}" class="nav-item">
                 <span class="nav-icon">📡</span>
                 <span class="nav-text">A Rádio</span>
@@ -44,6 +50,16 @@
             <a href="{{ url_for('admin_equipe') }}" class="nav-item">
                 <span class="nav-icon">👥</span>
                 <span class="nav-text">Equipe</span>
+            </a>
+            
+            <a href="{{ url_for('admin_mensagens') }}" class="nav-item">
+                <span class="nav-icon">💬</span>
+                <span class="nav-text">Mensagens</span>
+            </a>
+            
+            <a href="{{ url_for('admin_contato') }}" class="nav-item">
+                <span class="nav-icon">📞</span>
+                <span class="nav-text">Página Contato</span>
             </a>
             
             <a href="{{ url_for('admin_configuracoes') }}" class="nav-item">

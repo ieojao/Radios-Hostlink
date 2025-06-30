@@ -1,0 +1,12 @@
+Esta pasta contém as imagens do site.
+
+Para adicionar imagens:
+1. Coloque suas imagens nesta pasta
+2. Use URLs completas (https://exemplo.com/imagem.jpg) nos formulários
+3. Ou use nomes de arquivo locais (exemplo: imagem.jpg)
+
+Imagens necessárias:
+- programa.jpg (imagem padrão da programação)
+- destaque1.jpg, destaque2.jpg, destaque3.jpg (imagens dos destaques)
+- logo.png (logo do site)
+- favicon.ico (ícone do site) 

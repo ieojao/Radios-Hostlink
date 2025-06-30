@@ -1,47 +1,302 @@
 {% extends "base.html" %}
-{% block head %}
-  {{ super() }}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/contato.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    .contato-container, .contato-container * {
-      font-family: 'Montserrat', var(--fonte), Arial, sans-serif !important;
-    }
-  </style>
-{% endblock %}
+
 {% block content %}
-<div class="contato-main-modern">
-  <h1 class="contato-titulo">Contate-nos</h1>
-  <p class="contato-subtitulo">Alguma pergunta ou observação? Basta nos escrever uma mensagem!</p>
-  <form class="contato-form-modern">
-    <div class="contato-form-row">
-      <div class="contato-form-group">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="Enter a valid email address" required>
-      </div>
-      <div class="contato-form-group">
-        <label for="nome">Name</label>
-        <input type="text" id="nome" name="nome" placeholder="Enter your Name" required>
-      </div>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-background">
+        <div class="hero-overlay"></div>
     </div>
-    <button type="submit" class="contato-btn-enviar">ENVIAR</button>
-  </form>
-  <div class="contato-info-blocos-modern">
-    <div class="contato-bloco">
-      <div class="contato-icone"><span>🏃‍♂️</span></div>
-      <h3>SOBRE O CLUBE</h3>
-      <p>Guia de corrida<br>Exercícios</p>
+    <div class="hero-content">
+        <div class="container">
+            <h1 class="hero-title">
+                {% if pagina_contato and pagina_contato.titulo %}
+                    {{ pagina_contato.titulo }}
+                {% else %}
+                    Entre em Contato
+                {% endif %}
+            </h1>
+            {% if pagina_contato and pagina_contato.subtitulo %}
+            <p class="hero-subtitle">{{ pagina_contato.subtitulo }}</p>
+            {% endif %}
+            {% if pagina_contato and pagina_contato.descricao %}
+            <p class="hero-description">{{ pagina_contato.descricao }}</p>
+            {% endif %}
+        </div>
     </div>
-    <div class="contato-bloco">
-      <div class="contato-icone"><span>📞</span></div>
-      <h3>TELEFONE (FIXO)</h3>
-      <p>+912 3 567 8987<br>+912 5 252 3336</p>
+</section>
+
+<!-- Seção de Informações de Contato -->
+<section class="contact-info-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Informações de Contato</h2>
+            <div class="section-divider"></div>
+            <p>Entre em contato conosco através dos canais abaixo</p>
+        </div>
+        
+        <div class="contact-grid">
+            {% if pagina_contato.telefone_principal or pagina_contato.telefone_secundario %}
+            <div class="contact-card">
+                <div class="contact-icon">📞</div>
+                <h3>Telefone</h3>
+                {% if pagina_contato.telefone_principal %}
+                    <p><a href="tel:{{ pagina_contato.telefone_principal }}">{{ pagina_contato.telefone_principal }}</a></p>
+                {% endif %}
+                {% if pagina_contato.telefone_secundario %}
+                    <p><a href="tel:{{ pagina_contato.telefone_secundario }}">{{ pagina_contato.telefone_secundario }}</a></p>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            {% if pagina_contato.email_contato %}
+            <div class="contact-card">
+                <div class="contact-icon">✉️</div>
+                <h3>Email</h3>
+                <p><a href="mailto:{{ pagina_contato.email_contato }}">{{ pagina_contato.email_contato }}</a></p>
+            </div>
+            {% endif %}
+            
+            {% if pagina_contato.endereco %}
+            <div class="contact-card">
+                <div class="contact-icon">📍</div>
+                <h3>Endereço</h3>
+                <p>{{ pagina_contato.endereco | nl2br | safe }}</p>
+            </div>
+            {% endif %}
+            
+            {% if pagina_contato.horario_funcionamento %}
+            <div class="contact-card">
+                <div class="contact-icon">🕒</div>
+                <h3>Horário de Funcionamento</h3>
+                <p>{{ pagina_contato.horario_funcionamento | nl2br | safe }}</p>
+            </div>
+            {% endif %}
+        </div>
     </div>
-    <div class="contato-bloco">
-      <div class="contato-icone"><span>📍</span></div>
-      <h3>LOCALIZAÇÃO DO NOSSO ESCRITÓRIO</h3>
-      <p>The Interior Design Studio Company<br>The Courtyard, Al Quoz 1, Colorado, EUA</p>
+</section>
+
+<!-- Seção do Formulário -->
+<section class="contact-form-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Envie sua Mensagem</h2>
+            <div class="section-divider"></div>
+            <p>Preencha o formulário abaixo e entraremos em contato em breve!</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="contatoForm" class="contact-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo *</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefone">Telefone</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="(11) 99999-9999">
+                    </div>
+                    <div class="form-group">
+                        <label for="assunto">Assunto</label>
+                        <input type="text" id="assunto" name="assunto" placeholder="Como podemos ajudar?">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mensagem">Mensagem *</label>
+                    <textarea id="mensagem" name="mensagem" rows="6" required placeholder="Digite sua mensagem aqui..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Enviar Mensagem</span>
+                    <span class="btn-loading" style="display: none;">Enviando...</span>
+                </button>
+            </form>
+            
+            <div id="contatoSuccess" class="contact-success" style="display: none;">
+                <div class="success-icon">✓</div>
+                <h3>Mensagem Enviada!</h3>
+                <p>Obrigado pelo contato. Retornaremos em breve!</p>
+            </div>
+            
+            <div id="contatoError" class="contact-error" style="display: none;">
+                <div class="error-icon">✗</div>
+                <h3>Erro ao Enviar</h3>
+                <p>Houve um problema ao enviar sua mensagem. Tente novamente.</p>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
+</section>
+
+<!-- Redes Sociais -->
+{% if pagina_contato.redes_sociais %}
+<section class="social-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Siga-nos</h2>
+            <div class="section-divider"></div>
+            <p>Acompanhe nossas redes sociais e fique por dentro das novidades</p>
+        </div>
+        
+        <div class="social-grid">
+            {% set redes = pagina_contato.redes_sociais | from_json %}
+            {% if redes.facebook %}
+            <a href="{{ redes.facebook }}" target="_blank" class="social-card facebook">
+                <div class="social-icon">
+                    <img src="{{ url_for('static', filename='images/social/facebook.svg') }}" alt="Facebook" width="48" height="48">
+                </div>
+                <h3>Facebook</h3>
+                <p>Siga-nos no Facebook</p>
+            </a>
+            {% endif %}
+            
+            {% if redes.instagram %}
+            <a href="{{ redes.instagram }}" target="_blank" class="social-card instagram">
+                <div class="social-icon">
+                    <img src="{{ url_for('static', filename='images/social/instagram.svg') }}" alt="Instagram" width="48" height="48">
+                </div>
+                <h3>Instagram</h3>
+                <p>Siga-nos no Instagram</p>
+            </a>
+            {% endif %}
+            
+            {% if redes.twitter %}
+            <a href="{{ redes.twitter }}" target="_blank" class="social-card twitter">
+                <div class="social-icon">
+                    <img src="{{ url_for('static', filename='images/social/twitter.svg') }}" alt="Twitter/X" width="48" height="48">
+                </div>
+                <h3>Twitter/X</h3>
+                <p>Siga-nos no Twitter</p>
+            </a>
+            {% endif %}
+            
+            {% if redes.youtube %}
+            <a href="{{ redes.youtube }}" target="_blank" class="social-card youtube">
+                <div class="social-icon">
+                    <img src="{{ url_for('static', filename='images/social/youtube.svg') }}" alt="YouTube" width="48" height="48">
+                </div>
+                <h3>YouTube</h3>
+                <p>Inscreva-se no YouTube</p>
+            </a>
+            {% endif %}
+            
+            {% if redes.whatsapp %}
+            <a href="{{ redes.whatsapp }}" target="_blank" class="social-card whatsapp">
+                <div class="social-icon">
+                    <img src="{{ url_for('static', filename='images/social/whatsapp.svg') }}" alt="WhatsApp" width="48" height="48">
+                </div>
+                <h3>WhatsApp</h3>
+                <p>Entre em contato</p>
+            </a>
+            {% endif %}
+            
+            {% if redes.tiktok %}
+            <a href="{{ redes.tiktok }}" target="_blank" class="social-card tiktok">
+                <div class="social-icon">
+                    <img src="{{ url_for('static', filename='images/social/tiktok.svg') }}" alt="TikTok" width="48" height="48">
+                </div>
+                <h3>TikTok</h3>
+                <p>Siga-nos no TikTok</p>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Localização -->
+{% if pagina_contato.mapa_embed %}
+<section class="location-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Nossa Localização</h2>
+            <div class="section-divider"></div>
+            <p>Venha nos visitar em nosso estúdio</p>
+        </div>
+        
+        <div class="map-container">
+            {{ pagina_contato.mapa_embed | safe }}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Pronto para Entrar em Contato?</h2>
+            <p>Estamos ansiosos para ouvir de você e responder suas dúvidas</p>
+            <div class="cta-buttons">
+                <a href="#contatoForm" class="btn btn-primary">
+                    <span>📝</span> Enviar Mensagem
+                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                    Voltar ao Início
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contatoForm');
+    const successDiv = document.getElementById('contatoSuccess');
+    const errorDiv = document.getElementById('contatoError');
+    const btnText = document.querySelector('.btn-text');
+    const btnLoading = document.querySelector('.btn-loading');
+    const submitBtn = document.querySelector('.btn-primary');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Mostrar loading
+        submitBtn.disabled = true;
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'inline';
+        successDiv.style.display = 'none';
+        errorDiv.style.display = 'none';
+        
+        // Preparar dados do formulário
+        const formData = new FormData(form);
+        
+        // Enviar mensagem
+        fetch('/contato/enviar', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Sucesso
+                form.reset();
+                successDiv.style.display = 'block';
+                form.style.display = 'none';
+            } else {
+                // Erro
+                errorDiv.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            errorDiv.style.display = 'block';
+        })
+        .finally(() => {
+            // Restaurar botão
+            submitBtn.disabled = false;
+            btnText.style.display = 'inline';
+            btnLoading.style.display = 'none';
+        });
+    });
+});
+</script>
 {% endblock %} 

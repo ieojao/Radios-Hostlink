@@ -22,21 +22,35 @@
     
     <div class="programa-atual">
         {% if programacao_atual %}
-            <img src="{{ url_for('static', filename='images/' + programacao_atual.imagem) if programacao_atual.imagem else 'programa.jpg' }}" alt="{{ programacao_atual.titulo }}">
+            {% set img = programacao_atual.imagem %}
+            <img src="{% if img %}
+                        {% if img.startswith('http') %}{{ img }}
+                        {% elif img.startswith('/static/') %}{{ img }}
+                        {% else %}/static/uploads/programacao/{{ img }}{% endif %}
+                     {% else %}/static/images/programa.jpg{% endif %}"
+                 alt="{{ programacao_atual.titulo }}">
             <div>
-                <span class="rolando-agora">ROLANDO AGORA</span>
+                <span class="rolando-agora">{{ config.programacao_rolando_agora }}</span>
                 <h2>{{ programacao_atual.titulo }}</h2>
                 <p>{{ programacao_atual.descricao }}</p>
                 <span class="horario">{{ programacao_atual.horario_inicio.strftime('%H:%M') }} - {{ programacao_atual.horario_fim.strftime('%H:%M') }}</span>
             </div>
         {% else %}
-            <img src="{{ url_for('static', filename='images/programa.jpg') }}" alt="Programação musical">
+            <img src="{{ url_for('static', filename='images/programa.jpg') }}" alt="{{ config.programacao_padrao_titulo }}">
             <div>
-                <span class="rolando-agora">ROLANDO AGORA</span>
-                <h2>Programação musical</h2>
-                <p>Música gospel 24 horas por dia</p>
+                <span class="rolando-agora">{{ config.programacao_rolando_agora }}</span>
+                <h2>{{ config.programacao_padrao_titulo }}</h2>
+                <p>{{ config.programacao_padrao_descricao }}</p>
+                <span class="horario">{{ config.programacao_padrao_horario }}</span>
             </div>
         {% endif %}
+    </div>
+
+    <!-- Grade de programação -->
+    <div class="grade-programacao">
+        <div id="programacao-hoje" class="programacao-dia">
+            <!-- Será carregado via JavaScript -->
+        </div>
     </div>
 </section>
 
@@ -44,21 +58,35 @@
 <section class="destaques">
     <h2>DESTAQUES</h2>
     <div class="cards">
-        <div class="card">
-            <img src="{{ url_for('static', filename='images/destaque1.jpg') }}" alt="Destaque 1">
-            <h3>Programa da Manhã</h3>
-            <p>Comece seu dia com louvor e adoração</p>
-        </div>
-        <div class="card">
-            <img src="{{ url_for('static', filename='images/destaque2.jpg') }}" alt="Destaque 2">
-            <h3>Show da Tarde</h3>
-            <p>Música gospel para animar sua tarde</p>
-        </div>
-        <div class="card">
-            <img src="{{ url_for('static', filename='images/destaque3.jpg') }}" alt="Destaque 3">
-            <h3>Louvor da Noite</h3>
-            <p>Encerre seu dia com gratidão</p>
-        </div>
+        {% if destaques %}
+            {% for destaque in destaques %}
+            <div class="card">
+                <img src="{{ destaque.imagem if destaque.imagem else url_for('static', filename='images/destaque' + loop.index|string + '.jpg') }}" alt="{{ destaque.titulo }}">
+                <h3>{{ destaque.titulo }}</h3>
+                <p>{{ destaque.descricao }}</p>
+                {% if destaque.link %}
+                <a href="{{ destaque.link }}" class="card-link" target="_blank">Saiba mais</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Destaques padrão caso não haja dados no banco -->
+            <div class="card">
+                <img src="{{ url_for('static', filename='images/destaque1.jpg') }}" alt="Destaque 1">
+                <h3>Programa da Manhã</h3>
+                <p>Comece seu dia com louvor e adoração</p>
+            </div>
+            <div class="card">
+                <img src="{{ url_for('static', filename='images/destaque2.jpg') }}" alt="Destaque 2">
+                <h3>Show da Tarde</h3>
+                <p>Música gospel para animar sua tarde</p>
+            </div>
+            <div class="card">
+                <img src="{{ url_for('static', filename='images/destaque3.jpg') }}" alt="Destaque 3">
+                <h3>Louvor da Noite</h3>
+                <p>Encerre seu dia com gratidão</p>
+            </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
@@ -66,6 +94,73 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tab');
+    const programacaoContainer = document.getElementById('programacao-hoje');
+    
+    // Função para carregar programação de um dia específico
+    function carregarProgramacao(dia) {
+        fetch(`/api/programacao-dia/${dia}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.programacoes && data.programacoes.length > 0) {
+                    let html = '<div class="programas-lista">';
+                    data.programacoes.forEach(programa => {
+                        const horaInicio = programa.horario_inicio;
+                        const horaFim = programa.horario_fim;
+                        const isAtual = programa.is_atual;
+                        
+                        html += `
+                            <div class="programa-item ${isAtual ? 'atual' : ''}">
+                                <div class="horario">
+                                    <span class="hora-inicio">${horaInicio}</span>
+                                    <span class="hora-fim">${horaFim}</span>
+                                </div>
+                                <div class="programa-info">
+                                    <h3>${programa.titulo}</h3>
+                                    <p>${programa.descricao || 'Programa especial'}</p>
+                                    ${isAtual ? '<span class="ao-vivo">AO VIVO</span>' : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    programacaoContainer.innerHTML = html;
+                } else {
+                    programacaoContainer.innerHTML = '<p class="sem-programacao">Nenhuma programação cadastrada para este dia.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar programação:', error);
+                programacaoContainer.innerHTML = '<p class="erro">Erro ao carregar programação.</p>';
+            });
+    }
+    
+    // Event listeners para as tabs
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Remover classe active de todas as tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            // Adicionar classe active na tab clicada
+            this.classList.add('active');
+            
+            // Carregar programação do dia selecionado
+            const dia = this.getAttribute('data-dia');
+            carregarProgramacao(dia);
+        });
+    });
+    
+    // Carregar programação do dia atual por padrão
+    const hoje = new Date();
+    const diasSemana = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
+    const diaAtual = diasSemana[hoje.getDay()];
+    
+    // Ativar tab do dia atual
+    const tabAtual = document.querySelector(`[data-dia="${diaAtual}"]`);
+    if (tabAtual) {
+        tabAtual.classList.add('active');
+        carregarProgramacao(diaAtual);
+    }
+
     // Atualizar programação atual via API
     function atualizarProgramacaoAtual() {
         fetch('/api/programacao-atual')
