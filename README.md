@@ -99,7 +99,7 @@ SECRET_KEY=sua-chave-secreta-aqui
 
 # Configurações do site
 SITE_NAME=Radios Hostlink
-SITE_EMAIL=contato@radioshostlink.com.br
+SITE_EMAIL=suporte@directradios.com.br
 STREAMING_URL=https://streaming.example.com/live
 ```
 
@@ -243,7 +243,7 @@ python app.py --port 8080
 ## 📞 Suporte
 
 Para suporte técnico:
-- Email: contato@radioshostlink.com.br
+- Email: suporte@directradios.com.br
 - WhatsApp: (82) 98125-6340
 
 ## 📄 Licença
