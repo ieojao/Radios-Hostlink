@@ -20,18 +20,13 @@ Este é o projeto de template rádio web usando Flask. Uma aplicação web moder
 
 ## 🛠️ Instalação
 
-1. **Clone o repositório**
-```bash
-git clone <url-do-repositorio>
-cd Radios-Hostlink
-```
 
-2. **Crie um ambiente virtual**
+1. **Crie um ambiente virtual**
 ```bash
 python -m venv venv
 ```
 
-3. **Ative o ambiente virtual**
+2. **Ative o ambiente virtual**
 ```bash
 # Windows
 venv\Scripts\activate
@@ -40,12 +35,12 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-4. **Instale as dependências**
+3. **Instale as dependências**
 ```bash
 pip install -r requirements.txt
 ```
 
-5. **Configure as variáveis de ambiente**
+4. **Configure as variáveis de ambiente**
 ```bash
 # Copie o arquivo de exemplo
 cp env_example.txt .env
@@ -53,7 +48,7 @@ cp env_example.txt .env
 # Edite o arquivo .env com suas configurações
 ```
 
-6. **Execute a aplicação**
+5. **Execute a aplicação**
 ```bash
 python app.py
 ```
@@ -249,7 +244,7 @@ python app.py --port 8080
 
 Para suporte técnico:
 - Email: contato@radioshostlink.com.br
-- WhatsApp: (11) 99999-9999
+- WhatsApp: (82) 98125-6340
 
 ## 📄 Licença
 
@@ -265,5 +260,3 @@ Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes
 6. Faça backup regular
 
 ---
-
-**Desenvolvido com ❤️ para a Radios Hostlink** 

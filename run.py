@@ -77,7 +77,7 @@ def main():
         print(f"  • Porta: {args.port}")
         print(f"  • Host: {args.host}")
         print(f"  • Debug: {args.debug}")
-        print(f"  • Ambiente: {app.config['ENV']}")
+        print(f"  • Ambiente: {app.config.get('ENV', 'production')}")
         print(f"  • Banco: {app.config['SQLALCHEMY_DATABASE_URI']}")
         return
     
