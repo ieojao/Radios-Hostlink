@@ -1,0 +1,28 @@
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/devhostlink/public_html/site"
+PassengerBaseURI "/site"
+PassengerPython "/home/devhostlink/virtualenv/public_html/site/3.8/bin/python"
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
+
+# Configurações adicionais para Flask
+RewriteEngine On
+
+# Redirecionar erros 404 para a aplicação Flask
+ErrorDocument 404 /site/
+
+# Permitir acesso a arquivos estáticos
+<FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|webp)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Configurações de segurança
+<Files "*.db">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files "config.env">
+    Order Allow,Deny
+    Deny from all
+</Files>

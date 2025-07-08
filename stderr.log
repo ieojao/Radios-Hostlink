@@ -1,0 +1,8 @@
+  File "/home/devhostlink/public_html/site/passenger_wsgi.py", line 4
+    from app import app as app.py
+                              ^
+SyntaxError: invalid syntax
+  File "/home/devhostlink/public_html/site/passenger_wsgi.py", line 4
+    from app import app as app.py
+                              ^
+SyntaxError: invalid syntax

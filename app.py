@@ -8,14 +8,31 @@ import os
 from dotenv import load_dotenv
 import json
 import uuid
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 # Carregar variáveis de ambiente
 load_dotenv('config.env')
 
 app = Flask(__name__)
+
+# Configurações básicas
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'sua-chave-secreta-aqui')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///radio.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Configurações específicas para cPanel
+try:
+    from cpanel_config import apply_cpanel_config
+    app = apply_cpanel_config(app)
+except ImportError:
+    # Se não conseguir importar, usar configurações padrão
+    pass
+
+# Ajuste para funcionar em subdiretório /site no cPanel
+if os.environ.get('SCRIPT_NAME', '').startswith('/site'):
+    app.wsgi_app = DispatcherMiddleware(Flask('dummy_app'), {
+        '/site': app.wsgi_app
+    })
 
 # Configurações para upload de arquivos
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
