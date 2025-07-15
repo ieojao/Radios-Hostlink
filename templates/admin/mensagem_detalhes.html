@@ -1,0 +1,254 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Detalhes da Mensagem - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}Detalhes da Mensagem{% endblock %}
+
+{% block content %}
+<div class="mensagem-detalhes-container">
+    <div class="mensagem-header">
+        <div class="mensagem-info">
+            <h1>Mensagem de {{ mensagem.nome }}</h1>
+            <p class="mensagem-meta">
+                Enviada em {{ mensagem.criado_em.strftime('%d/%m/%Y às %H:%M') }}
+                <span class="status-badge status-{{ mensagem.status }}">
+                    {% if mensagem.status == 'não_lida' %}
+                        Não lida
+                    {% elif mensagem.status == 'lida' %}
+                        Lida
+                    {% else %}
+                        Respondida
+                    {% endif %}
+                </span>
+            </p>
+        </div>
+        
+        <div class="mensagem-actions">
+            <a href="{{ url_for('admin_mensagens') }}" class="btn btn-secondary">
+                ← Voltar
+            </a>
+            
+            <form method="POST" action="{{ url_for('admin_mensagem_excluir', id=mensagem.id) }}" style="display: inline;">
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta mensagem?')">
+                    Excluir
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="mensagem-content">
+        <div class="mensagem-details">
+            <div class="detail-group">
+                <label>Nome:</label>
+                <span>{{ mensagem.nome }}</span>
+            </div>
+            
+            <div class="detail-group">
+                <label>Email:</label>
+                <span><a href="mailto:{{ mensagem.email }}">{{ mensagem.email }}</a></span>
+            </div>
+            
+            {% if mensagem.telefone %}
+            <div class="detail-group">
+                <label>Telefone:</label>
+                <span><a href="tel:{{ mensagem.telefone }}">{{ mensagem.telefone }}</a></span>
+            </div>
+            {% endif %}
+            
+            {% if mensagem.assunto %}
+            <div class="detail-group">
+                <label>Assunto:</label>
+                <span>{{ mensagem.assunto }}</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="mensagem-text">
+            <label>Mensagem:</label>
+            <div class="mensagem-body">
+                {{ mensagem.mensagem | nl2br | safe }}
+            </div>
+        </div>
+        
+        <div class="mensagem-status">
+            <h3>Alterar Status</h3>
+            <form method="POST" action="{{ url_for('admin_mensagem_status', id=mensagem.id) }}">
+                <select name="status" class="form-control">
+                    <option value="não_lida" {% if mensagem.status == 'não_lida' %}selected{% endif %}>Não lida</option>
+                    <option value="lida" {% if mensagem.status == 'lida' %}selected{% endif %}>Lida</option>
+                    <option value="respondida" {% if mensagem.status == 'respondida' %}selected{% endif %}>Respondida</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Atualizar Status</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.mensagem-detalhes-container {
+    padding: 20px;
+}
+
+.mensagem-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.mensagem-info h1 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.mensagem-meta {
+    color: #666;
+    font-size: 14px;
+}
+
+.mensagem-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.mensagem-content {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 30px;
+}
+
+.mensagem-details {
+    margin-bottom: 30px;
+}
+
+.detail-group {
+    display: flex;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-group:last-child {
+    border-bottom: none;
+}
+
+.detail-group label {
+    font-weight: 600;
+    color: #333;
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.detail-group span {
+    color: #666;
+}
+
+.detail-group a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.detail-group a:hover {
+    text-decoration: underline;
+}
+
+.mensagem-text {
+    margin-bottom: 30px;
+}
+
+.mensagem-text label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.mensagem-body {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 6px;
+    border-left: 4px solid #007bff;
+    line-height: 1.6;
+    color: #333;
+    white-space: pre-wrap;
+}
+
+.mensagem-status {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.mensagem-status h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.mensagem-status form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.form-control {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 10px;
+}
+
+.status-nao_lida {
+    background: #dc3545;
+    color: white;
+}
+
+.status-lida {
+    background: #6c757d;
+    color: white;
+}
+
+.status-respondida {
+    background: #28a745;
+    color: white;
+}
+
+@media (max-width: 768px) {
+    .mensagem-header {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .mensagem-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .detail-group {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .detail-group label {
+        width: auto;
+    }
+    
+    .mensagem-status form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+</style>
+{% endblock %} 

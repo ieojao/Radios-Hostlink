@@ -1,0 +1,150 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if locutor %}Editar Locutor{% else %}Adicionar Locutor{% endif %} - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}{% if locutor %}Editar Locutor{% else %}Adicionar Locutor{% endif %}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>{% if locutor %}Editar Locutor{% else %}Adicionar Locutor{% endif %}</h1>
+        <a href="{{ url_for('admin_locutores') }}" class="btn btn-secondary">
+            ← Voltar
+        </a>
+    </div>
+
+    <form method="POST" class="admin-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="nome">Nome do Locutor *</label>
+            <input type="text" id="nome" name="nome" value="{{ locutor.nome if locutor else '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="foto_arquivo">Selecionar Foto</label>
+            <input type="file" id="foto_arquivo" name="foto_arquivo" accept="image/*">
+            <small>Selecione uma foto do seu computador (PNG, JPG, GIF, WebP)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="foto_url">OU URL da Foto</label>
+            <input type="text" id="foto_url" name="foto_url" 
+                   value="{{ locutor.foto if locutor and locutor.foto.startswith('http') else '' }}" 
+                   placeholder="https://exemplo.com/foto.jpg">
+            <small>URL da foto do locutor (opcional, se não selecionar arquivo)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="bio">Biografia</label>
+            <textarea id="bio" name="bio" rows="6" placeholder="Conte um pouco sobre o locutor...">{{ locutor.bio if locutor else '' }}</textarea>
+            <small>Uma breve descrição sobre o locutor e sua experiência</small>
+        </div>
+
+        <div class="form-group">
+            <label for="redes_sociais">Redes Sociais</label>
+            <textarea id="redes_sociais" name="redes_sociais" rows="3" placeholder="Instagram: @locutor&#10;Facebook: facebook.com/locutor&#10;Twitter: @locutor">{{ locutor.redes_sociais if locutor else '' }}</textarea>
+            <small>Links para redes sociais do locutor (um por linha)</small>
+        </div>
+
+        {% if locutor and locutor.foto %}
+        <div class="form-group">
+            <label>Foto Atual</label>
+            <div class="foto-atual">
+                <img src="{{ locutor.foto }}" alt="{{ locutor.nome }}" style="max-width: 150px; max-height: 150px; border-radius: 50%; object-fit: cover;">
+                <p class="foto-info">{{ locutor.foto }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if locutor %}Atualizar Locutor{% else %}Adicionar Locutor{% endif %}
+            </button>
+            <a href="{{ url_for('admin_locutores') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fotoArquivo = document.getElementById('foto_arquivo');
+    const fotoUrl = document.getElementById('foto_url');
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'foto-preview';
+    previewContainer.style.display = 'none';
+    fotoArquivo.parentNode.appendChild(previewContainer);
+    
+    // Função para validar URL
+    function isValidUrl(string) {
+        if (!string) return true; // URLs vazias são válidas (opcionais)
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+    
+    // Validação do formulário
+    const form = document.querySelector('.admin-form');
+    form.addEventListener('submit', function(e) {
+        const fotoUrlValue = fotoUrl.value.trim();
+        const fotoArquivoValue = fotoArquivo.files.length > 0;
+        
+        // Validar URL da foto apenas se não houver arquivo selecionado e a URL estiver preenchida
+        if (!fotoArquivoValue && fotoUrlValue && !isValidUrl(fotoUrlValue)) {
+            e.preventDefault();
+            alert('Por favor, insira uma URL válida no campo URL da Foto ou deixe em branco.');
+            fotoUrl.focus();
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Preview para arquivo selecionado
+    fotoArquivo.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewContainer.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview" style="max-width: 150px; max-height: 150px; border-radius: 50%; object-fit: cover; margin-top: 10px;">
+                    <p style="margin-top: 5px; font-size: 0.9rem; color: #666;">${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                `;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            
+            // Limpar URL se arquivo foi selecionado
+            fotoUrl.value = '';
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    });
+    
+    // Preview para URL
+    function atualizarPreviewUrl() {
+        const url = fotoUrl.value.trim();
+        if (url && isValidUrl(url)) {
+            previewContainer.innerHTML = `<img src="${url}" alt="Preview" style="max-width: 150px; max-height: 150px; border-radius: 50%; object-fit: cover; margin-top: 10px;" onerror="this.style.display='none'">`;
+            previewContainer.style.display = 'block';
+            
+            // Limpar arquivo se URL foi inserida
+            fotoArquivo.value = '';
+        } else if (!url) {
+            previewContainer.style.display = 'none';
+        }
+    }
+    
+    fotoUrl.addEventListener('input', atualizarPreviewUrl);
+    fotoUrl.addEventListener('blur', atualizarPreviewUrl);
+    
+    // Atualizar preview se já há valor
+    if (fotoUrl.value) {
+        atualizarPreviewUrl();
+    }
+});
+</script>
+{% endblock %} 

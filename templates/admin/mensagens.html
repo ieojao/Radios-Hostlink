@@ -1,0 +1,180 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Mensagens de Contato - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}Mensagens de Contato{% endblock %}
+
+{% block content %}
+<div class="mensagens-container">
+    <div class="mensagens-header">
+        <h1>Mensagens de Contato</h1>
+        <p>Gerencie as mensagens recebidas através do formulário de contato</p>
+    </div>
+    
+    {% if mensagens %}
+        <div class="mensagens-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Assunto</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mensagem in mensagens %}
+                    <tr class="mensagem-row {% if mensagem.status == 'não_lida' %}nao-lida{% endif %}">
+                        <td>{{ mensagem.criado_em.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ mensagem.nome }}</td>
+                        <td>{{ mensagem.email }}</td>
+                        <td>{{ mensagem.assunto or 'Sem assunto' }}</td>
+                        <td>
+                            <span class="status-badge status-{{ mensagem.status }}">
+                                {% if mensagem.status == 'não_lida' %}
+                                    Não lida
+                                {% elif mensagem.status == 'lida' %}
+                                    Lida
+                                {% else %}
+                                    Respondida
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin_mensagem_detalhes', id=mensagem.id) }}" class="btn btn-primary btn-sm">
+                                Ver
+                            </a>
+                            <form method="POST" action="{{ url_for('admin_mensagem_excluir', id=mensagem.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir esta mensagem?')">
+                                    Excluir
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <h3>Nenhuma mensagem encontrada</h3>
+            <p>Ainda não foram recebidas mensagens através do formulário de contato.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+.mensagens-container {
+    padding: 20px;
+}
+
+.mensagens-header {
+    margin-bottom: 30px;
+}
+
+.mensagens-header h1 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.mensagens-header p {
+    color: #666;
+    font-size: 16px;
+}
+
+.mensagens-table {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.mensagens-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mensagens-table th,
+.mensagens-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.mensagens-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.mensagem-row.nao-lida {
+    background: #fff3cd;
+    font-weight: 500;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-nao_lida {
+    background: #dc3545;
+    color: white;
+}
+
+.status-lida {
+    background: #6c757d;
+    color: white;
+}
+
+.status-respondida {
+    background: #28a745;
+    color: white;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .mensagens-table {
+        overflow-x: auto;
+    }
+    
+    .mensagens-table table {
+        min-width: 600px;
+    }
+}
+</style>
+{% endblock %} 

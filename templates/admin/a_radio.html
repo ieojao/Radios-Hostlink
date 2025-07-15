@@ -1,0 +1,153 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gerenciar Página "A Rádio" - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}Gerenciar Página "A Rádio"{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>Gerenciar Página "A Rádio"</h1>
+        <a href="{{ url_for('a_radio') }}" target="_blank" class="btn btn-secondary">
+            👁️ Ver Página
+        </a>
+    </div>
+
+    <form method="POST" class="admin-form">
+        <div class="config-section">
+            <h2>Informações Principais</h2>
+            
+            <div class="form-group">
+                <label for="titulo">Título Principal *</label>
+                <input type="text" id="titulo" name="titulo" value="{{ pagina_radio.titulo if pagina_radio else '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="subtitulo">Subtítulo</label>
+                <input type="text" id="subtitulo" name="subtitulo" value="{{ pagina_radio.subtitulo if pagina_radio else '' }}" 
+                       placeholder="Uma breve descrição da rádio">
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição Geral</label>
+                <textarea id="descricao" name="descricao" rows="4" placeholder="Descreva a rádio de forma geral...">{{ pagina_radio.descricao if pagina_radio else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="imagem_principal">URL da Imagem Principal</label>
+                <input type="url" id="imagem_principal" name="imagem_principal" value="{{ pagina_radio.imagem_principal if pagina_radio else '' }}" 
+                       placeholder="https://exemplo.com/imagem-principal.jpg">
+                <small>Imagem de destaque da página (recomendado: 1200x600px)</small>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>História da Rádio</h2>
+            
+            <div class="form-group">
+                <label for="historia">História</label>
+                <textarea id="historia" name="historia" rows="6" placeholder="Conte a história da rádio, quando foi fundada, principais momentos...">{{ pagina_radio.historia if pagina_radio else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="imagem_historia">URL da Imagem da História</label>
+                <input type="url" id="imagem_historia" name="imagem_historia" value="{{ pagina_radio.imagem_historia if pagina_radio else '' }}" 
+                       placeholder="https://exemplo.com/imagem-historia.jpg">
+                <small>Imagem para a seção de história (opcional)</small>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Missão, Visão e Valores</h2>
+            
+            <div class="form-group">
+                <label for="missao">Missão</label>
+                <textarea id="missao" name="missao" rows="3" placeholder="Qual é a missão da rádio?">{{ pagina_radio.missao if pagina_radio else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="visao">Visão</label>
+                <textarea id="visao" name="visao" rows="3" placeholder="Qual é a visão da rádio?">{{ pagina_radio.visao if pagina_radio else '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="valores">Valores</label>
+                <textarea id="valores" name="valores" rows="4" placeholder="Quais são os valores da rádio? (um por linha)">{{ pagina_radio.valores if pagina_radio else '' }}</textarea>
+                <small>Digite um valor por linha</small>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Estatísticas</h2>
+            <p>Adicione até 4 estatísticas para mostrar na página (ex: anos no ar, ouvintes, programas, etc.)</p>
+            
+            {% set estatisticas = {} %}
+            {% if pagina_radio and pagina_radio.estatisticas %}
+                {% set estatisticas = pagina_radio.estatisticas | from_json %}
+            {% endif %}
+            
+            {% for i in range(1, 5) %}
+            <div class="estatistica-item">
+                <h3>Estatística {{ i }}</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="estatistica_{{ i }}_titulo">Título</label>
+                        <input type="text" id="estatistica_{{ i }}_titulo" name="estatistica_{{ i }}_titulo" 
+                               value="{{ estatisticas.get('estatistica_' + i|string, {}).get('titulo', '') }}" 
+                               placeholder="Ex: Anos no Ar">
+                    </div>
+                    <div class="form-group">
+                        <label for="estatistica_{{ i }}_valor">Valor</label>
+                        <input type="text" id="estatistica_{{ i }}_valor" name="estatistica_{{ i }}_valor" 
+                               value="{{ estatisticas.get('estatistica_' + i|string, {}).get('valor', '') }}" 
+                               placeholder="Ex: 25">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview das imagens
+    const imagemPrincipal = document.getElementById('imagem_principal');
+    const imagemHistoria = document.getElementById('imagem_historia');
+    
+    function criarPreview(input, tipo) {
+        const previewContainer = document.createElement('div');
+        previewContainer.className = `${tipo}-preview`;
+        previewContainer.style.display = 'none';
+        input.parentNode.appendChild(previewContainer);
+        
+        function atualizarPreview() {
+            const url = input.value.trim();
+            if (url) {
+                previewContainer.innerHTML = `<img src="${url}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px;" onerror="this.style.display='none'">`;
+                previewContainer.style.display = 'block';
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        }
+        
+        input.addEventListener('input', atualizarPreview);
+        input.addEventListener('blur', atualizarPreview);
+        
+        if (input.value) {
+            atualizarPreview();
+        }
+    }
+    
+    criarPreview(imagemPrincipal, 'imagem-principal');
+    criarPreview(imagemHistoria, 'imagem-historia');
+});
+</script>
+{% endblock %} 

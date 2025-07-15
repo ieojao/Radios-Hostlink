@@ -1,0 +1,195 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if programacao %}Editar Programa{% else %}Adicionar Programa{% endif %} - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}{% if programacao %}Editar Programa{% else %}Adicionar Programa{% endif %}{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-header">
+        <h1>{% if programacao %}Editar Programa{% else %}Adicionar Programa{% endif %}</h1>
+        <a href="{{ url_for('admin_programacao') }}" class="btn btn-secondary">
+            ← Voltar
+        </a>
+    </div>
+
+    <form method="POST" class="admin-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="titulo">Título do Programa *</label>
+            <input type="text" id="titulo" name="titulo" value="{{ programacao.titulo if programacao else '' }}" required>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="dia_semana">Dia da Semana *</label>
+                <select id="dia_semana" name="dia_semana" required>
+                    <option value="">Selecione o dia</option>
+                    <option value="DOMINGO" {% if programacao and programacao.dia_semana == 'DOMINGO' %}selected{% endif %}>DOMINGO</option>
+                    <option value="SEGUNDA" {% if programacao and programacao.dia_semana == 'SEGUNDA' %}selected{% endif %}>SEGUNDA</option>
+                    <option value="TERÇA" {% if programacao and programacao.dia_semana == 'TERÇA' %}selected{% endif %}>TERÇA</option>
+                    <option value="QUARTA" {% if programacao and programacao.dia_semana == 'QUARTA' %}selected{% endif %}>QUARTA</option>
+                    <option value="QUINTA" {% if programacao and programacao.dia_semana == 'QUINTA' %}selected{% endif %}>QUINTA</option>
+                    <option value="SEXTA" {% if programacao and programacao.dia_semana == 'SEXTA' %}selected{% endif %}>SEXTA</option>
+                    <option value="SÁBADO" {% if programacao and programacao.dia_semana == 'SÁBADO' %}selected{% endif %}>SÁBADO</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="horario_inicio">Horário de Início *</label>
+                <input type="time" id="horario_inicio" name="horario_inicio" 
+                       value="{{ programacao.horario_inicio.strftime('%H:%M') if programacao else '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="horario_fim">Horário de Fim *</label>
+                <input type="time" id="horario_fim" name="horario_fim" 
+                       value="{{ programacao.horario_fim.strftime('%H:%M') if programacao else '' }}" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" name="descricao" rows="4" placeholder="Descreva o programa...">{{ programacao.descricao if programacao else '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="imagem_arquivo">Selecionar Imagem</label>
+            <input type="file" id="imagem_arquivo" name="imagem_arquivo" accept="image/*">
+            <small>Selecione uma imagem do seu computador (PNG, JPG, GIF, WebP)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="imagem_url">OU URL da Imagem</label>
+            <input type="text" id="imagem_url" name="imagem_url" 
+                   value="{{ programacao.imagem if programacao and programacao.imagem and programacao.imagem.startswith('http') else '' }}" 
+                   placeholder="https://exemplo.com/imagem.jpg">
+            <small>URL da imagem do programa (opcional, se não selecionar arquivo)</small>
+        </div>
+
+        {% if programacao and programacao.imagem %}
+        <div class="form-group">
+            <label>Imagem Atual</label>
+            <div class="imagem-atual">
+                <img src="{{ programacao.imagem }}" alt="{{ programacao.titulo }}" style="max-width: 200px; max-height: 150px; border-radius: 8px;">
+                <p class="imagem-info">{{ programacao.imagem }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if programacao %}Atualizar Programa{% else %}Adicionar Programa{% endif %}
+            </button>
+            <a href="{{ url_for('admin_programacao') }}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const imagemArquivo = document.getElementById('imagem_arquivo');
+    const imagemUrl = document.getElementById('imagem_url');
+    const previewContainer = document.createElement('div');
+    previewContainer.className = 'imagem-preview';
+    previewContainer.style.display = 'none';
+    imagemArquivo.parentNode.appendChild(previewContainer);
+    
+    // Função para validar URL
+    function isValidUrl(string) {
+        if (!string) return true; // URLs vazias são válidas (opcionais)
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+    
+    // Validação do formulário
+    const form = document.querySelector('.admin-form');
+    form.addEventListener('submit', function(e) {
+        const imagemUrlValue = imagemUrl.value.trim();
+        const imagemArquivoValue = imagemArquivo.files.length > 0;
+        
+        // Validar URL da imagem apenas se não houver arquivo selecionado e a URL estiver preenchida
+        if (!imagemArquivoValue && imagemUrlValue && !isValidUrl(imagemUrlValue)) {
+            e.preventDefault();
+            alert('Por favor, insira uma URL válida no campo URL da Imagem ou deixe em branco.');
+            imagemUrl.focus();
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // Preview para arquivo selecionado
+    imagemArquivo.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewContainer.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px; margin-top: 10px;">
+                    <p style="margin-top: 5px; font-size: 0.9rem; color: #666;">${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</p>
+                `;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            
+            // Limpar URL se arquivo foi selecionado
+            imagemUrl.value = '';
+        } else {
+            previewContainer.style.display = 'none';
+        }
+    });
+    
+    // Preview para URL
+    function atualizarPreviewUrl() {
+        const url = imagemUrl.value.trim();
+        if (url && isValidUrl(url)) {
+            previewContainer.innerHTML = `<img src="${url}" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 8px; margin-top: 10px;" onerror="this.style.display='none'">`;
+            previewContainer.style.display = 'block';
+            
+            // Limpar arquivo se URL foi inserida
+            imagemArquivo.value = '';
+        } else if (!url) {
+            previewContainer.style.display = 'none';
+        }
+    }
+    
+    imagemUrl.addEventListener('input', atualizarPreviewUrl);
+    imagemUrl.addEventListener('blur', atualizarPreviewUrl);
+    
+    // Atualizar preview se já há valor
+    if (imagemUrl.value) {
+        atualizarPreviewUrl();
+    }
+    
+    // Validação de horários
+    const horarioInicio = document.getElementById('horario_inicio');
+    const horarioFim = document.getElementById('horario_fim');
+    
+    function validarHorarios() {
+        if (horarioInicio.value && horarioFim.value) {
+            if (horarioInicio.value >= horarioFim.value) {
+                horarioFim.setCustomValidity('O horário de fim deve ser posterior ao horário de início');
+            } else {
+                horarioFim.setCustomValidity('');
+            }
+        }
+    }
+    
+    horarioInicio.addEventListener('change', validarHorarios);
+    horarioFim.addEventListener('change', validarHorarios);
+    
+    // Definir dia da semana se passado na URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const diaParam = urlParams.get('dia');
+    if (diaParam) {
+        document.getElementById('dia_semana').value = diaParam;
+    }
+});
+</script>
+{% endblock %} 

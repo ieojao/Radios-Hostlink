@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Responsividade - Dashboard</title>
+    <link rel="stylesheet" href="static/css/admin.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <style>
+        .teste-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .teste-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .teste-info h2 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+        
+        .teste-info p {
+            margin-bottom: 5px;
+        }
+        
+        .responsividade-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .status-ok {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .teste-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .teste-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .teste-item h3 {
+            color: #1e3a8a;
+            margin-bottom: 15px;
+        }
+        
+        .teste-item ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .teste-item li {
+            padding: 5px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        .teste-item li:last-child {
+            border-bottom: none;
+        }
+        
+        .check {
+            color: #28a745;
+            margin-right: 5px;
+        }
+        
+        .warning {
+            color: #ffc107;
+            margin-right: 5px;
+        }
+        
+        .error {
+            color: #dc3545;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body class="admin">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Rádio Teste</h2>
+            <p>Painel Admin</p>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📻</span>
+                <span class="nav-text">Programação</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span class="nav-text">Locutores</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🖼️</span>
+                <span class="nav-text">Banners</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📡</span>
+                <span class="nav-text">A Rádio</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">👥</span>
+                <span class="nav-text">Equipe</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">💬</span>
+                <span class="nav-text">Mensagens</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📞</span>
+                <span class="nav-text">Página Contato</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">Configurações</span>
+            </a>
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">👥</span>
+                <span class="nav-text">Usuários</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🚪</span>
+                <span class="nav-text">Sair</span>
+            </a>
+        </div>
+    </aside>
+    
+    <!-- Main content -->
+    <main class="main-content">
+        <!-- Top bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-toggle">☰</button>
+                <h1>Teste de Responsividade</h1>
+            </div>
+            
+            <div class="top-bar-right">
+                <div class="user-info">
+                    <span>Olá, Administrador</span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Page content -->
+        <div class="page-content">
+            <div class="teste-container">
+                <div class="teste-info">
+                    <h2>Status da Responsividade do Dashboard</h2>
+                    <p><strong>Largura atual da tela:</strong> <span id="screen-width">Carregando...</span></p>
+                    <p><strong>Altura atual da tela:</strong> <span id="screen-height">Carregando...</span></p>
+                    <p><strong>Status geral:</strong> <span class="responsividade-status status-ok">RESPONSIVO</span></p>
+                </div>
+                
+                <div class="dashboard">
+                    <div class="dashboard-header">
+                        <h1>Dashboard</h1>
+                        <p>Bem-vindo ao painel administrativo da Rádio Teste</p>
+                    </div>
+                    
+                    <!-- Cards de estatísticas -->
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="stat-icon">📻</div>
+                            <div class="stat-content">
+                                <h3>15</h3>
+                                <p>Programas</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">🎤</div>
+                            <div class="stat-content">
+                                <h3>8</h3>
+                                <p>Locutores</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">🖼️</div>
+                            <div class="stat-content">
+                                <h3>5</h3>
+                                <p>Banners</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">💬</div>
+                            <div class="stat-content">
+                                <h3>23</h3>
+                                <p>Mensagens</p>
+                                <small class="unread-badge">3 não lidas</small>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-content">
+                                <h3>1</h3>
+                                <p>Usuários</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ações rápidas -->
+                    <div class="quick-actions">
+                        <h2>Ações Rápidas</h2>
+                        <div class="actions-grid">
+                            <a href="#" class="action-card">
+                                <div class="action-icon">➕</div>
+                                <h3>Adicionar Programa</h3>
+                                <p>Criar nova programação</p>
+                            </a>
+                            
+                            <a href="#" class="action-card">
+                                <div class="action-icon">👤</div>
+                                <h3>Gerenciar Locutores</h3>
+                                <p>Adicionar ou editar locutores</p>
+                            </a>
+                            
+                            <a href="#" class="action-card">
+                                <div class="action-icon">⚙️</div>
+                                <h3>Configurações</h3>
+                                <p>Configurar site</p>
+                            </a>
+                            
+                            <a href="#" class="action-card">
+                                <div class="action-icon">📊</div>
+                                <h3>Usuários</h3>
+                                <p>Gerenciar usuários</p>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Programação atual -->
+                    <div class="current-programming">
+                        <h2>Programação Atual</h2>
+                        <div class="programming-info">
+                            <p><strong>Dia:</strong> <span id="current-day">Carregando...</span></p>
+                            <p><strong>Horário:</strong> <span id="current-time">Carregando...</span></p>
+                            <p><strong>Programa:</strong> <span id="current-program">Carregando...</span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Links úteis -->
+                    <div class="useful-links">
+                        <h2>Links Úteis</h2>
+                        <div class="links-grid">
+                            <a href="#" class="link-card">
+                                <h3>Ver Site</h3>
+                                <p>Acessar o site público</p>
+                            </a>
+                            
+                            <a href="#" class="link-card">
+                                <h3>Backup</h3>
+                                <p>Fazer backup do sistema</p>
+                            </a>
+                            
+                            <a href="#" class="link-card">
+                                <h3>Logs</h3>
+                                <p>Ver logs do sistema</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="teste-grid">
+                    <div class="teste-item">
+                        <h3>✅ Funcionalidades Responsivas</h3>
+                        <ul>
+                            <li><span class="check">✓</span> Meta viewport configurado</li>
+                            <li><span class="check">✓</span> Sidebar mobile com toggle</li>
+                            <li><span class="check">✓</span> Grid responsivo para cards</li>
+                            <li><span class="check">✓</span> Formulários adaptáveis</li>
+                            <li><span class="check">✓</span> Tabelas com scroll horizontal</li>
+                            <li><span class="check">✓</span> Botões e inputs responsivos</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="teste-item">
+                        <h3>⚠️ Pontos de Atenção</h3>
+                        <ul>
+                            <li><span class="warning">⚠</span> Testar em diferentes dispositivos</li>
+                            <li><span class="warning">⚠</span> Verificar orientação landscape</li>
+                            <li><span class="warning">⚠</span> Testar navegação por teclado</li>
+                            <li><span class="warning">⚠</span> Verificar acessibilidade</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="teste-item">
+                        <h3>📱 Breakpoints Implementados</h3>
+                        <ul>
+                            <li><span class="check">✓</span> Mobile: max-width: 768px</li>
+                            <li><span class="check">✓</span> Tablet: 768px - 1024px</li>
+                            <li><span class="check">✓</span> Desktop: > 1024px</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Scripts -->
+    <script src="static/js/admin.js"></script>
+    <script>
+        // Atualizar informações da tela
+        function atualizarInfoTela() {
+            const screenWidth = document.getElementById('screen-width');
+            const screenHeight = document.getElementById('screen-height');
+            
+            screenWidth.textContent = window.innerWidth + 'px';
+            screenHeight.textContent = window.innerHeight + 'px';
+        }
+        
+        // Atualizar programação atual
+        function atualizarProgramacaoAtual() {
+            const currentDay = document.getElementById('current-day');
+            const currentTime = document.getElementById('current-time');
+            const currentProgram = document.getElementById('current-program');
+            
+            const agora = new Date();
+            const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+            
+            currentDay.textContent = dias[agora.getDay()];
+            currentTime.textContent = agora.toLocaleTimeString('pt-BR');
+            currentProgram.textContent = 'Programa de Teste';
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarInfoTela();
+            atualizarProgramacaoAtual();
+            
+            // Atualizar quando a janela for redimensionada
+            window.addEventListener('resize', atualizarInfoTela);
+            
+            // Atualizar programação a cada minuto
+            setInterval(atualizarProgramacaoAtual, 60000);
+        });
+    </script>
+</body>
+</html> 

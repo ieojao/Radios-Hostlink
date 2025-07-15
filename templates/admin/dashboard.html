@@ -1,0 +1,159 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard - {{ config.nome_site }}{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        <p>Bem-vindo ao painel administrativo da {{ config.nome_site }}</p>
+    </div>
+    
+    <!-- Cards de estatísticas -->
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-icon">📻</div>
+            <div class="stat-content">
+                <h3>{{ total_programacao }}</h3>
+                <p>Programas</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">🎤</div>
+            <div class="stat-content">
+                <h3>{{ total_locutores }}</h3>
+                <p>Locutores</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">🖼️</div>
+            <div class="stat-content">
+                <h3>{{ total_banners }}</h3>
+                <p>Banners</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">💬</div>
+            <div class="stat-content">
+                <h3>{{ total_mensagens }}</h3>
+                <p>Mensagens</p>
+                {% if mensagens_nao_lidas > 0 %}
+                    <small class="unread-badge">{{ mensagens_nao_lidas }} não lidas</small>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+                <h3>1</h3>
+                <p>Usuários</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Ações rápidas -->
+    <div class="quick-actions">
+        <h2>Ações Rápidas</h2>
+        <div class="actions-grid">
+            <a href="{{ url_for('admin_programacao_adicionar') }}" class="action-card">
+                <div class="action-icon">➕</div>
+                <h3>Adicionar Programa</h3>
+                <p>Criar nova programação</p>
+            </a>
+            
+            <a href="{{ url_for('admin_locutores_adicionar') }}" class="action-card">
+                <div class="action-icon">👤</div>
+                <h3>Gerenciar Locutores</h3>
+                <p>Adicionar ou editar locutores</p>
+            </a>
+            
+            <a href="{{ url_for('admin_destaques') }}" class="action-card">
+                <div class="action-icon">⭐</div>
+                <h3>Gerenciar Destaques</h3>
+                <p>Editar destaques da página inicial</p>
+            </a>
+            
+            <a href="{{ url_for('admin_configuracoes') }}" class="action-card">
+                <div class="action-icon">⚙️</div>
+                <h3>Configurações</h3>
+                <p>Configurar site</p>
+            </a>
+            
+            <a href="{{ url_for('admin_usuarios') }}" class="action-card">
+                <div class="action-icon">📊</div>
+                <h3>Usuários</h3>
+                <p>Gerenciar usuários</p>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Programação atual -->
+    <div class="current-programming">
+        <h2>Programação Atual</h2>
+        <div class="programming-info">
+            <p><strong>Dia:</strong> <span id="current-day">Carregando...</span></p>
+            <p><strong>Horário:</strong> <span id="current-time">Carregando...</span></p>
+            <p><strong>Programa:</strong> <span id="current-program">Carregando...</span></p>
+        </div>
+    </div>
+    
+    <!-- Links úteis -->
+    <div class="useful-links">
+        <h2>Links Úteis</h2>
+        <div class="links-grid">
+            <a href="{{ url_for('index') }}" target="_blank" class="link-card">
+                <h3>Ver Site</h3>
+                <p>Acessar o site público</p>
+            </a>
+            
+            <a href="#" class="link-card">
+                <h3>Backup</h3>
+                <p>Fazer backup do sistema</p>
+            </a>
+            
+            <a href="#" class="link-card">
+                <h3>Logs</h3>
+                <p>Ver logs do sistema</p>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Atualizar informações da programação atual
+    function atualizarProgramacaoAtual() {
+        fetch('/api/programacao-atual')
+            .then(response => response.json())
+            .then(data => {
+                const currentDay = document.getElementById('current-day');
+                const currentTime = document.getElementById('current-time');
+                const currentProgram = document.getElementById('current-program');
+                
+                if (data.error) {
+                    currentProgram.textContent = 'Nenhuma programação ativa';
+                } else {
+                    currentProgram.textContent = data.titulo;
+                }
+                
+                // Atualizar dia e hora
+                const agora = new Date();
+                const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                currentDay.textContent = dias[agora.getDay()];
+                currentTime.textContent = agora.toLocaleTimeString('pt-BR');
+            })
+            .catch(error => console.error('Erro ao buscar programação:', error));
+    }
+    
+    // Atualizar a cada minuto
+    atualizarProgramacaoAtual();
+    setInterval(atualizarProgramacaoAtual, 60000);
+});
+</script>
+{% endblock %} 

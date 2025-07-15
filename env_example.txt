@@ -1,0 +1,4 @@
+# Configurações do site
+SITE_NAME=Radios Hostlink
+SITE_EMAIL=contato@radioshostlink.com.br
+STREAMING_URL=https://streaming.example.com/live 

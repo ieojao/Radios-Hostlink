@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}Equipe - {{ config.nome_site }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-background">
+        {% if pagina_equipe and pagina_equipe.imagem_principal %}
+        <img src="{{ pagina_equipe.imagem_principal }}" alt="{{ pagina_equipe.titulo }}" class="hero-image">
+        {% endif %}
+        <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+        <div class="container">
+            <h1 class="hero-title">
+                {% if pagina_equipe and pagina_equipe.titulo %}
+                    {{ pagina_equipe.titulo }}
+                {% else %}
+                    Nossa Equipe
+                {% endif %}
+            </h1>
+            {% if pagina_equipe and pagina_equipe.subtitulo %}
+            <p class="hero-subtitle">{{ pagina_equipe.subtitulo }}</p>
+            {% endif %}
+            {% if pagina_equipe and pagina_equipe.descricao %}
+            <p class="hero-description">{{ pagina_equipe.descricao }}</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Estatísticas da Equipe -->
+{% if pagina_equipe and pagina_equipe.estatisticas_equipe %}
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            {% set estatisticas_equipe = pagina_equipe.estatisticas_equipe | from_json %}
+            {% for key, estatistica in estatisticas_equipe.items() %}
+            <div class="stat-item">
+                <div class="stat-number">{{ estatistica.valor }}</div>
+                <div class="stat-label">{{ estatistica.titulo }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Mensagem da Equipe -->
+{% if pagina_equipe and pagina_equipe.mensagem_equipe %}
+<section class="team-message-section">
+    <div class="container">
+        <div class="team-message">
+            <div class="message-icon">💬</div>
+            <blockquote>
+                {{ pagina_equipe.mensagem_equipe | nl2br }}
+            </blockquote>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Locutores -->
+{% if locutores %}
+<section class="team-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Nossos Locutores</h2>
+            <div class="section-divider"></div>
+            <p>Conheça os profissionais que fazem a diferença na nossa rádio</p>
+        </div>
+        
+        <div class="team-grid">
+            {% for locutor in locutores %}
+            <div class="team-member">
+                <div class="member-photo">
+                    {% if locutor.foto %}
+                    <img src="{{ locutor.foto }}" alt="{{ locutor.nome }}" onerror="this.style.display='none'">
+                    {% endif %}
+                    {% if not locutor.foto or locutor.foto == '' %}
+                    <div class="photo-placeholder">
+                        <span>🎤</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="member-info">
+                    <h3>{{ locutor.nome }}</h3>
+                    {% if locutor.bio %}
+                    <p class="member-bio">{{ locutor.bio[:150] }}{% if locutor.bio|length > 150 %}...{% endif %}</p>
+                    {% endif %}
+                    {% if locutor.redes_sociais %}
+                    <div class="member-social">
+                        {% for rede in locutor.redes_sociais.split('\n') %}
+                            {% if rede.strip() %}
+                            <span class="social-item">{{ rede.strip() }}</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Áreas de Atuação -->
+{% if pagina_equipe and pagina_equipe.areas_atuacao %}
+<section class="areas-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Áreas de Atuação</h2>
+            <div class="section-divider"></div>
+            <p>Conheça as diferentes áreas que compõem nossa equipe</p>
+        </div>
+        
+        <div class="areas-grid">
+            {% set areas_atuacao = pagina_equipe.areas_atuacao | from_json %}
+            {% for key, area in areas_atuacao.items() %}
+            <div class="area-card">
+                <div class="area-icon">
+                    {% if loop.index == 1 %}🎤
+                    {% elif loop.index == 2 %}🎛️
+                    {% elif loop.index == 3 %}📡
+                    {% elif loop.index == 4 %}🎵
+                    {% elif loop.index == 5 %}📺
+                    {% else %}🎧
+                    {% endif %}
+                </div>
+                <h3>{{ area.titulo }}</h3>
+                <p>{{ area.descricao }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Seção de Destaque -->
+<section class="team-highlight-section">
+    <div class="container">
+        <div class="highlight-content">
+            <div class="highlight-text">
+                <h2>Faça Parte da Nossa Equipe</h2>
+                {% if pagina_equipe and pagina_equipe.convite_equipe %}
+                <p>{{ pagina_equipe.convite_equipe }}</p>
+                {% else %}
+                <p>Estamos sempre em busca de talentos apaixonados por rádio e comunicação. Se você tem interesse em fazer parte da nossa equipe, entre em contato conosco!</p>
+                {% endif %}
+                <div class="highlight-features">
+                    <div class="feature">
+                        <span class="feature-icon">🎓</span>
+                        <span>Oportunidade de Crescimento</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🤝</span>
+                        <span>Ambiente Colaborativo</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">💡</span>
+                        <span>Inovação Constante</span>
+                    </div>
+                </div>
+            </div>
+            <div class="highlight-image">
+                <div class="team-studio">
+                    <span class="studio-icon">🎙️</span>
+                    <h3>Estúdio Profissional</h3>
+                    <p>Trabalhe com equipamentos de última geração em um ambiente acolhedor e profissional</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Quer Fazer Parte da Nossa Equipe?</h2>
+            <p>Entre em contato conosco e descubra as oportunidades disponíveis</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('contato') }}" class="btn btn-primary">
+                    <span>📞</span> Entre em Contato
+                </a>
+                <a href="{{ url_for('a_radio') }}" class="btn btn-secondary">
+                    Conheça a Rádio
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animação dos números das estatísticas
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    function animateNumber(element, target) {
+        let current = 0;
+        const increment = target / 50;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            element.textContent = Math.floor(current);
+        }, 30);
+    }
+    
+    // Observador de interseção para animar quando a seção estiver visível
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const statNumber = entry.target;
+                const target = parseInt(statNumber.textContent);
+                animateNumber(statNumber, target);
+                observer.unobserve(statNumber);
+            }
+        });
+    });
+    
+    statNumbers.forEach(stat => observer.observe(stat));
+    
+    // Animação de entrada dos membros da equipe
+    const teamMembers = document.querySelectorAll('.team-member');
+    const memberObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    });
+    
+    teamMembers.forEach(member => {
+        member.style.opacity = '0';
+        member.style.transform = 'translateY(30px)';
+        member.style.transition = 'all 0.6s ease';
+        memberObserver.observe(member);
+    });
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gerenciar Usuários - {{ config.nome_site }}{% endblock %}
+
+{% block page_title %}Gerenciar Usuários{% endblock %}
+
+{% block content %}
+<div class="usuarios-admin">
+    <div class="page-header">
+        <h1>Gerenciar Usuários</h1>
+        <a href="{{ url_for('admin_usuarios_adicionar') }}" class="btn btn-primary">
+            <span>➕</span> Adicionar Usuário
+        </a>
+    </div>
+
+    {% if usuarios %}
+    <div class="usuarios-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Nível</th>
+                    <th>Data de Cadastro</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>
+                        <div class="usuario-info">
+                            <span class="usuario-nome">{{ usuario.nome }}</span>
+                            {% if usuario.id == current_user.id %}
+                            <span class="badge badge-primary">Você</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>{{ usuario.email }}</td>
+                    <td>
+                        <span class="badge badge-{{ 'primary' if usuario.nivel == 'admin' else 'secondary' }}">
+                            {{ usuario.nivel.upper() }}
+                        </span>
+                    </td>
+                    <td>{{ usuario.criado_em.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        <div class="usuario-acoes">
+                            <a href="{{ url_for('admin_usuarios_editar', id=usuario.id) }}" class="btn btn-small btn-secondary">
+                                ✏️ Editar
+                            </a>
+                            {% if usuario.id != current_user.id %}
+                            <form method="POST" action="{{ url_for('admin_usuarios_excluir', id=usuario.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?')">
+                                <button type="submit" class="btn btn-small btn-danger">
+                                    🗑️ Excluir
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted">Não pode excluir</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="no-usuarios">
+        <div class="empty-state">
+            <div class="empty-icon">👥</div>
+            <h2>Nenhum usuário cadastrado</h2>
+            <p>Adicione usuários para gerenciar o sistema.</p>
+            <a href="{{ url_for('admin_usuarios_adicionar') }}" class="btn btn-primary">
+                Adicionar Primeiro Usuário
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Usuários admin loaded');
+});
+</script>
+{% endblock %} 

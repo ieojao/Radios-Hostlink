@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.nome_site }} - Programação{% endblock %}
+
+{% block content %}
+<!-- Banner de programação -->
+<section class="banner">
+    <h1>PROGRAMAÇÃO</h1>
+</section>
+
+<!-- Tabs de dias da semana -->
+<section class="programacao">
+    <div class="tabs">
+        <button class="tab active" data-dia="DOMINGO">DOMINGO</button>
+        <button class="tab" data-dia="SEGUNDA">SEGUNDA</button>
+        <button class="tab" data-dia="TERÇA">TERÇA</button>
+        <button class="tab" data-dia="QUARTA">QUARTA</button>
+        <button class="tab" data-dia="QUINTA">QUINTA</button>
+        <button class="tab" data-dia="SEXTA">SEXTA</button>
+        <button class="tab" data-dia="SÁBADO">SÁBADO</button>
+    </div>
+    
+    <!-- Grade de programação -->
+    <div class="grade-programacao">
+        {% for dia, programas in programacao.items() %}
+        <div class="dia-programacao" id="programacao-{{ dia.lower() }}" {% if loop.first %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+            <h2>{{ dia }}</h2>
+            {% if programas %}
+                <div class="programas-lista">
+                    {% for programa in programas %}
+                    <div class="programa-item">
+                        <div class="horario">
+                            <span class="inicio">{{ programa.horario_inicio.strftime('%H:%M') }}</span>
+                            <span class="fim">{{ programa.horario_fim.strftime('%H:%M') }}</span>
+                        </div>
+                        <div class="programa-info">
+                            {% if programa.imagem %}
+                            <img src="{{ programa.imagem }}" alt="{{ programa.titulo }}">
+                            {% endif %}
+                            <div class="programa-detalhes">
+                                <h3>{{ programa.titulo }}</h3>
+                                {% if programa.descricao %}
+                                <p>{{ programa.descricao }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="sem-programacao">
+                    <p>Nenhuma programação cadastrada para este dia.</p>
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tab');
+    const diasProgramacao = document.querySelectorAll('.dia-programacao');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const dia = this.getAttribute('data-dia');
+            
+            // Remover classe active de todas as tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            // Adicionar classe active na tab clicada
+            this.classList.add('active');
+            
+            // Esconder todas as programações
+            diasProgramacao.forEach(diaProg => {
+                diaProg.style.display = 'none';
+            });
+            
+            // Mostrar programação do dia selecionado
+            const programacaoDia = document.getElementById('programacao-' + dia.toLowerCase());
+            if (programacaoDia) {
+                programacaoDia.style.display = 'block';
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

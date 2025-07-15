@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}A Rádio - {{ config.nome_site }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-background">
+        {% if pagina_radio and pagina_radio.imagem_principal %}
+        <img src="{{ pagina_radio.imagem_principal }}" alt="{{ pagina_radio.titulo }}" class="hero-image">
+        {% endif %}
+        <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+        <div class="container">
+            <h1 class="hero-title">
+                {% if pagina_radio and pagina_radio.titulo %}
+                    {{ pagina_radio.titulo }}
+                {% else %}
+                    A Rádio
+                {% endif %}
+            </h1>
+            {% if pagina_radio and pagina_radio.subtitulo %}
+            <p class="hero-subtitle">{{ pagina_radio.subtitulo }}</p>
+            {% endif %}
+            {% if pagina_radio and pagina_radio.descricao %}
+            <p class="hero-description">{{ pagina_radio.descricao }}</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Estatísticas -->
+{% if pagina_radio and pagina_radio.estatisticas %}
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            {% set estatisticas = pagina_radio.estatisticas | from_json %}
+            {% for key, estatistica in estatisticas.items() %}
+            <div class="stat-item">
+                <div class="stat-number">{{ estatistica.valor }}</div>
+                <div class="stat-label">{{ estatistica.titulo }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- História -->
+{% if pagina_radio and pagina_radio.historia %}
+<section class="history-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Nossa História</h2>
+            <div class="section-divider"></div>
+        </div>
+        <div class="history-content">
+            {% if pagina_radio.imagem_historia %}
+            <div class="history-image">
+                <img src="{{ pagina_radio.imagem_historia }}" alt="História da Rádio">
+            </div>
+            {% endif %}
+            <div class="history-text">
+                {{ pagina_radio.historia | nl2br }}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Missão, Visão e Valores -->
+{% if pagina_radio and (pagina_radio.missao or pagina_radio.visao or pagina_radio.valores) %}
+<section class="mvv-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Missão, Visão e Valores</h2>
+            <div class="section-divider"></div>
+        </div>
+        <div class="mvv-grid">
+            {% if pagina_radio.missao %}
+            <div class="mvv-card">
+                <div class="mvv-icon">🎯</div>
+                <h3>Missão</h3>
+                <p>{{ pagina_radio.missao }}</p>
+            </div>
+            {% endif %}
+            
+            {% if pagina_radio.visao %}
+            <div class="mvv-card">
+                <div class="mvv-icon">👁️</div>
+                <h3>Visão</h3>
+                <p>{{ pagina_radio.visao }}</p>
+            </div>
+            {% endif %}
+            
+            {% if pagina_radio.valores %}
+            <div class="mvv-card">
+                <div class="mvv-icon">💎</div>
+                <h3>Valores</h3>
+                <ul class="valores-list">
+                    {% for valor in pagina_radio.valores.split('\n') %}
+                        {% if valor.strip() %}
+                        <li>{{ valor.strip() }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Seção de Destaque -->
+<section class="highlight-section">
+    <div class="container">
+        <div class="highlight-content">
+            <div class="highlight-text">
+                <h2>Conectando Pessoas Através da Música</h2>
+                <p>Nossa rádio é mais que entretenimento. É um espaço de conexão, informação e inspiração para toda a comunidade.</p>
+                <div class="highlight-features">
+                    <div class="feature">
+                        <span class="feature-icon">🎵</span>
+                        <span>Música de Qualidade</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📻</span>
+                        <span>24h no Ar</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🌍</span>
+                        <span>Transmissão Online</span>
+                    </div>
+                </div>
+            </div>
+            <div class="highlight-image">
+                <div class="radio-studio">
+                    <span class="studio-icon">🎙️</span>
+                    <h3>Estúdio Profissional</h3>
+                    <p>Equipamentos de última geração para a melhor qualidade de som</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ouça Agora</h2>
+            <p>Não perca nenhum momento da nossa programação especial</p>
+            <div class="cta-buttons">
+                <button class="btn btn-primary play-now-btn">
+                    <span>▶</span> Ouvir Agora
+                </button>
+                <a href="{{ url_for('programacao') }}" class="btn btn-secondary">
+                    Ver Programação
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animação dos números das estatísticas
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    function animateNumber(element, target) {
+        let current = 0;
+        const increment = target / 50;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            element.textContent = Math.floor(current);
+        }, 30);
+    }
+    
+    // Observador de interseção para animar quando a seção estiver visível
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const statNumber = entry.target;
+                const target = parseInt(statNumber.textContent);
+                animateNumber(statNumber, target);
+                observer.unobserve(statNumber);
+            }
+        });
+    });
+    
+    statNumbers.forEach(stat => observer.observe(stat));
+    
+    // Botão de play
+    const playNowBtn = document.querySelector('.play-now-btn');
+    if (playNowBtn) {
+        playNowBtn.addEventListener('click', function() {
+            // Aqui você pode adicionar a lógica para iniciar o player
+            console.log('Iniciando player...');
+        });
+    }
+});
+</script>
+{% endblock %} 

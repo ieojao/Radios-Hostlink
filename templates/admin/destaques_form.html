@@ -1,0 +1,198 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ 'Editar' if destaque else 'Adicionar' }} Destaque - {{ config.nome_site }}{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+    <div class="content-header">
+        <h1>{{ 'Editar' if destaque else 'Adicionar' }} Destaque</h1>
+        <a href="{{ url_for('admin_destaques') }}" class="btn btn-secondary">← Voltar</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data" class="admin-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="titulo">Título *</label>
+                    <input type="text" id="titulo" name="titulo" value="{{ destaque.titulo if destaque else '' }}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ordem">Ordem</label>
+                    <input type="number" id="ordem" name="ordem" value="{{ destaque.ordem if destaque else '' }}" min="1">
+                    <small>Posição na lista (menor número = primeiro)</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição</label>
+                <textarea id="descricao" name="descricao" rows="3">{{ destaque.descricao if destaque else '' }}</textarea>
+                <small>Breve descrição do destaque</small>
+            </div>
+
+            <div class="form-group">
+                <label for="link">Link (opcional)</label>
+                <input type="text" id="link" name="link" value="{{ destaque.link if destaque else '' }}" placeholder="https://exemplo.com">
+                <small>URL para onde o destaque deve levar quando clicado (deixe em branco se não quiser link)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="ativo">Status</label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="ativo" name="ativo" {{ 'checked' if destaque and destaque.ativo else '' }}>
+                    <label for="ativo">Destaque ativo (aparece na página inicial)</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Imagem</label>
+                <div class="image-upload-section">
+                    <div class="upload-options">
+                        <div class="upload-option">
+                            <label for="imagem_arquivo">Upload de arquivo</label>
+                            <input type="file" id="imagem_arquivo" name="imagem_arquivo" accept="image/*">
+                            <small>Formatos: JPG, PNG, GIF, WebP (máx. 16MB)</small>
+                        </div>
+                        
+                        <div class="upload-option">
+                            <label for="imagem_url">Ou URL da imagem</label>
+                            <input type="text" id="imagem_url" name="imagem_url" value="{{ destaque.imagem if destaque and not destaque.imagem.startswith('/static/uploads/') else '' }}" placeholder="https://exemplo.com/imagem.jpg">
+                        </div>
+                    </div>
+                    
+                    {% if destaque and destaque.imagem %}
+                    <div class="current-image">
+                        <label>Imagem atual:</label>
+                        <img src="{{ destaque.imagem }}" alt="Imagem atual" style="max-width: 200px; max-height: 150px; border-radius: 8px;">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    {{ 'Atualizar' if destaque else 'Adicionar' }} Destaque
+                </button>
+                <a href="{{ url_for('admin_destaques') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+
+    {% if destaque %}
+    <div class="preview-section">
+        <h3>Preview do Destaque</h3>
+        <div class="preview-card">
+            <div class="preview-image">
+                <img id="preview-img" src="{{ destaque.imagem if destaque.imagem else '/static/images/destaque1.jpg' }}" alt="Preview">
+            </div>
+            <div class="preview-content">
+                <h4 id="preview-titulo">{{ destaque.titulo }}</h4>
+                <p id="preview-descricao">{{ destaque.descricao }}</p>
+                {% if destaque.link %}
+                <a href="{{ destaque.link }}" class="preview-link" target="_blank">Saiba mais</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview em tempo real
+    const tituloInput = document.getElementById('titulo');
+    const descricaoInput = document.getElementById('descricao');
+    const linkInput = document.getElementById('link');
+    const imagemUrlInput = document.getElementById('imagem_url');
+    
+    const previewTitulo = document.getElementById('preview-titulo');
+    const previewDescricao = document.getElementById('preview-descricao');
+    const previewImg = document.getElementById('preview-img');
+    
+    // Função para validar URL
+    function isValidUrl(string) {
+        if (!string) return true; // URLs vazias são válidas (opcionais)
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+    
+    // Validação do formulário
+    const form = document.querySelector('.admin-form');
+    form.addEventListener('submit', function(e) {
+        const linkValue = linkInput.value.trim();
+        const imagemUrlValue = imagemUrlInput.value.trim();
+        const imagemArquivoValue = document.getElementById('imagem_arquivo').files.length > 0;
+        
+        // Validar link se preenchido
+        if (linkValue && !isValidUrl(linkValue)) {
+            e.preventDefault();
+            alert('Por favor, insira uma URL válida no campo Link ou deixe em branco.');
+            linkInput.focus();
+            return false;
+        }
+        
+        // Validar URL da imagem apenas se não houver arquivo selecionado e a URL estiver preenchida
+        if (!imagemArquivoValue && imagemUrlValue && !isValidUrl(imagemUrlValue)) {
+            e.preventDefault();
+            alert('Por favor, insira uma URL válida no campo URL da imagem ou deixe em branco.');
+            imagemUrlInput.focus();
+            return false;
+        }
+        
+        return true;
+    });
+    
+    if (tituloInput && previewTitulo) {
+        tituloInput.addEventListener('input', function() {
+            previewTitulo.textContent = this.value || 'Título do Destaque';
+        });
+    }
+    
+    if (descricaoInput && previewDescricao) {
+        descricaoInput.addEventListener('input', function() {
+            previewDescricao.textContent = this.value || 'Descrição do destaque';
+        });
+    }
+    
+    if (imagemUrlInput && previewImg) {
+        imagemUrlInput.addEventListener('input', function() {
+            if (this.value && isValidUrl(this.value)) {
+                previewImg.src = this.value;
+            } else if (!this.value) {
+                previewImg.src = '/static/images/destaque1.jpg';
+            }
+        });
+    }
+    
+    // Preview de arquivo selecionado
+    const imagemArquivoInput = document.getElementById('imagem_arquivo');
+    if (imagemArquivoInput && previewImg) {
+        imagemArquivoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 

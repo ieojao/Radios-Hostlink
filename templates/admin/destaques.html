@@ -1,0 +1,130 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gerenciar Destaques - {{ config.nome_site }}{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+    <div class="content-header">
+        <h1>Gerenciar Destaques</h1>
+        <a href="{{ url_for('admin_destaques_adicionar') }}" class="btn btn-primary">➕ Adicionar Destaque</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="destaques-list">
+        {% if destaques %}
+            <div class="destaques-grid" id="destaques-grid">
+                {% for destaque in destaques %}
+                <div class="destaque-card" data-id="{{ destaque.id }}">
+                    <div class="destaque-image">
+                        {% if destaque.imagem %}
+                            <img src="{{ destaque.imagem }}" alt="{{ destaque.titulo }}">
+                        {% else %}
+                            <div class="no-image">Sem imagem</div>
+                        {% endif %}
+                        <div class="destaque-status {{ 'ativo' if destaque.ativo else 'inativo' }}">
+                            {{ 'Ativo' if destaque.ativo else 'Inativo' }}
+                        </div>
+                    </div>
+                    
+                    <div class="destaque-info">
+                        <h3>{{ destaque.titulo }}</h3>
+                        <p>{{ destaque.descricao[:100] }}{% if destaque.descricao|length > 100 %}...{% endif %}</p>
+                        {% if destaque.link %}
+                            <small class="destaque-link">Link: {{ destaque.link }}</small>
+                        {% endif %}
+                        <div class="destaque-meta">
+                            <span class="ordem">Ordem: {{ destaque.ordem }}</span>
+                            <span class="data">Criado: {{ destaque.criado_em.strftime('%d/%m/%Y') }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="destaque-actions">
+                        <a href="{{ url_for('admin_destaques_editar', id=destaque.id) }}" class="btn btn-small btn-secondary">✏️ Editar</a>
+                        <form method="POST" action="{{ url_for('admin_destaques_excluir', id=destaque.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este destaque?')">
+                            <button type="submit" class="btn btn-small btn-danger">🗑️ Excluir</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="destaques-help">
+                <h3>💡 Dicas:</h3>
+                <ul>
+                    <li>Arraste os cards para reordenar os destaques</li>
+                    <li>Destaques inativos não aparecem na página inicial</li>
+                    <li>Use imagens de 400x300px para melhor visualização</li>
+                    <li>Links são opcionais - se não preenchidos, o card não será clicável</li>
+                </ul>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">⭐</div>
+                <h3>Nenhum destaque cadastrado</h3>
+                <p>Comece adicionando seu primeiro destaque para a página inicial.</p>
+                <a href="{{ url_for('admin_destaques_adicionar') }}" class="btn btn-primary">Adicionar Primeiro Destaque</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const destaquesGrid = document.getElementById('destaques-grid');
+    
+    if (destaquesGrid) {
+        new Sortable(destaquesGrid, {
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            onEnd: function(evt) {
+                const destaques = [];
+                destaquesGrid.querySelectorAll('.destaque-card').forEach((card, index) => {
+                    destaques.push({
+                        id: parseInt(card.dataset.id),
+                        ordem: index + 1
+                    });
+                });
+                
+                // Enviar nova ordem para o servidor
+                fetch('/admin/destaques/ordem', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(destaques)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Atualizar números de ordem na interface
+                        destaquesGrid.querySelectorAll('.destaque-card').forEach((card, index) => {
+                            const ordemSpan = card.querySelector('.ordem');
+                            if (ordemSpan) {
+                                ordemSpan.textContent = `Ordem: ${index + 1}`;
+                            }
+                        });
+                    } else {
+                        console.error('Erro ao atualizar ordem:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar ordem:', error);
+                });
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 
