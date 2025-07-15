@@ -106,51 +106,18 @@
         <div class="config-section">
             <h2>Aparência</h2>
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="cor_principal">Cor Principal</label>
-                    <input type="color" id="cor_principal" name="cor_principal" value="{{ config.cor_principal }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="cor_fundo">Cor de Fundo</label>
-                    <input type="color" id="cor_fundo" name="cor_fundo" value="{{ config.cor_fundo }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="cor_texto">Cor do Texto</label>
-                    <input type="color" id="cor_texto" name="cor_texto" value="{{ config.cor_texto }}">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="cor_botoes">Cor dos Botões</label>
-                    <input type="color" id="cor_botoes" name="cor_botoes" value="{{ config.cor_botoes }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="cor_links">Cor dos Links</label>
-                    <input type="color" id="cor_links" name="cor_links" value="{{ config.cor_links }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="fonte">Fonte</label>
-                    <select id="fonte" name="fonte">
-                        <option value="Roboto" {% if config.fonte == 'Roboto' %}selected{% endif %}>Roboto</option>
-                        <option value="Arial" {% if config.fonte == 'Arial' %}selected{% endif %}>Arial</option>
-                        <option value="Helvetica" {% if config.fonte == 'Helvetica' %}selected{% endif %}>Helvetica</option>
-                        <option value="Georgia" {% if config.fonte == 'Georgia' %}selected{% endif %}>Georgia</option>
-                        <option value="Times New Roman" {% if config.fonte == 'Times New Roman' %}selected{% endif %}>Times New Roman</option>
-                    </select>
-                </div>
-            </div>
-
             <div class="form-group">
-                <label for="css_custom">CSS Personalizado</label>
-                <textarea id="css_custom" name="css_custom" rows="6" placeholder="/* Adicione estilos CSS personalizados aqui */">{{ config.css_custom }}</textarea>
-                <small>Estilos CSS adicionais para personalizar ainda mais o site</small>
+                <label for="fonte">Fonte</label>
+                <select id="fonte" name="fonte">
+                    <option value="Roboto" {% if config.fonte == 'Roboto' %}selected{% endif %}>Roboto</option>
+                    <option value="Arial" {% if config.fonte == 'Arial' %}selected{% endif %}>Arial</option>
+                    <option value="Helvetica" {% if config.fonte == 'Helvetica' %}selected{% endif %}>Helvetica</option>
+                    <option value="Georgia" {% if config.fonte == 'Georgia' %}selected{% endif %}>Georgia</option>
+                    <option value="Times New Roman" {% if config.fonte == 'Times New Roman' %}selected{% endif %}>Times New Roman</option>
+                </select>
             </div>
+
+
         </div>
 
         <div class="config-section">
@@ -216,16 +183,6 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Preview das cores em tempo real
-    const colorInputs = document.querySelectorAll('input[type="color"]');
-    
-    colorInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            // Aqui você pode adicionar preview em tempo real se necessário
-            console.log(`${this.name}: ${this.value}`);
-        });
-    });
-    
     // Configuração de upload de arquivos
     const logoArquivo = document.getElementById('logo_arquivo');
     const logoUrl = document.getElementById('logo_url');

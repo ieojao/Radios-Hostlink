@@ -10,21 +10,15 @@
     <link rel="icon" href="{{ config.favicon }}" onerror="this.href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📻</text></svg>'">
     <style>
         :root {
-            --cor-principal: {{ config.cor_principal }};
-            --cor-fundo: {{ config.cor_fundo }};
-            --cor-texto: {{ config.cor_texto }};
-            --cor-botoes: {{ config.cor_botoes }};
-            --cor-links: {{ config.cor_links }};
             --fonte: {{ config.fonte }};
         }
-        {{ config.css_custom | safe }}
     </style>
 </head>
 <body>
     <!-- Menu principal -->
     <header>
         <img src="{{ config.logo }}" alt="{{ config.nome_site }}" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <span class="logo-text" style="display: none; font-size: 24px; font-weight: bold; color: var(--cor-principal);">{{ config.nome_site }}</span>
+        <span class="logo-text" style="display: none; font-size: 24px; font-weight: bold; color: #1e3a8a;">{{ config.nome_site }}</span>
         <nav>
             <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>HOME</a>
             <a href="{{ url_for('a_radio') }}" {% if request.endpoint == 'a_radio' %}class="active"{% endif %}>A RÁDIO</a>
