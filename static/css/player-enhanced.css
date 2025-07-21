@@ -1,0 +1,787 @@
+/* ========================================
+   PLAYER DE RÁDIO ENHANCED - DESIGN MODERNO
+   ======================================== */
+
+/* Variáveis CSS para personalização */
+:root {
+    --player-primary: #667eea;
+    --player-secondary: #764ba2;
+    --player-accent: #10b981;
+    --player-warning: #f59e0b;
+    --player-error: #ef4444;
+    --player-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    --player-surface: rgba(255, 255, 255, 0.1);
+    --player-text: #ffffff;
+    --player-text-secondary: rgba(255, 255, 255, 0.7);
+    --player-border: rgba(255, 255, 255, 0.2);
+    --player-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --player-blur: blur(20px);
+    --player-radius: 16px;
+    --player-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Player Principal */
+.radio-player-enhanced {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--player-bg);
+    backdrop-filter: var(--player-blur);
+    border-top: 1px solid var(--player-border);
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: var(--player-transition);
+    box-shadow: var(--player-shadow);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.radio-player-enhanced.active {
+    transform: translateY(0);
+}
+
+/* Container do Player */
+.player-container-enhanced {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 24px;
+}
+
+/* Informações do Player */
+.player-info-enhanced {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Capa do Player */
+.player-cover-enhanced {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--player-radius);
+    background: linear-gradient(45deg, var(--player-primary), var(--player-secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    transition: var(--player-transition);
+}
+
+.player-cover-enhanced img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--player-radius);
+    transition: var(--player-transition);
+}
+
+.player-cover-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+    opacity: 0;
+    transition: var(--player-transition);
+}
+
+.player-cover-enhanced.playing::before {
+    opacity: 1;
+}
+
+.player-cover-enhanced .radio-icon-enhanced {
+    font-size: 32px;
+    color: var(--player-text);
+    z-index: 2;
+    position: relative;
+    transition: var(--player-transition);
+}
+
+.player-cover-enhanced.playing .radio-icon-enhanced {
+    animation: rotate 3s linear infinite;
+}
+
+/* Detalhes do Player */
+.player-details-enhanced {
+    flex: 1;
+    min-width: 0;
+}
+
+.player-title-enhanced {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--player-text);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.player-subtitle-enhanced {
+    font-size: 14px;
+    color: var(--player-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+/* Status do Player */
+.player-status-enhanced {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-indicator-enhanced {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--player-accent);
+    animation: pulse 2s infinite;
+    position: relative;
+}
+
+.status-indicator-enhanced::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    background: var(--player-accent);
+    opacity: 0.3;
+    animation: pulse 2s infinite 0.5s;
+}
+
+.status-text-enhanced {
+    font-size: 12px;
+    color: var(--player-text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Controles do Player */
+.player-controls-enhanced {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+/* Botões de Controle */
+.control-btn-enhanced {
+    background: var(--player-surface);
+    border: 1px solid var(--player-border);
+    color: var(--player-text);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 12px;
+    border-radius: 50%;
+    transition: var(--player-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.control-btn-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.control-btn-enhanced:hover::before {
+    left: 100%;
+}
+
+.control-btn-enhanced:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn-enhanced:active {
+    transform: scale(0.95);
+}
+
+/* Botão de Play */
+.play-btn-enhanced {
+    background: linear-gradient(45deg, var(--player-primary), var(--player-secondary));
+    width: 64px;
+    height: 64px;
+    font-size: 20px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    border: none;
+}
+
+.play-btn-enhanced:hover {
+    background: linear-gradient(45deg, #5a6fd8, #6a4a9a);
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.6);
+}
+
+/* Controle de Volume */
+.volume-control-enhanced {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    padding: 12px 20px;
+    border-radius: 30px;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: var(--player-transition);
+    overflow: hidden;
+}
+
+.volume-control-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.volume-control-enhanced:hover::before {
+    left: 100%;
+}
+
+.volume-control-enhanced:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Barra de Volume Melhorada */
+.volume-slider-enhanced {
+    width: 120px;
+    height: 6px;
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    transition: var(--player-transition);
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.volume-slider-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--volume-percentage, 0%);
+    background: linear-gradient(90deg, 
+        var(--player-primary) 0%, 
+        var(--player-secondary) 50%, 
+        var(--player-accent) 100%);
+    border-radius: 3px;
+    transition: width 0.1s ease;
+    z-index: 1;
+}
+
+.volume-slider-enhanced::-webkit-slider-thumb {
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, var(--player-primary), var(--player-secondary));
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        0 0 0 2px rgba(255, 255, 255, 0.2),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+}
+
+.volume-slider-enhanced::-webkit-slider-thumb::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.volume-slider-enhanced::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.4),
+        0 0 0 3px rgba(255, 255, 255, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.4);
+    background: linear-gradient(135deg, var(--player-secondary), var(--player-primary));
+}
+
+.volume-slider-enhanced::-webkit-slider-thumb:active {
+    transform: scale(1.1);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        0 0 0 2px rgba(255, 255, 255, 0.4),
+        inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.volume-slider-enhanced::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: linear-gradient(135deg, var(--player-primary), var(--player-secondary));
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.3),
+        0 0 0 2px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.volume-slider-enhanced::-moz-range-thumb:hover {
+    transform: scale(1.3);
+    box-shadow: 
+        0 8px 24px rgba(0, 0, 0, 0.4),
+        0 0 0 3px rgba(255, 255, 255, 0.3);
+}
+
+.volume-slider-enhanced::-moz-range-track {
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0.1) 100%);
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    height: 6px;
+}
+
+.volume-slider-enhanced:hover {
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.15) 0%, 
+        rgba(255, 255, 255, 0.25) 50%, 
+        rgba(255, 255, 255, 0.15) 100%);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Indicador de Volume Visual */
+.volume-indicator {
+    position: absolute;
+    top: -8px;
+    left: 0;
+    height: 22px;
+    background: linear-gradient(90deg, 
+        var(--player-primary) 0%, 
+        var(--player-secondary) 50%, 
+        var(--player-accent) 100%);
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.volume-slider-enhanced:hover .volume-indicator {
+    opacity: 0.3;
+}
+
+/* Animação de pulso para o thumb */
+@keyframes volumePulse {
+    0%, 100% {
+        box-shadow: 
+            0 4px 16px rgba(0, 0, 0, 0.3),
+            0 0 0 2px rgba(255, 255, 255, 0.2),
+            inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 4px 16px rgba(0, 0, 0, 0.3),
+            0 0 0 2px rgba(255, 255, 255, 0.2),
+            0 0 20px rgba(102, 126, 234, 0.5),
+            inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    }
+}
+
+.volume-slider-enhanced:focus::-webkit-slider-thumb {
+    animation: volumePulse 2s infinite;
+}
+
+/* Barra de Progresso */
+.player-progress-enhanced {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.progress-bar-enhanced {
+    height: 100%;
+    background: linear-gradient(90deg, var(--player-primary), var(--player-secondary));
+    width: 0%;
+    transition: width 0.1s ease;
+    position: relative;
+    border-radius: 0 2px 2px 0;
+}
+
+.progress-bar-enhanced::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: var(--player-text);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.progress-bar-enhanced:hover::after {
+    opacity: 1;
+}
+
+/* Botão Toggle do Player */
+.player-toggle-enhanced {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(45deg, var(--player-primary), var(--player-secondary));
+    border: none;
+    border-radius: 50%;
+    color: var(--player-text);
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+    transition: var(--player-transition);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.player-toggle-enhanced:hover {
+    transform: scale(1.1);
+    box-shadow: 0 16px 40px rgba(102, 126, 234, 0.6);
+}
+
+.player-toggle-enhanced:active {
+    transform: scale(0.95);
+}
+
+/* Estados do Player */
+.player-loading-enhanced .player-cover-enhanced {
+    animation: pulse 1.5s infinite;
+}
+
+.player-error-enhanced .status-indicator-enhanced {
+    background: var(--player-error);
+    animation: none;
+}
+
+.player-error-enhanced .player-title-enhanced {
+    color: var(--player-error);
+}
+
+
+
+
+
+/* Animações */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(100%);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .player-container-enhanced {
+        padding: 16px 20px;
+        gap: 16px;
+    }
+    
+    .player-cover-enhanced {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .player-title-enhanced {
+        font-size: 16px;
+    }
+    
+    .player-subtitle-enhanced {
+        font-size: 13px;
+    }
+    
+    .player-controls-enhanced {
+        gap: 12px;
+    }
+    
+    .control-btn-enhanced {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+    
+    .play-btn-enhanced {
+        width: 56px;
+        height: 56px;
+        font-size: 18px;
+    }
+    
+    .volume-slider-enhanced {
+        width: 100px;
+    }
+    
+    .volume-control-enhanced {
+        padding: 10px 16px;
+    }
+    
+    .player-toggle-enhanced {
+        width: 56px;
+        height: 56px;
+        font-size: 20px;
+        bottom: 20px;
+        right: 20px;
+    }
+    
+
+}
+
+@media (max-width: 480px) {
+    .player-container-enhanced {
+        flex-direction: column;
+        gap: 16px;
+        padding: 20px;
+    }
+    
+    .player-info-enhanced {
+        width: 100%;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+    
+    .player-controls-enhanced {
+        width: 100%;
+        justify-content: center;
+        gap: 16px;
+    }
+    
+    .volume-control-enhanced {
+        display: none;
+    }
+    
+    /* Em mobile, mostrar uma versão simplificada do volume */
+    .volume-control-mobile {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+        padding: 8px 12px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .volume-control-mobile .volume-slider-enhanced {
+        width: 60px;
+        height: 4px;
+    }
+    
+    .volume-control-mobile .volume-slider-enhanced::-webkit-slider-thumb {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.9);
+    }
+    
+    .player-toggle-enhanced {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+    
+    .player-cover-enhanced {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .player-title-enhanced {
+        font-size: 18px;
+    }
+    
+    .player-subtitle-enhanced {
+        font-size: 14px;
+    }
+    
+    .control-btn-enhanced {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+    
+    .play-btn-enhanced {
+        width: 64px;
+        height: 64px;
+        font-size: 20px;
+    }
+}
+
+/* Melhorias para dispositivos com notch */
+@supports (padding: max(0px)) {
+    .player-toggle-enhanced {
+        right: max(24px, env(safe-area-inset-right));
+        bottom: max(24px, env(safe-area-inset-bottom));
+    }
+    
+
+    
+    .radio-player-enhanced {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+}
+
+/* Modo escuro automático */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --player-bg: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+        --player-surface: rgba(255, 255, 255, 0.05);
+        --player-border: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Melhorias de acessibilidade */
+.control-btn-enhanced:focus,
+.player-toggle-enhanced:focus,
+.volume-slider-enhanced:focus {
+    outline: 2px solid var(--player-accent);
+    outline-offset: 2px;
+}
+
+/* Estados de hover melhorados */
+.control-btn-enhanced:hover,
+.player-toggle-enhanced:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Tooltips */
+.control-btn-enhanced[data-tooltip]:hover::after,
+.player-toggle-enhanced[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    margin-bottom: 8px;
+    z-index: 1003;
+    pointer-events: none;
+}
+
+.control-btn-enhanced[data-tooltip]:hover::before,
+.player-toggle-enhanced[data-tooltip]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+    margin-bottom: 4px;
+    pointer-events: none;
+} 
