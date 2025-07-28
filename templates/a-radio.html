@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}A Rádio - {{ config.nome_site }}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/page-styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/radio-animations.css') }}">
+{% endblock %}
+
+{% block title %}{{ config.nome_site }} - A Rádio{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -26,7 +31,20 @@
             {% if pagina_radio and pagina_radio.descricao %}
             <p class="hero-description">{{ pagina_radio.descricao }}</p>
             {% endif %}
+            <div class="hero-buttons">
+                <button class="btn btn-primary hero-play-btn" onclick="window.radioPlayer && window.radioPlayer.togglePlay()">
+                    <span class="btn-icon">▶</span>
+                    <span class="btn-text">Ouvir Agora</span>
+                </button>
+                <a href="#historia" class="btn btn-secondary hero-scroll-btn">
+                    <span class="btn-icon">📖</span>
+                    <span class="btn-text">Nossa História</span>
+                </a>
+            </div>
         </div>
+    </div>
+    <div class="hero-scroll-indicator">
+        <div class="scroll-arrow"></div>
     </div>
 </section>
 
@@ -34,11 +52,16 @@
 {% if pagina_radio and pagina_radio.estatisticas %}
 <section class="stats-section">
     <div class="container">
+        <div class="section-header">
+            <h2>Números que Contam Nossa História</h2>
+            <div class="section-divider"></div>
+        </div>
         <div class="stats-grid">
             {% set estatisticas = pagina_radio.estatisticas | from_json %}
             {% for key, estatistica in estatisticas.items() %}
             <div class="stat-item">
-                <div class="stat-number">{{ estatistica.valor }}</div>
+                <div class="stat-icon">📊</div>
+                <div class="stat-number" data-target="{{ estatistica.valor }}">0</div>
                 <div class="stat-label">{{ estatistica.titulo }}</div>
             </div>
             {% endfor %}
@@ -49,20 +72,22 @@
 
 <!-- História -->
 {% if pagina_radio and pagina_radio.historia %}
-<section class="history-section">
+<section id="historia" class="history-section">
     <div class="container">
         <div class="section-header">
             <h2>Nossa História</h2>
             <div class="section-divider"></div>
+            <p>Uma jornada de paixão pela música e pela comunidade</p>
         </div>
         <div class="history-content">
             {% if pagina_radio.imagem_historia %}
             <div class="history-image">
                 <img src="{{ pagina_radio.imagem_historia }}" alt="História da Rádio">
+                <div class="image-overlay"></div>
             </div>
             {% endif %}
             <div class="history-text">
-                {{ pagina_radio.historia | nl2br }}
+                {{ pagina_radio.historia | nl2br | safe }}
             </div>
         </div>
     </div>
@@ -76,6 +101,7 @@
         <div class="section-header">
             <h2>Missão, Visão e Valores</h2>
             <div class="section-divider"></div>
+            <p>Os pilares que guiam nossa jornada</p>
         </div>
         <div class="mvv-grid">
             {% if pagina_radio.missao %}
@@ -132,6 +158,10 @@
                         <span class="feature-icon">🌍</span>
                         <span>Transmissão Online</span>
                     </div>
+                    <div class="feature">
+                        <span class="feature-icon">🎙️</span>
+                        <span>Estúdio Profissional</span>
+                    </div>
                 </div>
             </div>
             <div class="highlight-image">
@@ -139,7 +169,54 @@
                     <span class="studio-icon">🎙️</span>
                     <h3>Estúdio Profissional</h3>
                     <p>Equipamentos de última geração para a melhor qualidade de som</p>
+                    <div class="studio-features">
+                        <div class="studio-feature">
+                            <span class="feature-dot"></span>
+                            <span>Acústica Otimizada</span>
+                        </div>
+                        <div class="studio-feature">
+                            <span class="feature-dot"></span>
+                            <span>Equipamentos HD</span>
+                        </div>
+                        <div class="studio-feature">
+                            <span class="feature-dot"></span>
+                            <span>Transmissão Estável</span>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Seção de Tecnologia -->
+<section class="tech-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Tecnologia de Ponta</h2>
+            <div class="section-divider"></div>
+            <p>Investimos na melhor tecnologia para você</p>
+        </div>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div class="tech-icon">🎧</div>
+                <h3>Qualidade HD</h3>
+                <p>Transmissão em alta definição para uma experiência sonora excepcional</p>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">📱</div>
+                <h3>Multiplataforma</h3>
+                <p>Ouça em qualquer dispositivo: celular, tablet, computador ou smart TV</p>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">⚡</div>
+                <h3>Baixa Latência</h3>
+                <p>Transmissão em tempo real com mínima diferença de tempo</p>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">🔒</div>
+                <h3>Transmissão Segura</h3>
+                <p>Infraestrutura robusta e segura para sua tranquilidade</p>
             </div>
         </div>
     </div>
@@ -152,11 +229,17 @@
             <h2>Ouça Agora</h2>
             <p>Não perca nenhum momento da nossa programação especial</p>
             <div class="cta-buttons">
-                <button class="btn btn-primary play-now-btn">
-                    <span>▶</span> Ouvir Agora
+                <button class="btn btn-primary play-now-btn" onclick="window.radioPlayer && window.radioPlayer.togglePlay()">
+                    <span class="btn-icon">▶</span>
+                    <span class="btn-text">Ouvir Agora</span>
                 </button>
                 <a href="{{ url_for('programacao') }}" class="btn btn-secondary">
-                    Ver Programação
+                    <span class="btn-icon">📅</span>
+                    <span class="btn-text">Ver Programação</span>
+                </a>
+                <a href="{{ url_for('contato') }}" class="btn btn-outline">
+                    <span class="btn-icon">📞</span>
+                    <span class="btn-text">Fale Conosco</span>
                 </a>
             </div>
         </div>
@@ -165,46 +248,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Animação dos números das estatísticas
-    const statNumbers = document.querySelectorAll('.stat-number');
-    
-    function animateNumber(element, target) {
-        let current = 0;
-        const increment = target / 50;
-        const timer = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-                current = target;
-                clearInterval(timer);
-            }
-            element.textContent = Math.floor(current);
-        }, 30);
-    }
-    
-    // Observador de interseção para animar quando a seção estiver visível
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const statNumber = entry.target;
-                const target = parseInt(statNumber.textContent);
-                animateNumber(statNumber, target);
-                observer.unobserve(statNumber);
-            }
-        });
-    });
-    
-    statNumbers.forEach(stat => observer.observe(stat));
-    
-    // Botão de play
-    const playNowBtn = document.querySelector('.play-now-btn');
-    if (playNowBtn) {
-        playNowBtn.addEventListener('click', function() {
-            // Aqui você pode adicionar a lógica para iniciar o player
-            console.log('Iniciando player...');
-        });
-    }
-});
-</script>
+<script src="{{ url_for('static', filename='js/radio-interactions.js') }}"></script>
 {% endblock %} 

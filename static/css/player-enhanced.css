@@ -6,7 +6,8 @@
 :root {
     --player-primary: #667eea;
     --player-secondary: #764ba2;
-    --player-accent: #10b981;
+    --player-accent: #8b5cf6;
+    --player-accent-dark: #7c3aed;
     --player-warning: #f59e0b;
     --player-error: #ef4444;
     --player-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);

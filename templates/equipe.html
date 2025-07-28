@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Equipe - {{ config.nome_site }}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/page-styles.css') }}">
+{% endblock %}
+
+{% block title %}{{ config.nome_site }} - Equipe{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->

@@ -7,19 +7,20 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/player-enhanced.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-responsive.css') }}">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="icon" href="{{ config.favicon }}" onerror="this.href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📻</text></svg>'">
     <style>
         :root {
             --fonte: {{ config.fonte }};
         }
     </style>
+    {% block head %}{% endblock %}
 </head>
 <body>
     <!-- Menu principal -->
     <header>
         <img src="{{ config.logo }}" alt="{{ config.nome_site }}" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <span class="logo-text" style="display: none; font-size: 24px; font-weight: bold; color: #1e3a8a;">{{ config.nome_site }}</span>
+        <span class="logo-text" style="display: none;">{{ config.nome_site }}</span>
         <nav>
             <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>HOME</a>
             <a href="{{ url_for('a_radio') }}" {% if request.endpoint == 'a_radio' %}class="active"{% endif %}>A RÁDIO</a>

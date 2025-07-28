@@ -1006,8 +1006,8 @@
 @media (prefers-color-scheme: dark) {
     /* Manter cores do tema para consistência */
     :root {
-        --cor-principal: #1e3a8a;
-        --cor-botoes: #3b82f6;
+            --cor-principal: #667eea;
+    --cor-botoes: #8b5cf6;
         --cor-texto: #333333;
     }
 }

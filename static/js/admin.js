@@ -401,7 +401,7 @@ adminStyle.textContent = `
         width: 20px;
         height: 20px;
         border: 3px solid #f3f3f3;
-        border-top: 3px solid #3b82f6;
+        border-top: 3px solid #f093fb;
         border-radius: 50%;
         animation: spin 1s linear infinite;
     }
@@ -482,7 +482,7 @@ async function testarImagem(input) {
     
     if (isValid) {
         feedbackElement.innerHTML = '✅ Imagem válida';
-        feedbackElement.style.color = '#10b981';
+        feedbackElement.style.color = '#667eea';
     } else {
         feedbackElement.innerHTML = '❌ Imagem não encontrada ou inválida';
         feedbackElement.style.color = '#ef4444';

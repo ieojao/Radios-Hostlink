@@ -374,10 +374,10 @@ class RadioPlayer {
                     statusIndicator.style.background = '#f59e0b';
                     break;
                 case 'ready':
-                    statusIndicator.style.background = '#10b981';
+                    statusIndicator.style.background = '#8b5cf6';
                     break;
                 case 'playing':
-                    statusIndicator.style.background = '#10b981';
+                    statusIndicator.style.background = '#8b5cf6';
                     break;
                 case 'paused':
                     statusIndicator.style.background = '#6b7280';

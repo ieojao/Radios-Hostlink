@@ -40,7 +40,7 @@ window.RadioPlayerConfig = {
         secondary: '#764ba2',
         background: '#1a1a2e',
         text: '#ffffff',
-        accent: '#10b981'
+        accent: '#8b5cf6'
     },
     
     // Configurações de animações
