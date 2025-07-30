@@ -20,30 +20,35 @@
         <button class="tab" data-dia="SÁBADO">SÁBADO</button>
     </div>
     
-    <div class="programa-atual">
-        {% if programacao_atual %}
-            {% set img = programacao_atual.imagem %}
-            <img src="{% if img %}
-                        {% if img.startswith('http') %}{{ img }}
-                        {% elif img.startswith('/static/') %}{{ img }}
-                        {% else %}/static/uploads/programacao/{{ img }}{% endif %}
-                     {% else %}/static/images/programa.jpg{% endif %}"
-                 alt="{{ programacao_atual.titulo }}">
-            <div>
-                <span class="rolando-agora">{{ config.programacao_rolando_agora }}</span>
-                <h2>{{ programacao_atual.titulo }}</h2>
-                <p>{{ programacao_atual.descricao }}</p>
-                <span class="horario">{{ programacao_atual.horario_inicio.strftime('%H:%M') }} - {{ programacao_atual.horario_fim.strftime('%H:%M') }}</span>
+    <div class="programa-atual" id="programa-atual-container">
+        <div class="programa-status">
+            <div class="status-indicator" id="status-indicator">
+                <span class="status-dot"></span>
+                <span class="status-text" id="status-text">Carregando...</span>
             </div>
-        {% else %}
-            <img src="{{ url_for('static', filename='images/programa.jpg') }}" alt="{{ config.programacao_padrao_titulo }}">
-            <div>
-                <span class="rolando-agora">{{ config.programacao_rolando_agora }}</span>
-                <h2>{{ config.programacao_padrao_titulo }}</h2>
-                <p>{{ config.programacao_padrao_descricao }}</p>
-                <span class="horario">{{ config.programacao_padrao_horario }}</span>
+            <div class="tempo-restante" id="tempo-restante" style="display: none;">
+                <span class="tempo-label">Termina em:</span>
+                <span class="tempo-valor" id="tempo-valor">--:--</span>
             </div>
-        {% endif %}
+        </div>
+        
+        <div class="programa-content">
+            <img id="programa-imagem" src="{{ url_for('static', filename='images/programa.jpg') }}" alt="Programa atual">
+            <div class="programa-info">
+                <span class="rolando-agora" id="rolando-agora">{{ config.programacao_rolando_agora }}</span>
+                <h2 id="programa-titulo">{{ config.programacao_padrao_titulo }}</h2>
+                <p id="programa-descricao">{{ config.programacao_padrao_descricao }}</p>
+                <span class="horario" id="programa-horario">{{ config.programacao_padrao_horario }}</span>
+            </div>
+        </div>
+        
+        <div class="programa-proximo" id="programa-proximo" style="display: none;">
+            <div class="proximo-indicator">
+                <span class="proximo-label">Próximo:</span>
+                <span class="proximo-titulo" id="proximo-titulo"></span>
+                <span class="proximo-horario" id="proximo-horario"></span>
+            </div>
+        </div>
     </div>
 
     <!-- Grade de programação -->
@@ -108,9 +113,30 @@ document.addEventListener('DOMContentLoaded', function() {
                         const horaInicio = programa.horario_inicio;
                         const horaFim = programa.horario_fim;
                         const isAtual = programa.is_atual;
+                        const isProximo = programa.is_proximo;
+                        const status = programa.status;
+                        const tempoRestante = programa.tempo_restante;
+                        
+                        let statusClass = '';
+                        let statusText = '';
+                        let tempoHtml = '';
+                        
+                        if (isAtual) {
+                            statusClass = 'atual';
+                            statusText = '<span class="ao-vivo">AO VIVO</span>';
+                            if (tempoRestante) {
+                                tempoHtml = `<div class="tempo-programa">
+                                    <span class="tempo-label">Termina em:</span>
+                                    <span class="tempo-valor">${tempoRestante.minutos.toString().padStart(2, '0')}:${tempoRestante.segundos.toString().padStart(2, '0')}</span>
+                                </div>`;
+                            }
+                        } else if (isProximo) {
+                            statusClass = 'proximo';
+                            statusText = '<span class="proximo-indicator">PRÓXIMO</span>';
+                        }
                         
                         html += `
-                            <div class="programa-item ${isAtual ? 'atual' : ''}">
+                            <div class="programa-item ${statusClass}">
                                 <div class="horario">
                                     <span class="hora-inicio">${horaInicio}</span>
                                     <span class="hora-fim">${horaFim}</span>
@@ -118,13 +144,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <div class="programa-info">
                                     <h3>${programa.titulo}</h3>
                                     <p>${programa.descricao || 'Programa especial'}</p>
-                                    ${isAtual ? '<span class="ao-vivo">AO VIVO</span>' : ''}
+                                    ${statusText}
+                                    ${tempoHtml}
                                 </div>
                             </div>
                         `;
                     });
                     html += '</div>';
                     programacaoContainer.innerHTML = html;
+                    
+                    // Atualizar contador de programas
+                    const totalProgramas = document.getElementById('total-programas');
+                    if (totalProgramas) {
+                        totalProgramas.textContent = data.total_programas;
+                    }
                 } else {
                     programacaoContainer.innerHTML = '<p class="sem-programacao">Nenhuma programação cadastrada para este dia.</p>';
                 }
@@ -166,27 +199,94 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/api/programacao-atual')
             .then(response => response.json())
             .then(data => {
+                const statusIndicator = document.getElementById('status-indicator');
+                const statusText = document.getElementById('status-text');
+                const tempoRestante = document.getElementById('tempo-restante');
+                const tempoValor = document.getElementById('tempo-valor');
+                const programaProximo = document.getElementById('programa-proximo');
+                const proximoTitulo = document.getElementById('proximo-titulo');
+                const proximoHorario = document.getElementById('proximo-horario');
+                
                 if (data.error) {
-                    console.log('Nenhuma programação atual');
+                    statusText.textContent = 'Sem programação';
+                    statusIndicator.className = 'status-indicator sem-programacao';
+                    tempoRestante.style.display = 'none';
+                    programaProximo.style.display = 'none';
                 } else {
                     // Atualizar informações da programação atual
-                    const programaAtual = document.querySelector('.programa-atual');
-                    if (programaAtual) {
-                        const titulo = programaAtual.querySelector('h2');
-                        const descricao = programaAtual.querySelector('p');
-                        const horario = programaAtual.querySelector('.horario');
+                    const titulo = document.getElementById('programa-titulo');
+                    const descricao = document.getElementById('programa-descricao');
+                    const horario = document.getElementById('programa-horario');
+                    const imagem = document.getElementById('programa-imagem');
+                    const rolandoAgora = document.getElementById('rolando-agora');
+                    
+                    if (titulo) titulo.textContent = data.titulo;
+                    if (descricao) descricao.textContent = data.descricao;
+                    if (horario) horario.textContent = `${data.horario_inicio} - ${data.horario_fim}`;
+                    
+                    // Atualizar imagem se disponível
+                    if (data.imagem && imagem) {
+                        if (data.imagem.startsWith('http')) {
+                            imagem.src = data.imagem;
+                        } else if (data.imagem.startsWith('/static/')) {
+                            imagem.src = data.imagem;
+                        } else {
+                            imagem.src = `/static/uploads/programacao/${data.imagem}`;
+                        }
+                    }
+                    
+                    // Atualizar status
+                    if (data.status === 'ao_vivo') {
+                        statusText.textContent = 'AO VIVO';
+                        statusIndicator.className = 'status-indicator ao-vivo';
+                        rolandoAgora.textContent = 'ROLANDO AGORA';
                         
-                        if (titulo) titulo.textContent = data.titulo;
-                        if (descricao) descricao.textContent = data.descricao;
-                        if (horario) horario.textContent = `${data.horario_inicio} - ${data.horario_fim}`;
+                        // Mostrar tempo restante
+                        if (data.tempo_restante) {
+                            tempoRestante.style.display = 'flex';
+                            atualizarTempoRestante(data.tempo_restante);
+                        }
+                    } else if (data.status === 'proximo') {
+                        statusText.textContent = 'PRÓXIMO';
+                        statusIndicator.className = 'status-indicator proximo';
+                        rolandoAgora.textContent = 'EM BREVE';
+                        tempoRestante.style.display = 'none';
                     }
                 }
             })
-            .catch(error => console.error('Erro ao buscar programação:', error));
+            .catch(error => {
+                console.error('Erro ao buscar programação:', error);
+                document.getElementById('status-text').textContent = 'Erro ao carregar';
+                document.getElementById('status-indicator').className = 'status-indicator erro';
+            });
+    }
+    
+    // Função para atualizar tempo restante
+    function atualizarTempoRestante(tempoInicial) {
+        const tempoValor = document.getElementById('tempo-valor');
+        let minutos = tempoInicial.minutos;
+        let segundos = tempoInicial.segundos;
+        
+        const timer = setInterval(() => {
+            if (segundos > 0) {
+                segundos--;
+            } else if (minutos > 0) {
+                minutos--;
+                segundos = 59;
+            } else {
+                clearInterval(timer);
+                tempoValor.textContent = '00:00';
+                // Recarregar programação quando terminar
+                setTimeout(atualizarProgramacaoAtual, 1000);
+                return;
+            }
+            
+            tempoValor.textContent = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        }, 1000);
     }
 
-    // Atualizar a cada 5 minutos
-    setInterval(atualizarProgramacaoAtual, 300000);
+    // Atualizar a cada 30 segundos para ser mais responsivo
+    setInterval(atualizarProgramacaoAtual, 30000);
     
     // Atualizar timer
     function atualizarTimer() {

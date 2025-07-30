@@ -283,7 +283,7 @@ def enviar_mensagem():
         return jsonify({'success': False, 'message': 'Erro ao enviar mensagem. Tente novamente.'})
 
 def get_programacao_atual():
-    """Retorna a programação atual baseada no dia e horário"""
+    """Retorna a programação atual baseada no dia e horário com sistema inteligente"""
     agora = datetime.now()
     dia_semana = agora.strftime('%A').upper()
     hora_atual = agora.time()
@@ -307,25 +307,123 @@ def get_programacao_atual():
         Programacao.horario_fim >= hora_atual
     ).first()
     
+    # Se não encontrar programação atual, buscar a próxima programação
+    if not programacao:
+        programacao = Programacao.query.filter_by(dia_semana=dia_portugues).filter(
+            Programacao.horario_inicio > hora_atual
+        ).order_by(Programacao.horario_inicio).first()
+    
     return programacao
+
+def get_programacao_status():
+    """Retorna o status detalhado da programação atual"""
+    agora = datetime.now()
+    dia_semana = agora.strftime('%A').upper()
+    hora_atual = agora.time()
+    
+    # Mapeamento de dias em inglês para português
+    dias_map = {
+        'MONDAY': 'SEGUNDA',
+        'TUESDAY': 'TERÇA', 
+        'WEDNESDAY': 'QUARTA',
+        'THURSDAY': 'QUINTA',
+        'FRIDAY': 'SEXTA',
+        'SATURDAY': 'SÁBADO',
+        'SUNDAY': 'DOMINGO'
+    }
+    
+    dia_portugues = dias_map.get(dia_semana, dia_semana)
+    
+    # Buscar todas as programações do dia
+    programacoes = Programacao.query.filter_by(dia_semana=dia_portugues).order_by(Programacao.horario_inicio).all()
+    
+    if not programacoes:
+        return {
+            'status': 'sem_programacao',
+            'mensagem': 'Nenhuma programação cadastrada para hoje',
+            'programacao_atual': None,
+            'proxima_programacao': None,
+            'tempo_restante': None
+        }
+    
+    # Encontrar programação atual
+    programacao_atual = None
+    proxima_programacao = None
+    
+    for programa in programacoes:
+        if programa.horario_inicio <= hora_atual and programa.horario_fim >= hora_atual:
+            programacao_atual = programa
+            break
+        elif programa.horario_inicio > hora_atual:
+            if not proxima_programacao:
+                proxima_programacao = programa
+    
+    # Calcular tempo restante
+    tempo_restante = None
+    if programacao_atual:
+        fim_programa = datetime.combine(agora.date(), programacao_atual.horario_fim)
+        agora_dt = datetime.combine(agora.date(), agora.time())
+        diferenca = fim_programa - agora_dt
+        tempo_restante = {
+            'minutos': int(diferenca.total_seconds() // 60),
+            'segundos': int(diferenca.total_seconds() % 60)
+        }
+    
+    return {
+        'status': 'ao_vivo' if programacao_atual else 'aguardando',
+        'programacao_atual': programacao_atual,
+        'proxima_programacao': proxima_programacao,
+        'tempo_restante': tempo_restante,
+        'hora_atual': hora_atual.strftime('%H:%M'),
+        'dia_semana': dia_portugues
+    }
 
 # Rotas da API
 @app.route('/api/programacao-atual')
 def api_programacao_atual():
-    programacao = get_programacao_atual()
-    if programacao:
+    status = get_programacao_status()
+    
+    if status['status'] == 'sem_programacao':
+        return jsonify({
+            'error': 'Nenhuma programação encontrada',
+            'status': 'sem_programacao',
+            'mensagem': status['mensagem']
+        })
+    
+    if status['programacao_atual']:
+        programacao = status['programacao_atual']
         return jsonify({
             'titulo': programacao.titulo,
             'descricao': programacao.descricao,
             'imagem': programacao.imagem,
             'horario_inicio': programacao.horario_inicio.strftime('%H:%M'),
-            'horario_fim': programacao.horario_fim.strftime('%H:%M')
+            'horario_fim': programacao.horario_fim.strftime('%H:%M'),
+            'status': 'ao_vivo',
+            'tempo_restante': status['tempo_restante'],
+            'hora_atual': status['hora_atual']
         })
+    elif status['proxima_programacao']:
+        programacao = status['proxima_programacao']
+        return jsonify({
+            'titulo': programacao.titulo,
+            'descricao': programacao.descricao,
+            'imagem': programacao.imagem,
+            'horario_inicio': programacao.horario_inicio.strftime('%H:%M'),
+            'horario_fim': programacao.horario_fim.strftime('%H:%M'),
+            'status': 'proximo',
+            'hora_atual': status['hora_atual']
+        })
+    
     return jsonify({'error': 'Nenhuma programação encontrada'})
+
+@app.route('/api/programacao-status')
+def api_programacao_status():
+    """API para obter status detalhado da programação"""
+    return jsonify(get_programacao_status())
 
 @app.route('/api/programacao-dia/<dia>')
 def api_programacao_dia(dia):
-    """API para buscar programações de um dia específico"""
+    """API para buscar programações de um dia específico com informações detalhadas"""
     try:
         # Validar dia da semana
         dias_validos = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO']
@@ -340,8 +438,28 @@ def api_programacao_dia(dia):
         hora_atual = agora.time()
         
         programacoes_json = []
+        programacao_atual = None
+        proxima_programacao = None
+        
         for programa in programacoes:
             is_atual = (programa.horario_inicio <= hora_atual and programa.horario_fim >= hora_atual)
+            is_proximo = (programa.horario_inicio > hora_atual and not proxima_programacao)
+            
+            if is_atual:
+                programacao_atual = programa
+            elif is_proximo:
+                proxima_programacao = programa
+            
+            # Calcular tempo restante se for o programa atual
+            tempo_restante = None
+            if is_atual:
+                fim_programa = datetime.combine(agora.date(), programa.horario_fim)
+                agora_dt = datetime.combine(agora.date(), agora.time())
+                diferenca = fim_programa - agora_dt
+                tempo_restante = {
+                    'minutos': int(diferenca.total_seconds() // 60),
+                    'segundos': int(diferenca.total_seconds() % 60)
+                }
             
             programacoes_json.append({
                 'id': programa.id,
@@ -350,12 +468,19 @@ def api_programacao_dia(dia):
                 'horario_inicio': programa.horario_inicio.strftime('%H:%M'),
                 'horario_fim': programa.horario_fim.strftime('%H:%M'),
                 'imagem': programa.imagem,
-                'is_atual': is_atual
+                'is_atual': is_atual,
+                'is_proximo': is_proximo,
+                'tempo_restante': tempo_restante,
+                'status': 'ao_vivo' if is_atual else ('proximo' if is_proximo else 'aguardando')
             })
         
         return jsonify({
             'dia': dia,
-            'programacoes': programacoes_json
+            'programacoes': programacoes_json,
+            'programacao_atual': programacao_atual.id if programacao_atual else None,
+            'proxima_programacao': proxima_programacao.id if proxima_programacao else None,
+            'hora_atual': hora_atual.strftime('%H:%M'),
+            'total_programas': len(programacoes)
         })
         
     except Exception as e:

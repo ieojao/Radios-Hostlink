@@ -1,9 +1,5 @@
 {% extends "base.html" %}
 
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/page-styles.css') }}">
-{% endblock %}
-
 {% block title %}{{ config.nome_site }} - Equipe{% endblock %}
 
 {% block content %}
@@ -102,6 +98,10 @@
                         {% endfor %}
                     </div>
                     {% endif %}
+                    <div class="member-status">
+                        <span class="status-indicator">●</span>
+                        <span class="status-text">Online</span>
+                    </div>
                 </div>
             </div>
             {% endfor %}

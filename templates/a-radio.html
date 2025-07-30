@@ -1,44 +1,30 @@
 {% extends "base.html" %}
 
-{% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/page-styles.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/radio-animations.css') }}">
-{% endblock %}
+{% block title %}A Rádio - {{ config.nome_site }}{% endblock %}
 
-{% block title %}{{ config.nome_site }} - A Rádio{% endblock %}
+
 
 {% block content %}
-<!-- Hero Section -->
+<!-- Hero Section Ultra Moderno -->
 <section class="hero-section">
     <div class="hero-background">
-        {% if pagina_radio and pagina_radio.imagem_principal %}
-        <img src="{{ pagina_radio.imagem_principal }}" alt="{{ pagina_radio.titulo }}" class="hero-image">
-        {% endif %}
         <div class="hero-overlay"></div>
     </div>
     <div class="hero-content">
         <div class="container">
             <h1 class="hero-title">
-                {% if pagina_radio and pagina_radio.titulo %}
-                    {{ pagina_radio.titulo }}
-                {% else %}
-                    A Rádio
-                {% endif %}
+                A Rádio
             </h1>
-            {% if pagina_radio and pagina_radio.subtitulo %}
-            <p class="hero-subtitle">{{ pagina_radio.subtitulo }}</p>
-            {% endif %}
-            {% if pagina_radio and pagina_radio.descricao %}
-            <p class="hero-description">{{ pagina_radio.descricao }}</p>
-            {% endif %}
+            <p class="hero-subtitle">Conectando pessoas através da música</p>
+            <p class="hero-description">Nossa rádio é mais que entretenimento. É um espaço de conexão, informação e inspiração para toda a comunidade.</p>
             <div class="hero-buttons">
-                <button class="btn btn-primary hero-play-btn" onclick="window.radioPlayer && window.radioPlayer.togglePlay()">
+                <button class="hero-play-btn play-now-btn">
                     <span class="btn-icon">▶</span>
-                    <span class="btn-text">Ouvir Agora</span>
+                    Ouvir Agora
                 </button>
-                <a href="#historia" class="btn btn-secondary hero-scroll-btn">
-                    <span class="btn-icon">📖</span>
-                    <span class="btn-text">Nossa História</span>
+                <a href="#historia" class="hero-scroll-btn">
+                    <span class="btn-icon">↓</span>
+                    Conheça Nossa História
                 </a>
             </div>
         </div>
@@ -48,31 +34,36 @@
     </div>
 </section>
 
-<!-- Estatísticas -->
-{% if pagina_radio and pagina_radio.estatisticas %}
+<!-- Estatísticas Ultra Modernas -->
 <section class="stats-section">
     <div class="container">
         <div class="section-header">
-            <h2>Números que Contam Nossa História</h2>
+            <h2>Nossos Números</h2>
             <div class="section-divider"></div>
+            <p>Conheça alguns números que fazem nossa rádio especial</p>
         </div>
         <div class="stats-grid">
-            {% set estatisticas = pagina_radio.estatisticas | from_json %}
-            {% for key, estatistica in estatisticas.items() %}
             <div class="stat-item">
-                <div class="stat-icon">📊</div>
-                <div class="stat-number" data-target="{{ estatistica.valor }}">0</div>
-                <div class="stat-label">{{ estatistica.titulo }}</div>
+                <span class="stat-icon">📊</span>
+                <div class="stat-number">1000+</div>
+                <div class="stat-label">Ouvintes Diários</div>
             </div>
-            {% endfor %}
+            <div class="stat-item">
+                <span class="stat-icon">🎵</span>
+                <div class="stat-number">24h</div>
+                <div class="stat-label">No Ar</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🌍</span>
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Países</div>
+            </div>
         </div>
     </div>
 </section>
-{% endif %}
 
-<!-- História -->
-{% if pagina_radio and pagina_radio.historia %}
-<section id="historia" class="history-section">
+<!-- História Modernizada -->
+<section class="history-section" id="historia">
     <div class="container">
         <div class="section-header">
             <h2>Nossa História</h2>
@@ -80,22 +71,20 @@
             <p>Uma jornada de paixão pela música e pela comunidade</p>
         </div>
         <div class="history-content">
-            {% if pagina_radio.imagem_historia %}
             <div class="history-image">
-                <img src="{{ pagina_radio.imagem_historia }}" alt="História da Rádio">
+                <img src="/static/images/programa.jpg" alt="História da Rádio">
                 <div class="image-overlay"></div>
             </div>
-            {% endif %}
             <div class="history-text">
-                {{ pagina_radio.historia | nl2br | safe }}
+                <h3>Uma História de Dedicação</h3>
+                <p>Nossa rádio nasceu da paixão pela música e pelo desejo de conectar pessoas. Desde o início, buscamos oferecer não apenas entretenimento, mas também informação de qualidade e um espaço para a comunidade se expressar.</p>
+                <p>Com anos de experiência e dedicação, construímos uma rádio que é referência em qualidade e inovação. Nossa equipe trabalha incansavelmente para trazer a melhor programação para nossos ouvintes.</p>
             </div>
         </div>
     </div>
 </section>
-{% endif %}
 
-<!-- Missão, Visão e Valores -->
-{% if pagina_radio and (pagina_radio.missao or pagina_radio.visao or pagina_radio.valores) %}
+<!-- Missão, Visão e Valores Ultra Modernos -->
 <section class="mvv-section">
     <div class="container">
         <div class="section-header">
@@ -104,47 +93,40 @@
             <p>Os pilares que guiam nossa jornada</p>
         </div>
         <div class="mvv-grid">
-            {% if pagina_radio.missao %}
             <div class="mvv-card">
                 <div class="mvv-icon">🎯</div>
                 <h3>Missão</h3>
-                <p>{{ pagina_radio.missao }}</p>
+                <p>Conectar pessoas através da música, oferecendo entretenimento de qualidade e informação relevante para nossa comunidade.</p>
             </div>
-            {% endif %}
             
-            {% if pagina_radio.visao %}
             <div class="mvv-card">
                 <div class="mvv-icon">👁️</div>
                 <h3>Visão</h3>
-                <p>{{ pagina_radio.visao }}</p>
+                <p>Ser a rádio de referência em nossa região, reconhecida pela qualidade, inovação e compromisso com a comunidade.</p>
             </div>
-            {% endif %}
             
-            {% if pagina_radio.valores %}
             <div class="mvv-card">
                 <div class="mvv-icon">💎</div>
                 <h3>Valores</h3>
                 <ul class="valores-list">
-                    {% for valor in pagina_radio.valores.split('\n') %}
-                        {% if valor.strip() %}
-                        <li>{{ valor.strip() }}</li>
-                        {% endif %}
-                    {% endfor %}
+                    <li>Qualidade em tudo que fazemos</li>
+                    <li>Inovação constante</li>
+                    <li>Compromisso com a comunidade</li>
+                    <li>Transparência e ética</li>
+                    <li>Paixão pela música</li>
                 </ul>
             </div>
-            {% endif %}
         </div>
     </div>
 </section>
-{% endif %}
 
-<!-- Seção de Destaque -->
+<!-- Seção de Destaque Ultra Moderna -->
 <section class="highlight-section">
     <div class="container">
         <div class="highlight-content">
             <div class="highlight-text">
                 <h2>Conectando Pessoas Através da Música</h2>
-                <p>Nossa rádio é mais que entretenimento. É um espaço de conexão, informação e inspiração para toda a comunidade.</p>
+                <p>Nossa rádio é mais que entretenimento. É um espaço de conexão, informação e inspiração para toda a comunidade. Com tecnologia de ponta e uma equipe apaixonada, levamos a melhor música e conteúdo para você.</p>
                 <div class="highlight-features">
                     <div class="feature">
                         <span class="feature-icon">🎵</span>
@@ -160,7 +142,11 @@
                     </div>
                     <div class="feature">
                         <span class="feature-icon">🎙️</span>
-                        <span>Estúdio Profissional</span>
+                        <span>Equipe Profissional</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">💬</span>
+                        <span>Interação com Ouvintes</span>
                     </div>
                 </div>
             </div>
@@ -168,78 +154,31 @@
                 <div class="radio-studio">
                     <span class="studio-icon">🎙️</span>
                     <h3>Estúdio Profissional</h3>
-                    <p>Equipamentos de última geração para a melhor qualidade de som</p>
-                    <div class="studio-features">
-                        <div class="studio-feature">
-                            <span class="feature-dot"></span>
-                            <span>Acústica Otimizada</span>
-                        </div>
-                        <div class="studio-feature">
-                            <span class="feature-dot"></span>
-                            <span>Equipamentos HD</span>
-                        </div>
-                        <div class="studio-feature">
-                            <span class="feature-dot"></span>
-                            <span>Transmissão Estável</span>
-                        </div>
-                    </div>
+                    <p>Equipamentos de última geração para a melhor qualidade de som e transmissão</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Seção de Tecnologia -->
-<section class="tech-section">
-    <div class="container">
-        <div class="section-header">
-            <h2>Tecnologia de Ponta</h2>
-            <div class="section-divider"></div>
-            <p>Investimos na melhor tecnologia para você</p>
-        </div>
-        <div class="tech-grid">
-            <div class="tech-item">
-                <div class="tech-icon">🎧</div>
-                <h3>Qualidade HD</h3>
-                <p>Transmissão em alta definição para uma experiência sonora excepcional</p>
-            </div>
-            <div class="tech-item">
-                <div class="tech-icon">📱</div>
-                <h3>Multiplataforma</h3>
-                <p>Ouça em qualquer dispositivo: celular, tablet, computador ou smart TV</p>
-            </div>
-            <div class="tech-item">
-                <div class="tech-icon">⚡</div>
-                <h3>Baixa Latência</h3>
-                <p>Transmissão em tempo real com mínima diferença de tempo</p>
-            </div>
-            <div class="tech-item">
-                <div class="tech-icon">🔒</div>
-                <h3>Transmissão Segura</h3>
-                <p>Infraestrutura robusta e segura para sua tranquilidade</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Call to Action -->
+<!-- Call to Action Ultra Moderno -->
 <section class="cta-section">
     <div class="container">
         <div class="cta-content">
             <h2>Ouça Agora</h2>
-            <p>Não perca nenhum momento da nossa programação especial</p>
+            <p>Não perca nenhum momento da nossa programação especial. Conecte-se conosco e faça parte desta comunidade apaixonada por música.</p>
             <div class="cta-buttons">
-                <button class="btn btn-primary play-now-btn" onclick="window.radioPlayer && window.radioPlayer.togglePlay()">
+                <button class="btn btn-primary play-now-btn">
                     <span class="btn-icon">▶</span>
-                    <span class="btn-text">Ouvir Agora</span>
+                    Ouvir Agora
                 </button>
                 <a href="{{ url_for('programacao') }}" class="btn btn-secondary">
                     <span class="btn-icon">📅</span>
-                    <span class="btn-text">Ver Programação</span>
+                    Ver Programação
                 </a>
                 <a href="{{ url_for('contato') }}" class="btn btn-outline">
-                    <span class="btn-icon">📞</span>
-                    <span class="btn-text">Fale Conosco</span>
+                    <span class="btn-icon">💬</span>
+                    Fale Conosco
                 </a>
             </div>
         </div>
@@ -248,5 +187,126 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/radio-interactions.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animação dos números das estatísticas com efeito de contagem
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    function animateNumber(element, target) {
+        let current = 0;
+        const increment = target / 100;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            element.textContent = Math.floor(current);
+        }, 20);
+    }
+    
+    // Observador de interseção para animar quando a seção estiver visível
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const statNumber = entry.target;
+                const target = parseInt(statNumber.textContent);
+                animateNumber(statNumber, target);
+                observer.unobserve(statNumber);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    statNumbers.forEach(stat => observer.observe(stat));
+    
+    // Botão de play com efeito de pulso
+    const playNowBtns = document.querySelectorAll('.play-now-btn');
+    playNowBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Efeito de clique
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+            
+            // Aqui você pode adicionar a lógica para iniciar o player
+            console.log('Iniciando player...');
+            
+            // Simular início do player
+            this.innerHTML = '<span class="btn-icon">⏸</span>Pausar';
+        });
+    });
+    
+    // Scroll suave para links internos
+    const internalLinks = document.querySelectorAll('a[href^="#"]');
+    internalLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    // Animação de entrada para elementos quando aparecem na tela
+    const animateElements = document.querySelectorAll('.mvv-card, .feature, .stat-item');
+    const elementObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    animateElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        elementObserver.observe(el);
+    });
+    
+    // Efeito parallax suave no hero
+    const heroSection = document.querySelector('.hero-section');
+    const heroImage = document.querySelector('.hero-image');
+    
+    if (heroImage) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            heroImage.style.transform = `translateY(${rate}px)`;
+        });
+    }
+    
+    // Efeito de hover nos cards MVV
+    const mvvCards = document.querySelectorAll('.mvv-card');
+    mvvCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-20px) scale(1.05)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Efeito de hover nas features
+    const features = document.querySelectorAll('.feature');
+    features.forEach(feature => {
+        feature.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateX(15px)';
+        });
+        
+        feature.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(0)';
+        });
+    });
+});
+</script>
 {% endblock %} 

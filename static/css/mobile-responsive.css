@@ -587,12 +587,52 @@
     }
     
     .member-photo {
-        width: 100px;
-        height: 100px;
+        width: 140px;
+        height: 140px;
+        margin-bottom: 20px;
+    }
+    
+    .photo-placeholder {
+        font-size: 3rem;
     }
     
     .member-info h3 {
-        font-size: 1.3rem;
+        font-size: 1.5rem;
+    }
+    
+    .member-bio {
+        font-size: 0.95rem;
+    }
+    
+    .social-item {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+    
+    /* Telas muito pequenas */
+    @media (max-width: 480px) {
+        .member-photo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 15px;
+        }
+        
+        .photo-placeholder {
+            font-size: 2.5rem;
+        }
+        
+        .member-info h3 {
+            font-size: 1.3rem;
+        }
+        
+        .member-bio {
+            font-size: 0.9rem;
+        }
+        
+        .social-item {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
     }
     
     .areas-section {
