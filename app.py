@@ -437,13 +437,27 @@ def api_programacao_dia(dia):
         agora = datetime.now()
         hora_atual = agora.time()
         
+        # Mapear dias da semana para números (0=Segunda, 6=Domingo)
+        dias_semana = {
+            'SEGUNDA': 0, 'TERÇA': 1, 'QUARTA': 2, 'QUINTA': 3, 
+            'SEXTA': 4, 'SÁBADO': 5, 'DOMINGO': 6
+        }
+        
+        # Obter o dia atual da semana (0=Segunda, 6=Domingo)
+        dia_atual_num = agora.weekday()
+        dia_consulta_num = dias_semana.get(dia, None)
+        
+        # Verificar se estamos consultando o dia atual
+        is_dia_atual = (dia_atual_num == dia_consulta_num)
+        
         programacoes_json = []
         programacao_atual = None
         proxima_programacao = None
         
         for programa in programacoes:
-            is_atual = (programa.horario_inicio <= hora_atual and programa.horario_fim >= hora_atual)
-            is_proximo = (programa.horario_inicio > hora_atual and not proxima_programacao)
+            # Só considerar "ao vivo" se for o dia atual
+            is_atual = is_dia_atual and (programa.horario_inicio <= hora_atual and programa.horario_fim >= hora_atual)
+            is_proximo = is_dia_atual and (programa.horario_inicio > hora_atual and not proxima_programacao)
             
             if is_atual:
                 programacao_atual = programa

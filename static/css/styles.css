@@ -171,6 +171,19 @@ header:hover {
     border-bottom-color: var(--primary-green);
 }
 
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.logo-link:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
 .logo {
     height: 50px;
     width: auto;
@@ -394,43 +407,49 @@ nav a.active::before {
     gap: 8px;
     padding: 8px 15px;
     border-radius: 20px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .status-indicator.ao-vivo {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(34, 197, 94, 0.2));
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #000000;
+    border: 1px solid #10b981;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
     animation: pulse 2s infinite;
 }
 
 .status-indicator.proximo {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.2));
-    color: #3b82f6;
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #000000;
+    border: 1px solid #3b82f6;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
 }
 
 .status-indicator.sem-programacao {
-    background: linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(156, 163, 175, 0.2));
-    color: #6b7280;
-    border: 1px solid rgba(107, 114, 128, 0.3);
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: #000000;
+    border: 1px solid #6b7280;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
 }
 
 .status-indicator.erro {
-    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #000000;
+    border: 1px solid #ef4444;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
 .status-dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: currentColor;
+    background: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
     animation: pulse 2s infinite;
 }
 
@@ -717,6 +736,38 @@ nav a.active::before {
     display: inline-block;
     animation: pulse 2s infinite;
     letter-spacing: 0.5px;
+}
+
+.programa-item .proximo {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.programa-item .aguardando {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: inline-block;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+}
+
+.programa-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
 }
 
 .sem-programacao {

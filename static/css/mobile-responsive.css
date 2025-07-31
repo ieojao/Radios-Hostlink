@@ -11,6 +11,12 @@
         gap: 10px;
     }
     
+    .logo-link {
+        order: 1;
+        display: flex;
+        align-items: center;
+    }
+    
     .logo {
         height: 40px;
         order: 1;
@@ -175,6 +181,17 @@
     .ao-vivo {
         font-size: 0.75rem;
         padding: 3px 8px;
+    }
+    
+    .programa-item .proximo,
+    .programa-item .aguardando {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+    
+    .programa-status {
+        gap: 6px;
+        margin-top: 6px;
     }
     
     /* ===== DESTAQUES MOBILE ===== */
@@ -681,6 +698,11 @@
         padding: 8px 12px;
     }
     
+    .logo-link {
+        display: flex;
+        align-items: center;
+    }
+    
     .logo {
         height: 35px;
     }
@@ -767,6 +789,18 @@
     
     .programa-item .programa-info p {
         font-size: 0.85rem;
+    }
+    
+    .programa-item .ao-vivo,
+    .programa-item .proximo,
+    .programa-item .aguardando {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+    }
+    
+    .programa-status {
+        gap: 4px;
+        margin-top: 4px;
     }
     
     /* ===== DESTAQUES MUITO PEQUENO ===== */

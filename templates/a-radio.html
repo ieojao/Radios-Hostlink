@@ -307,6 +307,33 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.transform = 'translateX(0)';
         });
     });
+    
+    // Funcionalidade do hero-scroll-indicator
+    const scrollIndicator = document.querySelector('.hero-scroll-indicator');
+    if (scrollIndicator) {
+        scrollIndicator.addEventListener('click', function() {
+            const statsSection = document.querySelector('.stats-section');
+            if (statsSection) {
+                statsSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+        
+        // Efeito de clique no indicador
+        scrollIndicator.addEventListener('mousedown', function() {
+            this.style.transform = 'translateX(-50%) scale(0.95)';
+        });
+        
+        scrollIndicator.addEventListener('mouseup', function() {
+            this.style.transform = 'translateX(-50%) scale(1)';
+        });
+        
+        scrollIndicator.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateX(-50%) scale(1)';
+        });
+    }
 });
 </script>
 {% endblock %} 

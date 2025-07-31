@@ -62,7 +62,136 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const tabs = document.querySelectorAll('.tab');
-    const diasProgramacao = document.querySelectorAll('.dia-programacao');
+    const gradeProgramacao = document.querySelector('.grade-programacao');
+    
+    // Função para carregar programação de um dia específico
+    function carregarProgramacao(dia) {
+        fetch(`/api/programacao-dia/${dia}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.programacoes && data.programacoes.length > 0) {
+                    let html = `<div class="dia-programacao" id="programacao-${dia.toLowerCase()}">
+                        <h2>${dia}</h2>
+                        <div class="programas-lista">`;
+                    
+                    data.programacoes.forEach(programa => {
+                        const horaInicio = programa.horario_inicio;
+                        const horaFim = programa.horario_fim;
+                        const isAtual = programa.is_atual;
+                        const isProximo = programa.is_proximo;
+                        const status = programa.status;
+                        const tempoRestante = programa.tempo_restante;
+                        
+                        let statusClass = '';
+                        let statusText = '';
+                        let tempoHtml = '';
+                        
+                        if (isAtual) {
+                            statusClass = 'atual';
+                            statusText = '<span class="ao-vivo">AO VIVO</span>';
+                            if (tempoRestante) {
+                                tempoHtml = `<div class="tempo-programa">
+                                    <span class="tempo-label">Termina em:</span>
+                                    <span class="tempo-valor">${tempoRestante.minutos.toString().padStart(2, '0')}:${tempoRestante.segundos.toString().padStart(2, '0')}</span>
+                                </div>`;
+                            }
+                        } else if (isProximo) {
+                            statusClass = 'proximo';
+                            statusText = '<span class="proximo">PRÓXIMO</span>';
+                        } else {
+                            statusClass = 'aguardando';
+                            statusText = '<span class="aguardando">AGUARDANDO</span>';
+                        }
+                        
+                        html += `
+                            <div class="programa-item ${statusClass}">
+                                <div class="horario">
+                                    <span class="inicio">${horaInicio}</span>
+                                    <span class="fim">${horaFim}</span>
+                                </div>
+                                <div class="programa-info">
+                                    ${programa.imagem ? `<img src="${programa.imagem}" alt="${programa.titulo}">` : ''}
+                                    <div class="programa-detalhes">
+                                        <h3>${programa.titulo}</h3>
+                                        ${programa.descricao ? `<p>${programa.descricao}</p>` : ''}
+                                        <div class="programa-status">
+                                            ${statusText}
+                                            ${tempoHtml}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                    });
+                    
+                    html += `</div></div>`;
+                    
+                    // Remover programação anterior do dia
+                    const programacaoAnterior = document.getElementById('programacao-' + dia.toLowerCase());
+                    if (programacaoAnterior) {
+                        programacaoAnterior.remove();
+                    }
+                    
+                    // Adicionar nova programação
+                    gradeProgramacao.insertAdjacentHTML('beforeend', html);
+                } else {
+                    let html = `<div class="dia-programacao" id="programacao-${dia.toLowerCase()}">
+                        <h2>${dia}</h2>
+                        <div class="sem-programacao">
+                            <p>Nenhuma programação cadastrada para este dia.</p>
+                        </div>
+                    </div>`;
+                    
+                    // Remover programação anterior do dia
+                    const programacaoAnterior = document.getElementById('programacao-' + dia.toLowerCase());
+                    if (programacaoAnterior) {
+                        programacaoAnterior.remove();
+                    }
+                    
+                    // Adicionar nova programação
+                    gradeProgramacao.insertAdjacentHTML('beforeend', html);
+                }
+                
+                // Mostrar programação do dia selecionado
+                const programacaoDia = document.getElementById('programacao-' + dia.toLowerCase());
+                if (programacaoDia) {
+                    // Esconder todas as programações
+                    document.querySelectorAll('.dia-programacao').forEach(diaProg => {
+                        diaProg.style.display = 'none';
+                    });
+                    // Mostrar programação do dia selecionado
+                    programacaoDia.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar programação:', error);
+                let html = `<div class="dia-programacao" id="programacao-${dia.toLowerCase()}">
+                    <h2>${dia}</h2>
+                    <div class="sem-programacao">
+                        <p>Erro ao carregar programação.</p>
+                    </div>
+                </div>`;
+                
+                // Remover programação anterior do dia
+                const programacaoAnterior = document.getElementById('programacao-' + dia.toLowerCase());
+                if (programacaoAnterior) {
+                    programacaoAnterior.remove();
+                }
+                
+                // Adicionar nova programação
+                gradeProgramacao.insertAdjacentHTML('beforeend', html);
+                
+                // Mostrar programação do dia selecionado
+                const programacaoDia = document.getElementById('programacao-' + dia.toLowerCase());
+                if (programacaoDia) {
+                    // Esconder todas as programações
+                    document.querySelectorAll('.dia-programacao').forEach(diaProg => {
+                        diaProg.style.display = 'none';
+                    });
+                    // Mostrar programação do dia selecionado
+                    programacaoDia.style.display = 'block';
+                }
+            });
+    }
     
     tabs.forEach(tab => {
         tab.addEventListener('click', function() {
@@ -73,18 +202,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // Adicionar classe active na tab clicada
             this.classList.add('active');
             
-            // Esconder todas as programações
-            diasProgramacao.forEach(diaProg => {
-                diaProg.style.display = 'none';
-            });
-            
-            // Mostrar programação do dia selecionado
-            const programacaoDia = document.getElementById('programacao-' + dia.toLowerCase());
-            if (programacaoDia) {
-                programacaoDia.style.display = 'block';
-            }
+            // Carregar programação do dia selecionado
+            carregarProgramacao(dia);
         });
     });
+    
+    // Carregar programação do dia atual na inicialização
+    const tabAtiva = document.querySelector('.tab.active');
+    if (tabAtiva) {
+        const diaAtual = tabAtiva.getAttribute('data-dia');
+        carregarProgramacao(diaAtual);
+    }
 });
 </script>
 {% endblock %} 

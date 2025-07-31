@@ -21,8 +21,10 @@
 <body>
     <!-- Menu principal -->
     <header>
-        <img src="{{ config.logo }}" alt="{{ config.nome_site }}" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <span class="logo-text" style="display: none;">{{ config.nome_site }}</span>
+        <a href="{{ url_for('index') }}" class="logo-link">
+            <img src="{{ config.logo }}" alt="{{ config.nome_site }}" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <span class="logo-text" style="display: none;">{{ config.nome_site }}</span>
+        </a>
         <nav>
             <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>HOME</a>
             <a href="{{ url_for('a_radio') }}" {% if request.endpoint == 'a_radio' %}class="active"{% endif %}>A RÁDIO</a>
