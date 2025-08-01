@@ -6,7 +6,7 @@
 <div class="admin-content">
     <div class="content-header">
         <h1>Gerenciar Destaques</h1>
-        <a href="{{ url_for('admin_destaques_adicionar') }}" class="btn btn-primary">➕ Adicionar Destaque</a>
+        <a href="{{ url_for('admin.destaques_adicionar') }}" class="btn btn-primary"><span class="icon-plus"></span> Adicionar Destaque</a>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -48,10 +48,10 @@
                     </div>
                     
                     <div class="destaque-actions">
-                        <a href="{{ url_for('admin_destaques_editar', id=destaque.id) }}" class="btn btn-small btn-secondary">✏️ Editar</a>
-                        <form method="POST" action="{{ url_for('admin_destaques_excluir', id=destaque.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este destaque?')">
-                            <button type="submit" class="btn btn-small btn-danger">🗑️ Excluir</button>
-                        </form>
+                                        <a href="{{ url_for('admin.destaques_editar', id=destaque.id) }}" class="btn btn-small btn-secondary"><span class="icon-edit"></span> Editar</a>
+                <form method="POST" action="{{ url_for('admin.destaques_deletar', id=destaque.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este destaque?')">
+                    <button type="submit" class="btn btn-small btn-danger"><span class="icon-trash"></span> Excluir</button>
+                </form>
                     </div>
                 </div>
                 {% endfor %}
@@ -68,10 +68,10 @@
             </div>
         {% else %}
             <div class="empty-state">
-                <div class="empty-icon">⭐</div>
+                <div class="empty-icon icon-star"></div>
                 <h3>Nenhum destaque cadastrado</h3>
                 <p>Comece adicionando seu primeiro destaque para a página inicial.</p>
-                <a href="{{ url_for('admin_destaques_adicionar') }}" class="btn btn-primary">Adicionar Primeiro Destaque</a>
+                <a href="{{ url_for('admin.destaques_adicionar') }}" class="btn btn-primary"><span class="icon-plus"></span> Adicionar Primeiro Destaque</a>
             </div>
         {% endif %}
     </div>

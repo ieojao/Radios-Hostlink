@@ -8,8 +8,8 @@
 <div class="programacao-admin">
     <div class="page-header">
         <h1>Gerenciar Programação</h1>
-        <a href="{{ url_for('admin_programacao_adicionar') }}" class="btn btn-primary">
-            <span>➕</span> Adicionar Programa
+        <a href="{{ url_for('admin.programacao_adicionar') }}" class="btn btn-primary">
+            <span class="icon-plus"></span> Adicionar Programa
         </a>
     </div>
 
@@ -39,14 +39,14 @@
                 {% endif %}
                 
                 <div class="programa-acoes">
-                    <a href="{{ url_for('admin_programacao_editar', id=programa.id) }}" class="btn btn-small btn-secondary">
-                        ✏️ Editar
-                    </a>
-                    <form method="POST" action="{{ url_for('admin_programacao_excluir', id=programa.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este programa?')">
-                        <button type="submit" class="btn btn-small btn-danger">
-                            🗑️ Excluir
-                        </button>
-                    </form>
+                                    <a href="{{ url_for('admin.programacao_editar', id=programa.id) }}" class="btn btn-small btn-secondary">
+                    <span class="icon-edit"></span> Editar
+                </a>
+                <form method="POST" action="{{ url_for('admin.programacao_deletar', id=programa.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este programa?')">
+                    <button type="submit" class="btn btn-small btn-danger">
+                        <span class="icon-trash"></span> Excluir
+                    </button>
+                </form>
                 </div>
             </div>
             {% endfor %}
@@ -54,8 +54,8 @@
         {% else %}
         <div class="no-programs">
             <p>Nenhum programa cadastrado para este dia.</p>
-            <a href="{{ url_for('admin_programacao_adicionar') }}?dia={{ dia }}" class="btn btn-secondary">
-                Adicionar Programa
+                            <a href="{{ url_for('admin.programacao_adicionar') }}?dia={{ dia }}" class="btn btn-secondary">
+                <span class="icon-plus"></span> Adicionar Programa
             </a>
         </div>
         {% endif %}

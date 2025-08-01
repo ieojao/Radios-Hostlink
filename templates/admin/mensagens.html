@@ -43,10 +43,10 @@
                             </span>
                         </td>
                         <td>
-                            <a href="{{ url_for('admin_mensagem_detalhes', id=mensagem.id) }}" class="btn btn-primary btn-sm">
+                            <a href="{{ url_for('admin.mensagem_detalhes', id=mensagem.id) }}" class="btn btn-primary btn-sm">
                                 Ver
                             </a>
-                            <form method="POST" action="{{ url_for('admin_mensagem_excluir', id=mensagem.id) }}" style="display: inline;">
+                            <form method="POST" action="{{ url_for('admin.mensagem_excluir', id=mensagem.id) }}" style="display: inline;">
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir esta mensagem?')">
                                     Excluir
                                 </button>

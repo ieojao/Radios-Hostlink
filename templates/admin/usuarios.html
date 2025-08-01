@@ -8,8 +8,8 @@
 <div class="usuarios-admin">
     <div class="page-header">
         <h1>Gerenciar Usuários</h1>
-        <a href="{{ url_for('admin_usuarios_adicionar') }}" class="btn btn-primary">
-            <span>➕</span> Adicionar Usuário
+        <a href="{{ url_for('admin.usuarios_adicionar') }}" class="btn btn-primary">
+            <span class="icon-plus"></span> Adicionar Usuário
         </a>
     </div>
 
@@ -45,13 +45,13 @@
                     <td>{{ usuario.criado_em.strftime('%d/%m/%Y %H:%M') }}</td>
                     <td>
                         <div class="usuario-acoes">
-                            <a href="{{ url_for('admin_usuarios_editar', id=usuario.id) }}" class="btn btn-small btn-secondary">
-                                ✏️ Editar
+                            <a href="{{ url_for('admin.usuarios_editar', id=usuario.id) }}" class="btn btn-small btn-secondary">
+                                <span class="icon-edit"></span> Editar
                             </a>
                             {% if usuario.id != current_user.id %}
-                            <form method="POST" action="{{ url_for('admin_usuarios_excluir', id=usuario.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?')">
+                            <form method="POST" action="{{ url_for('admin.usuarios_deletar', id=usuario.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este usuário?')">
                                 <button type="submit" class="btn btn-small btn-danger">
-                                    🗑️ Excluir
+                                    <span class="icon-trash"></span> Excluir
                                 </button>
                             </form>
                             {% else %}
@@ -67,11 +67,11 @@
     {% else %}
     <div class="no-usuarios">
         <div class="empty-state">
-            <div class="empty-icon">👥</div>
+            <div class="empty-icon icon-users"></div>
             <h2>Nenhum usuário cadastrado</h2>
             <p>Adicione usuários para gerenciar o sistema.</p>
-            <a href="{{ url_for('admin_usuarios_adicionar') }}" class="btn btn-primary">
-                Adicionar Primeiro Usuário
+            <a href="{{ url_for('admin.usuarios_adicionar') }}" class="btn btn-primary">
+                <span class="icon-plus"></span> Adicionar Primeiro Usuário
             </a>
         </div>
     </div>

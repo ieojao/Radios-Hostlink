@@ -24,11 +24,11 @@
         </div>
         
         <div class="mensagem-actions">
-            <a href="{{ url_for('admin_mensagens') }}" class="btn btn-secondary">
+            <a href="{{ url_for('admin.mensagens') }}" class="btn btn-secondary">
                 ← Voltar
             </a>
             
-            <form method="POST" action="{{ url_for('admin_mensagem_excluir', id=mensagem.id) }}" style="display: inline;">
+            <form method="POST" action="{{ url_for('admin.mensagem_excluir', id=mensagem.id) }}" style="display: inline;">
                 <button type="submit" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir esta mensagem?')">
                     Excluir
                 </button>
@@ -72,7 +72,7 @@
         
         <div class="mensagem-status">
             <h3>Alterar Status</h3>
-            <form method="POST" action="{{ url_for('admin_mensagem_status', id=mensagem.id) }}">
+            <form method="POST" action="{{ url_for('admin.mensagem_status', id=mensagem.id) }}">
                 <select name="status" class="form-control">
                     <option value="não_lida" {% if mensagem.status == 'não_lida' %}selected{% endif %}>Não lida</option>
                     <option value="lida" {% if mensagem.status == 'lida' %}selected{% endif %}>Lida</option>

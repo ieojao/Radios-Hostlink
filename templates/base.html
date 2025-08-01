@@ -9,8 +9,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-responsive.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/page-styles.css') }}?v=2.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/radio-animations.css') }}?v=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='icons/icons.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="icon" href="{{ config.favicon }}" onerror="this.href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📻</text></svg>'">
+    <link rel="icon" href="{{ config.favicon }}" onerror="this.href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z%22 fill=%22currentColor%22/></svg>'">
     <style>
         :root {
             --fonte: {{ config.fonte }};
@@ -33,7 +34,7 @@
             <a href="{{ url_for('public.contato') }}" {% if request.endpoint == 'public.contato' %}class="active"{% endif %}>CONTATO</a>
         </nav>
         <div class="header-buttons">
-            <button class="play-now-btn" onclick="window.radioPlayer && window.radioPlayer.togglePlay()">▶ OUVIR AGORA</button>
+            <button class="play-now-btn" onclick="window.radioPlayer && window.radioPlayer.togglePlay()"><span class="icon-play"></span> OUVIR AGORA</button>
         </div>
     </header>
 

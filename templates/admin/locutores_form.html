@@ -8,7 +8,7 @@
 <div class="form-container">
     <div class="form-header">
         <h1>{% if locutor %}Editar Locutor{% else %}Adicionar Locutor{% endif %}</h1>
-        <a href="{{ url_for('admin_locutores') }}" class="btn btn-secondary">
+        <a href="{{ url_for('admin.locutores') }}" class="btn btn-secondary">
             ← Voltar
         </a>
     </div>
@@ -59,7 +59,7 @@
             <button type="submit" class="btn btn-primary">
                 {% if locutor %}Atualizar Locutor{% else %}Adicionar Locutor{% endif %}
             </button>
-            <a href="{{ url_for('admin_locutores') }}" class="btn btn-secondary">Cancelar</a>
+            <a href="{{ url_for('admin.locutores') }}" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

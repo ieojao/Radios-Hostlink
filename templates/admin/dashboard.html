@@ -4,120 +4,189 @@
 
 {% block content %}
 <div class="dashboard">
+    <!-- Header com animação -->
     <div class="dashboard-header">
-        <h1>Dashboard</h1>
-        <p>Bem-vindo ao painel administrativo da {{ config.nome_site }}</p>
+        <div class="welcome-section">
+            <h1>Bem-vindo ao Painel Administrativo</h1>
+            <p>Gerencie sua rádio com facilidade e eficiência</p>
+            <div class="current-time">
+                <div class="time-display" id="current-time">Carregando...</div>
+                <div class="date-display" id="current-date">Carregando...</div>
+            </div>
+        </div>
     </div>
     
-    <!-- Cards de estatísticas -->
+    <!-- Cards de estatísticas com animações -->
     <div class="stats-cards">
-        <div class="stat-card">
-            <div class="stat-icon">📻</div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="stat-icon icon-radio"></div>
             <div class="stat-content">
                 <h3>{{ total_programacao }}</h3>
-                <p>Programas</p>
+                <p>Programas Cadastrados</p>
+                <div class="stat-detail">
+                    <span class="active-count">{{ programacao_ativa }} ativos</span>
+                </div>
             </div>
         </div>
         
-        <div class="stat-card">
-            <div class="stat-icon">🎤</div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="stat-icon icon-microphone"></div>
             <div class="stat-content">
                 <h3>{{ total_locutores }}</h3>
-                <p>Locutores</p>
+                <p>Locutores na Equipe</p>
+                <div class="stat-detail">
+                    <span class="active-count">{{ locutores_ativos }} ativos</span>
+                </div>
             </div>
         </div>
         
-        <div class="stat-card">
-            <div class="stat-icon">🖼️</div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="stat-icon icon-image"></div>
             <div class="stat-content">
                 <h3>{{ total_banners }}</h3>
-                <p>Banners</p>
+                <p>Banners Criados</p>
+                <div class="stat-detail">
+                    <span class="active-count">Todos ativos</span>
+                </div>
             </div>
         </div>
         
-        <div class="stat-card">
-            <div class="stat-icon">💬</div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="400">
+            <div class="stat-icon icon-message"></div>
             <div class="stat-content">
                 <h3>{{ total_mensagens }}</h3>
-                <p>Mensagens</p>
+                <p>Mensagens Recebidas</p>
                 {% if mensagens_nao_lidas > 0 %}
-                    <small class="unread-badge">{{ mensagens_nao_lidas }} não lidas</small>
+                    <div class="stat-detail">
+                        <span class="unread-badge">{{ mensagens_nao_lidas }} não lidas</span>
+                    </div>
+                {% else %}
+                    <div class="stat-detail">
+                        <span class="all-read">Todas lidas</span>
+                    </div>
                 {% endif %}
             </div>
         </div>
         
-        <div class="stat-card">
-            <div class="stat-icon">👥</div>
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="500">
+            <div class="stat-icon icon-users"></div>
             <div class="stat-content">
                 <h3>1</h3>
-                <p>Usuários</p>
+                <p>Usuários Administradores</p>
+                <div class="stat-detail">
+                    <span class="active-count">Sistema ativo</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card" data-aos="fade-up" data-aos-delay="600">
+            <div class="stat-icon icon-star"></div>
+            <div class="stat-content">
+                <h3>{{ destaques_ativos }}</h3>
+                <p>Destaques Ativos</p>
+                <div class="stat-detail">
+                    <span class="active-count">Na página inicial</span>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Ações rápidas -->
+    <!-- Ações rápidas com design moderno -->
     <div class="quick-actions">
-        <h2>Ações Rápidas</h2>
+        <div class="section-header">
+            <h2>Ações Rápidas</h2>
+            <p>Acesse rapidamente as principais funcionalidades</p>
+        </div>
         <div class="actions-grid">
-            <a href="{{ url_for('admin_programacao_adicionar') }}" class="action-card">
-                <div class="action-icon">➕</div>
+            <a href="{{ url_for('admin.programacao_adicionar') }}" class="action-card" data-aos="zoom-in" data-aos-delay="100">
+                <div class="action-icon icon-plus"></div>
                 <h3>Adicionar Programa</h3>
-                <p>Criar nova programação</p>
+                <p>Criar nova programação para a rádio</p>
+                <div class="action-hint">Clique para começar</div>
             </a>
             
-            <a href="{{ url_for('admin_locutores_adicionar') }}" class="action-card">
-                <div class="action-icon">👤</div>
+            <a href="{{ url_for('admin.locutores_adicionar') }}" class="action-card" data-aos="zoom-in" data-aos-delay="200">
+                <div class="action-icon icon-microphone"></div>
                 <h3>Gerenciar Locutores</h3>
-                <p>Adicionar ou editar locutores</p>
+                <p>Adicionar ou editar locutores da equipe</p>
+                <div class="action-hint">Clique para começar</div>
             </a>
             
-            <a href="{{ url_for('admin_destaques') }}" class="action-card">
-                <div class="action-icon">⭐</div>
+            <a href="{{ url_for('admin.destaques') }}" class="action-card" data-aos="zoom-in" data-aos-delay="300">
+                <div class="action-icon icon-star"></div>
                 <h3>Gerenciar Destaques</h3>
                 <p>Editar destaques da página inicial</p>
+                <div class="action-hint">Clique para começar</div>
             </a>
             
-            <a href="{{ url_for('admin_configuracoes') }}" class="action-card">
-                <div class="action-icon">⚙️</div>
+            <a href="{{ url_for('admin.configuracoes') }}" class="action-card" data-aos="zoom-in" data-aos-delay="400">
+                <div class="action-icon icon-settings"></div>
                 <h3>Configurações</h3>
-                <p>Configurar site</p>
+                <p>Configurar site e preferências</p>
+                <div class="action-hint">Clique para começar</div>
             </a>
             
-            <a href="{{ url_for('admin_usuarios') }}" class="action-card">
-                <div class="action-icon">📊</div>
+            <a href="{{ url_for('admin.usuarios') }}" class="action-card" data-aos="zoom-in" data-aos-delay="500">
+                <div class="action-icon icon-users"></div>
                 <h3>Usuários</h3>
-                <p>Gerenciar usuários</p>
+                <p>Gerenciar usuários do sistema</p>
+                <div class="action-hint">Clique para começar</div>
             </a>
         </div>
     </div>
     
-    <!-- Programação atual -->
-    <div class="current-programming">
-        <h2>Programação Atual</h2>
+    <!-- Programação atual com design moderno -->
+    <div class="current-programming" data-aos="fade-up" data-aos-delay="300">
+        <div class="section-header">
+            <h2>Programação Atual</h2>
+            <p>Informações em tempo real sobre a programação</p>
+        </div>
         <div class="programming-info">
-            <p><strong>Dia:</strong> <span id="current-day">Carregando...</span></p>
-            <p><strong>Horário:</strong> <span id="current-time">Carregando...</span></p>
-            <p><strong>Programa:</strong> <span id="current-program">Carregando...</span></p>
+            <div class="info-row">
+                <div class="info-item">
+                    <span class="info-label">Dia da Semana:</span>
+                    <span class="info-value" id="current-day">Carregando...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Horário Atual:</span>
+                    <span class="info-value" id="current-time-display">Carregando...</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-item full-width">
+                    <span class="info-label">Programa Atual:</span>
+                    <span class="info-value highlight" id="current-program">Carregando...</span>
+                </div>
+            </div>
         </div>
     </div>
     
-    <!-- Links úteis -->
+    <!-- Links úteis com design moderno -->
     <div class="useful-links">
-        <h2>Links Úteis</h2>
+        <div class="section-header">
+            <h2>Links Úteis</h2>
+            <p>Acesse recursos importantes do sistema</p>
+        </div>
         <div class="links-grid">
-            <a href="{{ url_for('public.index') }}" target="_blank" class="link-card">
-                <h3>Ver Site</h3>
-                <p>Acessar o site público</p>
+            <a href="{{ url_for('public.index') }}" target="_blank" class="link-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="link-icon icon-radio"></div>
+                <h3>Ver Site Público</h3>
+                <p>Acessar o site público da rádio</p>
+                <div class="link-hint">Abre em nova aba</div>
             </a>
             
-            <a href="#" class="link-card">
-                <h3>Backup</h3>
-                <p>Fazer backup do sistema</p>
+            <a href="#" class="link-card disabled" data-aos="fade-up" data-aos-delay="200">
+                <div class="link-icon icon-settings"></div>
+                <h3>Backup do Sistema</h3>
+                <p>Fazer backup completo do sistema</p>
+                <div class="link-hint">Em breve</div>
             </a>
             
-            <a href="#" class="link-card">
-                <h3>Logs</h3>
-                <p>Ver logs do sistema</p>
+            <a href="#" class="link-card disabled" data-aos="fade-up" data-aos-delay="300">
+                <div class="link-icon icon-chart"></div>
+                <h3>Logs do Sistema</h3>
+                <p>Ver logs e estatísticas detalhadas</p>
+                <div class="link-hint">Em breve</div>
             </a>
         </div>
     </div>
@@ -127,33 +196,588 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Atualizar data e hora em tempo real
+    function atualizarDataHora() {
+        const agora = new Date();
+        const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+        const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        
+        const diaSemana = dias[agora.getDay()];
+        const dia = agora.getDate();
+        const mes = meses[agora.getMonth()];
+        const ano = agora.getFullYear();
+        const hora = agora.getHours().toString().padStart(2, '0');
+        const minuto = agora.getMinutes().toString().padStart(2, '0');
+        const segundo = agora.getSeconds().toString().padStart(2, '0');
+        
+        document.getElementById('current-time').textContent = `${hora}:${minuto}:${segundo}`;
+        document.getElementById('current-date').textContent = `${diaSemana}, ${dia} de ${mes} de ${ano}`;
+        document.getElementById('current-time-display').textContent = `${hora}:${minuto}:${segundo}`;
+        document.getElementById('current-day').textContent = diaSemana;
+    }
+    
     // Atualizar informações da programação atual
     function atualizarProgramacaoAtual() {
         fetch('/api/programacao-atual')
             .then(response => response.json())
             .then(data => {
-                const currentDay = document.getElementById('current-day');
-                const currentTime = document.getElementById('current-time');
                 const currentProgram = document.getElementById('current-program');
                 
                 if (data.error) {
-                    currentProgram.textContent = 'Nenhuma programação ativa';
+                    currentProgram.textContent = 'Nenhuma programação ativa no momento';
+                    currentProgram.classList.add('no-program');
                 } else {
                     currentProgram.textContent = data.titulo;
+                    currentProgram.classList.remove('no-program');
                 }
-                
-                // Atualizar dia e hora
-                const agora = new Date();
-                const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-                currentDay.textContent = dias[agora.getDay()];
-                currentTime.textContent = agora.toLocaleTimeString('pt-BR');
             })
-            .catch(error => console.error('Erro ao buscar programação:', error));
+            .catch(error => {
+                console.error('Erro ao buscar programação:', error);
+                document.getElementById('current-program').textContent = 'Erro ao carregar programação';
+            });
     }
     
-    // Atualizar a cada minuto
+    // Inicializar
+    atualizarDataHora();
     atualizarProgramacaoAtual();
+    
+    // Atualizar a cada segundo (data/hora) e a cada minuto (programação)
+    setInterval(atualizarDataHora, 1000);
     setInterval(atualizarProgramacaoAtual, 60000);
+    
+    // Adicionar efeitos de hover nos cards
+    const cards = document.querySelectorAll('.stat-card, .action-card, .link-card:not(.disabled)');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Prevenir cliques em links desabilitados
+    const disabledLinks = document.querySelectorAll('.link-card.disabled');
+    disabledLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+        });
+    });
 });
 </script>
+
+<style>
+/* Estilos otimizados para o dashboard moderno */
+.welcome-section {
+    text-align: center;
+    margin-bottom: 50px;
+    padding: 40px 20px;
+}
+
+.welcome-section h1 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 15px;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.welcome-section p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+.current-time {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.time-display, .date-display {
+    background: var(--bg-card);
+    backdrop-filter: var(--blur);
+    padding: 18px 30px;
+    border-radius: var(--radius);
+    font-weight: 700;
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-card);
+    font-size: 1.1rem;
+    min-width: 200px;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.time-display:hover, .date-display:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+
+.section-header h2 {
+    color: var(--text-primary);
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    position: relative;
+    display: inline-block;
+}
+
+.section-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--gradient-primary);
+    border-radius: 2px;
+}
+
+.section-header p {
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    font-weight: 500;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Melhorias nos cards de estatísticas */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 50px;
+    padding: 0 20px;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    backdrop-filter: var(--blur);
+    border-radius: var(--radius);
+    padding: 30px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-glow);
+}
+
+.stat-icon {
+    font-size: 3rem;
+    color: var(--primary-green);
+    margin-bottom: 20px;
+    display: block;
+    transition: var(--transition);
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1);
+    color: var(--accent-green);
+}
+
+.stat-content h3 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1;
+}
+
+.stat-content p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.stat-detail {
+    margin-top: 12px;
+}
+
+.active-count, .unread-badge, .all-read {
+    padding: 6px 16px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.active-count {
+    background: var(--gradient-accent);
+    color: white;
+}
+
+.unread-badge {
+    background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+    color: white;
+}
+
+.all-read {
+    background: var(--gradient-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+}
+
+/* Melhorias nas ações rápidas */
+.quick-actions {
+    margin-bottom: 50px;
+    padding: 0 20px;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.action-card {
+    background: var(--bg-card);
+    backdrop-filter: var(--blur);
+    border-radius: var(--radius);
+    padding: 35px 30px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.action-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-glow);
+    color: inherit;
+    text-decoration: none;
+}
+
+.action-icon {
+    font-size: 3.5rem;
+    color: var(--primary-green);
+    margin-bottom: 25px;
+    display: block;
+    transition: var(--transition);
+}
+
+.action-card:hover .action-icon {
+    transform: scale(1.1);
+    color: var(--accent-green);
+}
+
+.action-card h3 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.action-card p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.action-hint {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Melhorias na programação atual */
+.current-programming {
+    background: var(--bg-card);
+    backdrop-filter: var(--blur);
+    border-radius: var(--radius);
+    padding: 40px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-card);
+    margin-bottom: 50px;
+    position: relative;
+    overflow: hidden;
+}
+
+.programming-info {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.info-row {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    flex: 1;
+    min-width: 250px;
+}
+
+.info-item.full-width {
+    flex: 100%;
+}
+
+.info-label {
+    display: block;
+    color: var(--text-secondary);
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    display: block;
+    color: var(--text-primary);
+    font-weight: 800;
+    font-size: 1.3rem;
+    line-height: 1.4;
+}
+
+.info-value.highlight {
+    color: var(--primary-green);
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.info-value.no-program {
+    color: var(--text-muted);
+    font-style: italic;
+    font-weight: 600;
+}
+
+/* Melhorias nos links úteis */
+.useful-links {
+    padding: 0 20px;
+}
+
+.links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.link-card {
+    background: var(--bg-card);
+    backdrop-filter: var(--blur);
+    border-radius: var(--radius);
+    padding: 30px;
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-card);
+    transition: var(--transition);
+    text-decoration: none;
+    color: inherit;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.link-card:not(.disabled):hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-glow);
+    color: inherit;
+    text-decoration: none;
+}
+
+.link-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.link-icon {
+    font-size: 3rem;
+    margin-bottom: 25px;
+    display: block;
+    color: var(--primary-green);
+    transition: var(--transition);
+}
+
+.link-card:not(.disabled):hover .link-icon {
+    transform: scale(1.1);
+    color: var(--accent-green);
+}
+
+.link-card h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.link-card p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.link-hint {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Animações AOS otimizadas */
+[data-aos] {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-aos].aos-animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+[data-aos="zoom-in"] {
+    transform: scale(0.8) translateY(40px);
+}
+
+[data-aos="zoom-in"].aos-animate {
+    transform: scale(1) translateY(0);
+}
+
+/* Responsividade otimizada */
+@media (max-width: 1200px) {
+    .stats-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    .actions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .welcome-section {
+        padding: 30px 15px;
+        margin-bottom: 40px;
+    }
+    
+    .welcome-section h1 {
+        font-size: 2.2rem;
+    }
+    
+    .welcome-section p {
+        font-size: 1.1rem;
+    }
+    
+    .current-time {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .time-display, .date-display {
+        min-width: auto;
+        padding: 15px 25px;
+    }
+    
+    .section-header {
+        margin-bottom: 30px;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .section-header p {
+        font-size: 1rem;
+    }
+    
+    .stats-cards {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 15px;
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .links-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .current-programming {
+        padding: 30px 25px;
+        margin-bottom: 40px;
+    }
+    
+    .info-row {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .info-item {
+        min-width: auto;
+    }
+    
+    .stat-card, .action-card, .link-card {
+        padding: 25px 20px;
+    }
+    
+    .stat-content h3 {
+        font-size: 2.2rem;
+    }
+    
+    .action-icon, .link-icon {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-section h1 {
+        font-size: 1.8rem;
+    }
+    
+    .section-header h2 {
+        font-size: 1.6rem;
+    }
+    
+    .stat-content h3 {
+        font-size: 2rem;
+    }
+    
+    .info-value {
+        font-size: 1.1rem;
+    }
+    
+    .info-value.highlight {
+        font-size: 1.3rem;
+    }
+}
+</style>
 {% endblock %} 

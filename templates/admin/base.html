@@ -5,77 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Admin - {{ config.nome_site }}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
-    <link rel="icon" href="{{ config.favicon }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='icons/icons.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ config.favicon }}" onerror="this.href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><path d=%22M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z%22 fill=%22currentColor%22/></svg>'">
+    <style>
+        :root {
+            --fonte: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+    </style>
 </head>
 <body class="admin">
     <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2>{{ config.nome_site }}</h2>
-            <p>Painel Admin</p>
+            <p>Painel Administrativo</p>
         </div>
         
         <nav class="sidebar-nav">
-            <a href="{{ url_for('admin.dashboard') }}" class="nav-item">
-                <span class="nav-icon">📊</span>
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-item {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                <span class="nav-icon icon-chart"></span>
                 <span class="nav-text">Dashboard</span>
             </a>
             
-            <a href="{{ url_for('admin.programacao') }}" class="nav-item">
-                <span class="nav-icon">📻</span>
+            <a href="{{ url_for('admin.programacao') }}" class="nav-item {% if request.endpoint.startswith('admin.programacao') %}active{% endif %}">
+                <span class="nav-icon icon-radio"></span>
                 <span class="nav-text">Programação</span>
             </a>
             
-            <a href="{{ url_for('admin.locutores') }}" class="nav-item">
-                <span class="nav-icon">👤</span>
+            <a href="{{ url_for('admin.locutores') }}" class="nav-item {% if request.endpoint.startswith('admin.locutores') %}active{% endif %}">
+                <span class="nav-icon icon-microphone"></span>
                 <span class="nav-text">Locutores</span>
             </a>
             
-            <a href="{{ url_for('admin.banners') }}" class="nav-item">
-                <span class="nav-icon">🖼️</span>
+            <a href="{{ url_for('admin.banners') }}" class="nav-item {% if request.endpoint.startswith('admin.banners') %}active{% endif %}">
+                <span class="nav-icon icon-image"></span>
                 <span class="nav-text">Banners</span>
             </a>
             
-            <a href="{{ url_for('admin.destaques') }}" class="nav-item">
-                <span class="nav-icon">⭐</span>
+            <a href="{{ url_for('admin.destaques') }}" class="nav-item {% if request.endpoint.startswith('admin.destaques') %}active{% endif %}">
+                <span class="nav-icon icon-star"></span>
                 <span class="nav-text">Destaques</span>
             </a>
             
-            <a href="{{ url_for('admin.a_radio') }}" class="nav-item">
-                <span class="nav-icon">📡</span>
+            <a href="{{ url_for('admin.a_radio') }}" class="nav-item {% if request.endpoint == 'admin.a_radio' %}active{% endif %}">
+                <span class="nav-icon icon-radio"></span>
                 <span class="nav-text">A Rádio</span>
             </a>
             
-            <a href="{{ url_for('admin.equipe') }}" class="nav-item">
-                <span class="nav-icon">👥</span>
+            <a href="{{ url_for('admin.equipe') }}" class="nav-item {% if request.endpoint == 'admin.equipe' %}active{% endif %}">
+                <span class="nav-icon icon-users"></span>
                 <span class="nav-text">Equipe</span>
             </a>
             
-            <a href="{{ url_for('admin.mensagens') }}" class="nav-item">
-                <span class="nav-icon">💬</span>
+            <a href="{{ url_for('admin.mensagens') }}" class="nav-item {% if request.endpoint == 'admin.mensagens' %}active{% endif %}">
+                <span class="nav-icon icon-message"></span>
                 <span class="nav-text">Mensagens</span>
             </a>
             
-            <a href="{{ url_for('admin.contato') }}" class="nav-item">
-                <span class="nav-icon">📞</span>
+            <a href="{{ url_for('admin.contato') }}" class="nav-item {% if request.endpoint == 'admin.contato' %}active{% endif %}">
+                <span class="nav-icon icon-phone"></span>
                 <span class="nav-text">Página Contato</span>
             </a>
             
-            <a href="{{ url_for('admin.configuracoes') }}" class="nav-item">
-                <span class="nav-icon">⚙️</span>
+            <a href="{{ url_for('admin.configuracoes') }}" class="nav-item {% if request.endpoint == 'admin.configuracoes' %}active{% endif %}">
+                <span class="nav-icon icon-settings"></span>
                 <span class="nav-text">Configurações</span>
             </a>
             
-            <a href="{{ url_for('admin.usuarios') }}" class="nav-item">
-                <span class="nav-icon">👥</span>
+            <a href="{{ url_for('admin.usuarios') }}" class="nav-item {% if request.endpoint.startswith('admin.usuarios') %}active{% endif %}">
+                <span class="nav-icon icon-users"></span>
                 <span class="nav-text">Usuários</span>
             </a>
         </nav>
         
         <div class="sidebar-footer">
             <a href="{{ url_for('admin.logout') }}" class="nav-item">
-                <span class="nav-icon">🚪</span>
+                <span class="nav-icon icon-close"></span>
                 <span class="nav-text">Sair</span>
             </a>
         </div>
@@ -86,13 +92,14 @@
         <!-- Top bar -->
         <header class="top-bar">
             <div class="top-bar-left">
-                <button class="menu-toggle">☰</button>
+                <button class="menu-toggle icon-menu" onclick="toggleSidebar()"></button>
                 <h1>{% block page_title %}Dashboard{% endblock %}</h1>
             </div>
             
             <div class="top-bar-right">
                 <div class="user-info">
                     <span>Olá, {{ current_user.nome }}</span>
+                    <div class="user-role">Administrador</div>
                 </div>
             </div>
         </header>
@@ -102,8 +109,22 @@
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            {{ message }}
+                        <div class="alert alert-{{ category }}" data-aos="fade-down">
+                            <div class="alert-content">
+                                <span class="alert-icon">
+                                    {% if category == 'success' %}
+                                        <span class="icon-check"></span>
+                                    {% elif category == 'error' %}
+                                        <span class="icon-close"></span>
+                                    {% else %}
+                                        <span class="icon-info"></span>
+                                    {% endif %}
+                                </span>
+                                <span class="alert-message">{{ message }}</span>
+                            </div>
+                            <button class="alert-close" onclick="this.parentElement.remove()">
+                                <span class="icon-close"></span>
+                            </button>
                         </div>
                     {% endfor %}
                 {% endif %}
@@ -115,6 +136,49 @@
     
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script>
+        // Função para alternar sidebar em dispositivos móveis
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Fechar sidebar ao clicar fora em dispositivos móveis
+        document.addEventListener('click', function(event) {
+            const sidebar = document.querySelector('.sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+        
+        // Animações AOS simples
+        function initAOS() {
+            const elements = document.querySelectorAll('[data-aos]');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('aos-animate');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            elements.forEach(el => observer.observe(el));
+        }
+        
+        // Inicializar animações quando o DOM estiver pronto
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAOS);
+        } else {
+            initAOS();
+        }
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html> 

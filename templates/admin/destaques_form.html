@@ -6,7 +6,7 @@
 <div class="admin-content">
     <div class="content-header">
         <h1>{{ 'Editar' if destaque else 'Adicionar' }} Destaque</h1>
-        <a href="{{ url_for('admin_destaques') }}" class="btn btn-secondary">← Voltar</a>
+        <a href="{{ url_for('admin.destaques') }}" class="btn btn-secondary">← Voltar</a>
     </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -83,7 +83,7 @@
                 <button type="submit" class="btn btn-primary">
                     {{ 'Atualizar' if destaque else 'Adicionar' }} Destaque
                 </button>
-                <a href="{{ url_for('admin_destaques') }}" class="btn btn-secondary">Cancelar</a>
+                <a href="{{ url_for('admin.destaques') }}" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>

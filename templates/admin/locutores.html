@@ -8,8 +8,8 @@
 <div class="locutores-admin">
     <div class="page-header">
         <h1>Gerenciar Locutores</h1>
-        <a href="{{ url_for('admin_locutores_adicionar') }}" class="btn btn-primary">
-            <span>➕</span> Adicionar Locutor
+        <a href="{{ url_for('admin.locutores_adicionar') }}" class="btn btn-primary">
+            <span class="icon-plus"></span> Adicionar Locutor
         </a>
     </div>
 
@@ -24,7 +24,7 @@
                 </div>
                 {% else %}
                 <div class="locutor-foto-placeholder">
-                    <span>🎤</span>
+                    <span class="icon-microphone"></span>
                 </div>
                 {% endif %}
                 
@@ -48,12 +48,12 @@
             {% endif %}
             
             <div class="locutor-acoes">
-                <a href="{{ url_for('admin_locutores_editar', id=locutor.id) }}" class="btn btn-small btn-secondary">
-                    ✏️ Editar
+                <a href="{{ url_for('admin.locutores_editar', id=locutor.id) }}" class="btn btn-small btn-secondary">
+                    <span class="icon-edit"></span> Editar
                 </a>
-                <form method="POST" action="{{ url_for('admin_locutores_excluir', id=locutor.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este locutor?')">
+                <form method="POST" action="{{ url_for('admin.locutores_deletar', id=locutor.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja excluir este locutor?')">
                     <button type="submit" class="btn btn-small btn-danger">
-                        🗑️ Excluir
+                        <span class="icon-trash"></span> Excluir
                     </button>
                 </form>
             </div>
@@ -63,11 +63,11 @@
     {% else %}
     <div class="no-locutores">
         <div class="empty-state">
-            <div class="empty-icon">🎤</div>
+            <div class="empty-icon icon-microphone"></div>
             <h2>Nenhum locutor cadastrado</h2>
             <p>Comece adicionando o primeiro locutor da equipe.</p>
-            <a href="{{ url_for('admin_locutores_adicionar') }}" class="btn btn-primary">
-                Adicionar Primeiro Locutor
+            <a href="{{ url_for('admin.locutores_adicionar') }}" class="btn btn-primary">
+                <span class="icon-plus"></span> Adicionar Primeiro Locutor
             </a>
         </div>
     </div>
