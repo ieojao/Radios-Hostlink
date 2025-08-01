@@ -128,6 +128,27 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# Radios Hostlink specific
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+static/uploads/*
+!static/uploads/.gitkeep
+
+# Logs
+logs/*
+!logs/.gitkeep
+
+# Configurações locais
+config.env
+.env.local
+.env.production
+
+# Backup files
+backup_old_architecture_*
+
 # IDE
 .vscode/
 .idea/
@@ -137,15 +158,8 @@ dmypy.json
 
 # OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Project specific
-config.env
-*.db
-uploads/
-!uploads/.gitkeep 
+# Temporary files
+*.tmp
+*.temp 

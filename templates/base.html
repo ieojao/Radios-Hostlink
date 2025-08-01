@@ -21,16 +21,16 @@
 <body>
     <!-- Menu principal -->
     <header>
-        <a href="{{ url_for('index') }}" class="logo-link">
+        <a href="{{ url_for('public.index') }}" class="logo-link">
             <img src="{{ config.logo }}" alt="{{ config.nome_site }}" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
             <span class="logo-text" style="display: none;">{{ config.nome_site }}</span>
         </a>
         <nav>
-            <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>HOME</a>
-            <a href="{{ url_for('a_radio') }}" {% if request.endpoint == 'a_radio' %}class="active"{% endif %}>A RÁDIO</a>
-            <a href="{{ url_for('programacao') }}" {% if request.endpoint == 'programacao' %}class="active"{% endif %}>PROGRAMAÇÃO</a>
-            <a href="{{ url_for('equipe') }}" {% if request.endpoint == 'equipe' %}class="active"{% endif %}>EQUIPE</a>
-            <a href="{{ url_for('contato') }}" {% if request.endpoint == 'contato' %}class="active"{% endif %}>CONTATO</a>
+            <a href="{{ url_for('public.index') }}" {% if request.endpoint == 'public.index' %}class="active"{% endif %}>HOME</a>
+            <a href="{{ url_for('public.a_radio') }}" {% if request.endpoint == 'public.a_radio' %}class="active"{% endif %}>A RÁDIO</a>
+            <a href="{{ url_for('public.programacao') }}" {% if request.endpoint == 'public.programacao' %}class="active"{% endif %}>PROGRAMAÇÃO</a>
+            <a href="{{ url_for('public.equipe') }}" {% if request.endpoint == 'public.equipe' %}class="active"{% endif %}>EQUIPE</a>
+            <a href="{{ url_for('public.contato') }}" {% if request.endpoint == 'public.contato' %}class="active"{% endif %}>CONTATO</a>
         </nav>
         <div class="header-buttons">
             <button class="play-now-btn" onclick="window.radioPlayer && window.radioPlayer.togglePlay()">▶ OUVIR AGORA</button>
